@@ -1,0 +1,41 @@
+{
+  "escopo": {"tipo": "uf", "ufs": ["PB"]},
+  "municipios": [
+    {
+      "codigo_ibge": "5105259",
+      "nome": "Lucas do Rio Verde",
+      "uf": "MT"
+    }
+  ],
+  "ano_inicial": 2020,
+  "ano_final": 2024,
+  "fontes": ["ibge", "siconfi", "pncp", "obrasgov"],
+  "palavras_objeto": [
+    "reurb",
+    "regularizacao fundiaria",
+    "regularização fundiária",
+    "plano diretor",
+    "saneamento",
+    "drenagem",
+    "meio ambiente",
+    "ambiental"
+  ],
+  "pncp_modalidades": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+  "pncp_tamanho_pagina": 50,
+  "pncp_intervalo_requisicoes_segundos": 1.5,
+  "pncp_backoff_base_segundos": 3,
+  "pncp_max_tentativas": 6,
+  "pncp_timeout_segundos": 60,
+  "pncp_janela_meses": 3,
+  "pncp_ano_inicial": 2022,
+  "ibge_tamanho_lote": 50,
+  "siconfi_intervalo_requisicoes_segundos": 0.3,
+  "obrasgov_tamanho_pagina": 200,
+  "obrasgov_max_paginas_por_uf_ano": 100,
+  "timeout_segundos": 60,
+  "max_tentativas": 4,
+  "limiar_cobertura_manter": 0.70,
+  "limiar_cobertura_revisar": 0.50,
+  "limiar_correlacao": 0.85,
+  "min_observacoes_correlacao": 20
+}

@@ -1,0 +1,64 @@
+variavel,dimensao,fonte_principal,nivel,unidade,tipo,prioridade,sentido_risco,regra_ou_formula,observacao
+codigo_ibge,identificacao,IBGE,municipio,codigo,bruta,essencial,neutro,,"Chave primária territorial"
+municipio,identificacao,IBGE,municipio,texto,bruta,essencial,neutro,,
+uf,identificacao,IBGE,municipio,sigla,bruta,essencial,neutro,,
+ano,identificacao,todas,municipio-ano,ano,bruta,essencial,neutro,,
+populacao,territorial,IBGE,municipio-ano,pessoas,bruta,essencial,neutro,,"Usar data de referência; SICONFI pode servir de fallback"
+pib,territorial-economica,IBGE,municipio-ano,reais,bruta,alta,ambigua,,"SIDRA publica em mil reais; ETL converte para reais"
+pib_per_capita,territorial-economica,IBGE,municipio-ano,reais-por-habitante,derivada,alta,menor-pode-elevar,pib/populacao,
+area_km2,territorial,IBGE,municipio,km2,bruta,media,ambigua,,
+densidade_demografica,territorial,IBGE,municipio-ano,habitantes-por-km2,derivada,media,ambigua,populacao/area_km2,
+tipologia_rural_urbana,territorial,IBGE,municipio,categoria,bruta,alta,controle,,"Usar para grupo comparável, não como penalidade automática"
+bioma,territorial,IBGE,municipio,categoria,bruta,alta,controle,,"Usar para grupo comparável"
+receita_total_realizada,fiscal-institucional,SICONFI,municipio-ano,reais,bruta,essencial,menor-pode-elevar,,
+transferencias_correntes_realizadas,fiscal-institucional,SICONFI,municipio-ano,reais,bruta,essencial,maior-pode-elevar,,
+despesa_total_liquidada,fiscal-institucional,SICONFI,municipio-ano,reais,bruta,alta,ambigua,,
+despesa_pessoal_liquidada,fiscal-institucional,SICONFI,municipio-ano,reais,bruta,essencial,maior-pode-elevar,,
+investimentos_liquidados,fiscal-institucional,SICONFI,municipio-ano,reais,bruta,essencial,menor-pode-elevar,,
+restos_pagar_processados,fiscal-institucional,SICONFI,municipio-ano,reais,bruta,alta,maior-pode-elevar,,
+restos_pagar_nao_processados,fiscal-institucional,SICONFI,municipio-ano,reais,bruta,alta,maior-pode-elevar,,
+caixa_equivalentes,fiscal-institucional,SICONFI,municipio-ano,reais,bruta,alta,menor-pode-elevar,,
+dependencia_transferencias,fiscal-institucional,SICONFI,municipio-ano,proporcao,derivada,essencial,maior-eleva,transferencias_correntes_realizadas/receita_total_realizada,
+investimento_per_capita,fiscal-institucional,SICONFI+IBGE,municipio-ano,reais-por-habitante,derivada,essencial,menor-pode-elevar,investimentos_liquidados/populacao,
+resultado_orcamentario_proxy,fiscal-institucional,SICONFI,municipio-ano,reais,derivada,alta,negativo-eleva,receita_total_realizada-despesa_total_liquidada,"Proxy exploratória; confirmar conceito contábil final"
+restos_pagar_sobre_receita,fiscal-institucional,SICONFI,municipio-ano,proporcao,derivada,essencial,maior-eleva,"(restos_pagar_processados+restos_pagar_nao_processados)/receita_total_realizada",
+caixa_sobre_receita,fiscal-institucional,SICONFI,municipio-ano,proporcao,derivada,alta,menor-eleva,caixa_equivalentes/receita_total_realizada,
+pressao_pessoal_proxy,fiscal-institucional,SICONFI,municipio-ano,proporcao,derivada,essencial,maior-eleva,despesa_pessoal_liquidada/receita_total_realizada,"Não chamar de pessoal/RCL até integrar RGF"
+numero_instrumentos_ativos,recursos-e-captacao,Transferegov,municipio-ano,contagem,derivada,alta,oportunidade,,
+valor_pactuado,recursos-e-captacao,Transferegov,municipio-ano,reais,bruta,essencial,oportunidade,,
+valor_liberado,recursos-e-captacao,Transferegov,municipio-ano,reais,bruta,essencial,oportunidade,,
+saldo_a_executar,recursos-e-captacao,Transferegov,municipio-ano,reais,derivada,essencial,ambos,valor_pactuado-valor_executado,"Confirmar semântica dos campos do arquivo"
+saldo_a_executar_relativo,recursos-e-captacao,Transferegov,municipio-ano,proporcao,derivada,essencial,ambos,saldo_a_executar/valor_pactuado,
+recursos_federais_per_capita,recursos-e-captacao,Transferegov+IBGE,municipio-ano,reais-por-habitante,derivada,alta,oportunidade,valor_liberado/populacao,
+instrumentos_proximos_vencimento,recursos-e-captacao,Transferegov,municipio-ano,contagem,derivada,alta,maior-eleva,,"Definir janela ex ante, por exemplo 180 dias"
+total_obras,execucao-e-patrimonio,ObrasGov,municipio-ano,contagem,derivada,essencial,controle,,
+obras_paradas,execucao-e-patrimonio,ObrasGov,municipio-ano,contagem,derivada,essencial,maior-eleva,,
+taxa_obras_paradas,execucao-e-patrimonio,ObrasGov,municipio-ano,proporcao,derivada,essencial,maior-eleva,obras_paradas/total_obras,
+valor_obras_paradas,execucao-e-patrimonio,ObrasGov,municipio-ano,reais,derivada,alta,maior-eleva,,
+percentual_execucao_medio,execucao-e-patrimonio,ObrasGov,municipio-ano,percentual,derivada,alta,menor-pode-elevar,,
+atraso_medio_dias,execucao-e-patrimonio,ObrasGov,municipio-ano,dias,derivada,alta,maior-eleva,data_real-ou-corte_menos_data_prevista,
+obras_sem_estudo_viabilidade,execucao-e-patrimonio,ObrasGov,municipio-ano,contagem,derivada,media,maior-pode-elevar,,
+total_contratacoes,contratacao-publica,PNCP,municipio-ano,contagem,derivada,alta,maturidade,,
+valor_estimado_contratacoes,contratacao-publica,PNCP,municipio-ano,reais,derivada,alta,oportunidade,,
+valor_homologado_contratacoes,contratacao-publica,PNCP,municipio-ano,reais,derivada,alta,oportunidade,,
+contratacoes_similares,contratacao-publica,PNCP,municipio-ano,contagem,derivada,essencial,maturidade,,"Definida por palavras-chave versionadas"
+valor_contratacoes_similares,contratacao-publica,PNCP,municipio-ano,reais,derivada,alta,oportunidade,,
+area_urbanizada_ha,territorial-socioambiental,MapBiomas,municipio-ano,hectares,bruta,essencial,maior-pode-elevar,,
+proporcao_area_urbanizada,territorial-socioambiental,MapBiomas,municipio-ano,proporcao,derivada,alta,ambigua,area_urbanizada_ha/area_municipal_ha,
+crescimento_area_urbanizada,territorial-socioambiental,MapBiomas,municipio-ano,proporcao,derivada,essencial,maior-pode-elevar,area_urbanizada_t/area_urbanizada_t-1-1,
+vegetacao_nativa_ha,territorial-socioambiental,MapBiomas,municipio-ano,hectares,bruta,essencial,menor-pode-elevar,,
+perda_vegetacao_nativa,territorial-socioambiental,MapBiomas,municipio-ano,hectares,derivada,essencial,maior-eleva,vegetacao_nativa_t-1-vegetacao_nativa_t,
+superficie_agua_ha,territorial-socioambiental,MapBiomas,municipio-ano,hectares,bruta,alta,ambigua,,
+precipitacao_anual_mm,territorial-socioambiental,ANA,municipio-ano,milimetros,derivada,alta,extremos-elevam,,"Agregar estações ou grade espacial ao município"
+anomalia_precipitacao,territorial-socioambiental,ANA,municipio-ano,desvio-padronizado,derivada,alta,extremos-elevam,"(chuva-media_historica)/desvio_historico",
+cobertura_agua,territorial-socioambiental,SINISA-SNIS,municipio-ano,percentual,bruta,alta,menor-eleva,,
+cobertura_esgoto,territorial-socioambiental,SINISA-SNIS,municipio-ano,percentual,bruta,essencial,menor-eleva,,
+tratamento_esgoto,territorial-socioambiental,SINISA-SNIS,municipio-ano,percentual,bruta,alta,menor-eleva,,
+cobertura_coleta_residuos,territorial-socioambiental,SINISA-SNIS,municipio-ano,percentual,bruta,alta,menor-eleva,,
+domicilios_em_area_risco_inundacao,territorial-socioambiental,SINISA,municipio-ano,contagem,bruta,essencial,maior-eleva,,"Verificar código exato no glossário de Águas Pluviais"
+cobertura_drenagem,territorial-socioambiental,SINISA-SNIS,municipio-ano,percentual,bruta,essencial,menor-eleva,,
+restricao_ambiental_localizada,risco-especifico-reurb,MapBiomas+ANA+orgaos-locais,area-do-projeto,binaria-ou-area,derivada,essencial,maior-eleva,,"Não pode ser inferida apenas pelo agregado municipal"
+distancia_corpo_hidrico_m,risco-especifico-reurb,ANA+geodados-locais,area-do-projeto,metros,derivada,essencial,menor-eleva,,
+intersecao_app_ha,risco-especifico-reurb,ANA+geodados-locais,area-do-projeto,hectares,derivada,essencial,maior-eleva,,
+evento_risco_t1,alvo-supervisionado,ObrasGov-ou-Transferegov,municipio-ano,binaria,alvo,essencial,evento,,"Definir antes do Elastic Net; deve ocorrer em t+1 e ser observável publicamente"
+
