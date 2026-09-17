@@ -167,5 +167,5 @@ Nesse caso, o Elastic Net deve estar dentro da validação temporal. Não use di
 - O PNCP tem cobertura condicionada à publicação dos órgãos e à vigência do portal; ausência de registro não significa ausência de contratação.
 - ObrasGov e FNDE/SIMEC podem conter o mesmo empreendimento.
 - SNIS e SINISA têm transição metodológica; mantenha uma coluna de fonte/metodologia.
-- MapBiomas e ANA são espaciais. Um indicador municipal pode não detectar o risco localizado no núcleo REURB.
-- Para o caso ambiental de Lucas do Rio Verde, a etapa municipal deve ser complementada por sobreposição geográfica da área do projeto com APP, corpos d'água, cobertura da terra e restrições ambientais.
+
+
