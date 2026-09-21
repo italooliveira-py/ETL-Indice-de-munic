@@ -1,6 +1,6 @@
 # Entrega — confiabilidade e escopo Paraíba
 
-Implementação em dois checkpoints, validada em 16/09/2026. Não houve commit, push, publicação, exclusão de dados anteriores nem coleta estadual completa. Os arquivos originais em `output/` foram preservados; as integrações desta implementação usaram exclusivamente `output/smoke/` e `data/raw/smoke/`.
+Implementação em dois checkpoints, revalidada em 21/09/2026. Não houve commit, push, publicação, exclusão de dados anteriores nem coleta estadual completa. Os arquivos originais em `output/` foram preservados; as integrações desta implementação usaram exclusivamente `output/smoke/` e `data/raw/smoke/`.
 
 ## Diagnóstico
 
@@ -49,7 +49,7 @@ python -m unittest discover -s tests -v
 python -m py_compile etl_primario.py etl_confiabilidade.py
 ```
 
-O smoke estadual mais recente com rede está em `output/smoke/20260916T130533602781Z/`. Comando:
+O smoke estadual limitado mais recente está em `output/smoke/20260921T120758274248Z/`. Ele reutilizou os checkpoints válidos existentes e não iniciou coleta estadual completa. Comando:
 
 ```powershell
 python etl_primario.py --sources ibge siconfi pncp obrasgov --smoke-test
