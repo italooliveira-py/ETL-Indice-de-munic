@@ -102,9 +102,13 @@ class Checkpoint1(unittest.TestCase):
 
     def test_erro_permanente_sem_retry(self):
         self.sessao.get.return_value = resposta(400)
-        _, base = self.coletar()
+        resultado = etl.coletar_janela_pncp(
+            self.sessao, self.config, "5105259", {"codigoMunicipioIbge": "5105259"},
+            date(2024, 1, 1), date(2024, 1, 1), 8, {},
+        )
         self.assertEqual(self.sessao.get.call_count, 1)
-        self.assertTrue(pd.isna(base.iloc[0].total_contratacoes))
+        self.assertEqual(resultado["situacao"], "falhou")
+        self.assertEqual(resultado["dados"], [])
 
     def test_janelas_bissexto_sem_lacuna(self):
         self.assertTrue(hasattr(etl, "janelas_ano"), "Gerador de janelas ainda ausente")
@@ -135,6 +139,7 @@ class Checkpoint1(unittest.TestCase):
         self.assertEqual(base.iloc[0].total_contratacoes, 2)
 
     def test_pagina_parcial_nao_vira_total(self):
+        self.config["_smoke_test"] = True
         self.sessao.get.side_effect = [resposta(dados=pagina([compra()], 2)), resposta(400)]
         eventos, base = self.coletar()
         self.assertEqual(len(eventos), 1)

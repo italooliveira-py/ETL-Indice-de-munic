@@ -23,6 +23,11 @@ TRANSITORIOS = {429, 500, 502, 503, 504}
 class FalhaConsulta(RuntimeError):
     """Consulta não concluída: nunca equivale a uma resposta vazia."""
 
+    def __init__(self, mensagem, status_code=None, resposta_corpo=None):
+        super().__init__(mensagem)
+        self.status_code = status_code
+        self.resposta_corpo = resposta_corpo
+
 
 def salvar_json_atomico(caminho: Path, dados):
     caminho.parent.mkdir(parents=True, exist_ok=True)
@@ -106,7 +111,13 @@ def requisitar_json(sessao, url, config, params=None, fonte="", contexto="", est
         except (requests.Timeout, requests.ConnectionError, RemoteDisconnected, requests.HTTPError) as exc:
             status = resposta.status_code if resposta is not None else None
             if status is not None and status not in TRANSITORIOS:
-                raise FalhaConsulta(f"HTTP permanente {status}: {exc}") from exc
+                corpo = resposta.text[:500].replace("\x00", "") if resposta is not None else ""
+                detalhe = f" | resposta: {corpo}" if corpo else ""
+                raise FalhaConsulta(
+                    f"HTTP permanente {status}: {exc}{detalhe}",
+                    status_code=status,
+                    resposta_corpo=corpo,
+                ) from exc
             atraso = max(base * 2 ** tentativa + random.uniform(0, base),
                          retry_after(resposta.headers.get("Retry-After")) if resposta is not None else 0)
             if status in {429, 503}:

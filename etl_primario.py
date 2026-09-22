@@ -17,7 +17,7 @@ import unicodedata
 import zipfile
 from urllib.parse import parse_qs, urlparse
 from dataclasses import dataclass
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -459,6 +459,175 @@ PNCP_METRICAS = [
 ]
 
 
+def coletar_janela_pncp(
+    sessao, config, escopo, filtro, inicio, fim, modalidade, estado_http,
+    _pasta_arvore=None,
+):
+    """Coleta uma janela; subdivide somente HTTP 400 de intervalos com mais de um dia."""
+    if not isinstance(inicio, date) or not isinstance(fim, date) or inicio > fim:
+        raise ValueError("Período PNCP inválido")
+    if not isinstance(modalidade, int) or modalidade <= 0:
+        raise ValueError("Modalidade PNCP inválida")
+    filtros_validos = [chave for chave in ("uf", "codigoMunicipioIbge") if filtro.get(chave)]
+    if len(filtros_validos) != 1:
+        raise ValueError("Consulta PNCP exige exatamente um filtro territorial válido")
+
+    url = "https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao"
+    periodo = f"{inicio}/{fim}"
+    registro = dict(
+        fonte="PNCP", escopo=escopo, periodo=periodo, modalidade=modalidade,
+        paginas_esperadas=None, paginas_concluidas=0, situacao="parcial",
+        quantidade_registros=0, erro_final=None,
+        registros_antes_deduplicacao=0, registros_apos_deduplicacao=0,
+        janelas_filhas=[],
+    )
+    atualizar_manifesto(OUTPUT_DIR, registro)
+    pagina, total, caches = 1, None, 0
+    total_registros = None
+    dados = []
+    tamanho = int(config.get("pncp_tamanho_pagina", 50))
+    refresh = "pncp" in config.get("_refresh_fontes", [])
+    if _pasta_arvore is None:
+        _pasta_arvore = geracao_cache(
+            RAW_DIR / "pncp", f"{escopo}-{inicio}-{fim}-{modalidade}-{tamanho}", refresh
+        )
+    pasta_paginas = _pasta_arvore
+    try:
+        while total is None or pagina <= max(1, total):
+            caminho = pasta_paginas / (
+                f"{escopo}_{inicio:%Y%m%d}_{fim:%Y%m%d}_modalidade_{modalidade:02d}"
+                f"_tamanho_{tamanho}_pagina_{pagina:04d}.json"
+            )
+            validar = lambda resposta: validar_pagina(resposta, pagina=pagina)
+            resposta = None if refresh else ler_cache(caminho, validar)
+            if resposta is None:
+                resposta = requisitar_json(
+                    sessao, url, config, fonte="PNCP", estado=estado_http,
+                    contexto=f"{escopo} {inicio}/{fim} modalidade {modalidade} página {pagina}",
+                    params={
+                        "dataInicial": inicio.strftime("%Y%m%d"),
+                        "dataFinal": fim.strftime("%Y%m%d"),
+                        "codigoModalidadeContratacao": modalidade,
+                        **filtro,
+                        "pagina": pagina,
+                        "tamanhoPagina": tamanho,
+                    },
+                )
+                validar(resposta)
+                salvar_json(caminho, resposta)
+            else:
+                caches += 1
+            esperado = resposta["totalPaginas"]
+            if total is not None and esperado != total:
+                raise FalhaConsulta("Paginação mudou durante a coleta; use --refresh para esta fonte")
+            total = esperado
+            informado = resposta.get("totalRegistros")
+            if total_registros is not None and informado != total_registros:
+                raise FalhaConsulta("PNCP mudou total de registros durante a coleta")
+            total_registros = informado
+            dados.extend(resposta["data"])
+            registro.update(
+                paginas_esperadas=max(1, total), paginas_concluidas=pagina,
+                quantidade_registros=len(dados),
+            )
+            atualizar_manifesto(OUTPUT_DIR, registro)
+            if config.get("_smoke_test") and pagina >= 2 and pagina < total:
+                raise FalhaConsulta("Limite de duas páginas do smoke test; cobertura parcial")
+            pagina += 1
+        if total_registros is not None and len(dados) != total_registros:
+            raise FalhaConsulta("PNCP: soma das páginas não corresponde ao total de registros")
+        quantidade_bruta = len(dados)
+        unicos = {chave_compra(item): item for item in dados}
+        dados = list(unicos.values())
+        registro.update(
+            situacao=("sem_registros_confirmado" if not dados else
+                      "cache_reutilizado" if caches == registro["paginas_concluidas"] else "completa"),
+            quantidade_registros=len(dados),
+            registros_antes_deduplicacao=quantidade_bruta,
+            registros_apos_deduplicacao=len(dados),
+        )
+    except KeyboardInterrupt:
+        registro.update(situacao="parcial", erro_final="Interrompido por Ctrl+C")
+        atualizar_manifesto(OUTPUT_DIR, registro)
+        raise
+    except FalhaConsulta as exc:
+        if exc.status_code == 400 and inicio < fim:
+            meio = inicio + timedelta(days=(fim - inicio).days // 2)
+            intervalos = [(inicio, meio), (meio + timedelta(days=1), fim)]
+            registro["janelas_filhas"] = [f"{a}/{b}" for a, b in intervalos]
+            atualizar_manifesto(OUTPUT_DIR, registro)
+            filhos = []
+            try:
+                for inicio_filho, fim_filho in intervalos:
+                    filhos.append(coletar_janela_pncp(
+                        sessao, config, escopo, filtro, inicio_filho, fim_filho,
+                        modalidade, estado_http, _pasta_arvore,
+                    ))
+                    registro.update(
+                        paginas_concluidas=sum(filho["paginas_concluidas"] for filho in filhos),
+                        registros_antes_deduplicacao=sum(
+                            filho["registros_antes_deduplicacao"] for filho in filhos
+                        ),
+                        registros_apos_deduplicacao=sum(
+                            filho["registros_apos_deduplicacao"] for filho in filhos
+                        ),
+                    )
+                    atualizar_manifesto(OUTPUT_DIR, registro)
+            except KeyboardInterrupt:
+                registro.update(
+                    situacao="parcial",
+                    erro_final="Interrompido por Ctrl+C durante subdivisão",
+                    paginas_concluidas=sum(filho["paginas_concluidas"] for filho in filhos),
+                    registros_antes_deduplicacao=sum(
+                        filho["registros_antes_deduplicacao"] for filho in filhos
+                    ),
+                    registros_apos_deduplicacao=sum(
+                        filho["registros_apos_deduplicacao"] for filho in filhos
+                    ),
+                )
+                atualizar_manifesto(OUTPUT_DIR, registro)
+                raise
+            combinados = [item for filho in filhos for item in filho["dados"]]
+            unicos = {chave_compra(item): item for item in combinados}
+            dados = list(unicos.values())
+            estados_validos = {"completa", "sem_registros_confirmado", "cache_reutilizado"}
+            completa = all(filho["situacao"] in estados_validos for filho in filhos)
+            erros_filhos = [filho["erro_final"] for filho in filhos if filho.get("erro_final")]
+            registro.update(
+                paginas_esperadas=(sum(filho["paginas_esperadas"] for filho in filhos)
+                                   if all(filho["paginas_esperadas"] is not None for filho in filhos) else None),
+                paginas_concluidas=sum(filho["paginas_concluidas"] for filho in filhos),
+                situacao=("sem_registros_confirmado" if completa and not dados else
+                          "completa" if completa else "parcial"),
+                quantidade_registros=len(dados),
+                erro_final=" | ".join(erros_filhos) or None,
+                registros_antes_deduplicacao=sum(
+                    filho["registros_antes_deduplicacao"] for filho in filhos
+                ),
+                registros_apos_deduplicacao=len(dados),
+            )
+        else:
+            quantidade_bruta = len(dados)
+            dados = list({chave_compra(item): item for item in dados}.values())
+            registro.update(
+                situacao="parcial" if registro["paginas_concluidas"] else "falhou",
+                erro_final=str(exc)[:800],
+                registros_antes_deduplicacao=quantidade_bruta,
+                registros_apos_deduplicacao=len(dados),
+            )
+    except Exception as exc:
+        quantidade_bruta = len(dados)
+        dados = list({chave_compra(item): item for item in dados}.values())
+        registro.update(
+            situacao="parcial" if registro["paginas_concluidas"] else "falhou",
+            erro_final=str(exc)[:800],
+            registros_antes_deduplicacao=quantidade_bruta,
+            registros_apos_deduplicacao=len(dados),
+        )
+    atualizar_manifesto(OUTPUT_DIR, registro)
+    return {**registro, "dados": dados}
+
+
 def coletar_pncp(sessao, config, erros):
     url = "https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao"
     eventos, agregados, rejeitados = [], [], []
@@ -478,60 +647,16 @@ def coletar_pncp(sessao, config, erros):
                 janelas = [(date(ano, 1, 2), date(ano, 1, 2))]
             for inicio, fim in janelas:
                 for modalidade in config.get("pncp_modalidades", list(range(1, 14))):
-                    registro = dict(fonte="PNCP", escopo=codigo, periodo=f"{inicio}/{fim}",
-                                    modalidade=modalidade, paginas_esperadas=None, paginas_concluidas=0,
-                                    situacao="parcial", quantidade_registros=0, erro_final=None)
-                    pagina, total, caches = 1, None, 0
-                    total_registros = None
-                    tamanho = int(config.get("pncp_tamanho_pagina", 50))
-                    pasta_paginas = geracao_cache(RAW_DIR / "pncp", f"{codigo}-{inicio}-{fim}-{modalidade}-{tamanho}", "pncp" in config.get("_refresh_fontes", []))
-                    atualizar_manifesto(OUTPUT_DIR, registro)
-                    try:
-                        while total is None or pagina <= max(1, total):
-                            tamanho = int(config.get("pncp_tamanho_pagina", 50))
-                            caminho = pasta_paginas / (
-                                f"{codigo}_{inicio:%Y%m%d}_{fim:%Y%m%d}_modalidade_{modalidade:02d}"
-                                f"_tamanho_{tamanho}_pagina_{pagina:04d}.json")
-                            validar = lambda r: validar_pagina(r, pagina=pagina)
-                            resposta = None if "pncp" in config.get("_refresh_fontes", []) else ler_cache(caminho, validar)
-                            if resposta is None:
-                                resposta = requisitar_json(sessao, url, config, fonte="PNCP", estado=estado_http,
-                                    contexto=f"{codigo} {inicio}/{fim} modalidade {modalidade} página {pagina}",
-                                    params={"dataInicial": inicio.strftime("%Y%m%d"), "dataFinal": fim.strftime("%Y%m%d"),
-                                            "codigoModalidadeContratacao": modalidade, **filtro,
-                                            "pagina": pagina, "tamanhoPagina": tamanho})
-                                validar(resposta)
-                                salvar_json(caminho, resposta)
-                            else:
-                                caches += 1
-                            esperado = resposta["totalPaginas"]
-                            if total is not None and esperado != total:
-                                raise FalhaConsulta("Paginação mudou durante a coleta; use --refresh para esta fonte")
-                            total = esperado
-                            informado = resposta.get("totalRegistros")
-                            if total_registros is not None and informado != total_registros:
-                                raise FalhaConsulta("PNCP mudou total de registros durante a coleta")
-                            total_registros = informado
-                            bruto_ano.extend(resposta["data"])
-                            registro.update(paginas_esperadas=max(1, total), paginas_concluidas=pagina,
-                                            quantidade_registros=registro["quantidade_registros"] + len(resposta["data"]))
-                            atualizar_manifesto(OUTPUT_DIR, registro)
-                            if config.get("_smoke_test") and pagina >= 2 and pagina < total:
-                                raise FalhaConsulta("Limite de duas páginas do smoke test; cobertura parcial")
-                            pagina += 1
-                        if total_registros is not None and registro["quantidade_registros"] != total_registros:
-                            raise FalhaConsulta("PNCP: soma das páginas não corresponde ao total de registros")
-                        registro["situacao"] = ("sem_registros_confirmado" if not registro["quantidade_registros"]
-                                                else "cache_reutilizado" if caches == registro["paginas_concluidas"] else "completa")
-                    except KeyboardInterrupt:
-                        registro.update(situacao="parcial", erro_final="Interrompido por Ctrl+C")
-                        atualizar_manifesto(OUTPUT_DIR, registro)
-                        raise
-                    except Exception as exc:
-                        registro.update(situacao="parcial" if registro["paginas_concluidas"] else "falhou", erro_final=str(exc))
-                        registrar_erro(erros, "PNCP", f"{codigo}-{inicio}-{modalidade}", exc)
-                    atualizar_manifesto(OUTPUT_DIR, registro)
-                    estados.append(registro["situacao"])
+                    resultado = coletar_janela_pncp(
+                        sessao, config, codigo, filtro, inicio, fim, modalidade, estado_http
+                    )
+                    bruto_ano.extend(resultado["dados"])
+                    estados.append(resultado["situacao"])
+                    if resultado["situacao"] not in {"completa", "sem_registros_confirmado", "cache_reutilizado"}:
+                        registrar_erro(
+                            erros, "PNCP", f"{codigo}-{inicio}-{modalidade}",
+                            FalhaConsulta(resultado["erro_final"] or "Cobertura PNCP incompleta"),
+                        )
             # Páginas são a fonte da retomada; o arquivo anual mantém o nome legado.
             salvar_json(RAW_DIR / "pncp" / f"contratacoes_{codigo}_{ano}.json", bruto_ano)
             unicos = {chave_compra(item): item for item in bruto_ano}

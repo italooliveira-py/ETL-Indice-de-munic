@@ -23,6 +23,7 @@ Criados: `etl_confiabilidade.py`, `config.municipio.json`, `tests/test_checkpoin
 - `--resume` padrão, `--refresh` restrito às fontes selecionadas, gerações separadas para não misturar uma atualização interrompida com páginas antigas.
 - Deduplicação antes da agregação. Chave principal `numeroControlePNCP`; alternativa CNPJ/ano/sequencial; último recurso hash do JSON completo, que só elimina duplicatas exatas.
 - Falhas e cobertura parcial produzem valores ausentes. Zero somente para consulta anual completa no recorte configurado do PNCP. Valores monetários desconhecidos não são somados como zero.
+- HTTP 400 permanece permanente para uma consulta de um dia. Quando os parâmetros já são válidos e a janela tem mais de um dia, o PNCP divide somente essa janela em duas partes contíguas e repete o processo nas partes que ainda retornarem 400. A janela-pai só completa quando todas as folhas completam; manifesto e cache registram as janelas-filhas, páginas, contagens antes/depois da deduplicação e interrupções. A árvore inteira compartilha a geração de refresh, preservando compatibilidade com os marcadores anteriores.
 
 Os 13 testes iniciais passaram antes de iniciar o Checkpoint 2. O smoke municipal original consultou Lucas do Rio Verde, 01–07/01/2024, modalidade 8: uma consulta, sem registros, sem erro. Comando naquele checkpoint: `python etl_primario.py --sources pncp --smoke-test`. Evidência: `output/smoke/20260916T125053889254Z/`.
 
@@ -39,7 +40,17 @@ Os 13 testes iniciais passaram antes de iniciar o Checkpoint 2. O smoke municipa
 
 ## Testes e integrações
 
-Suíte final: **44 testes, todos aprovados**, com HTTP simulado e diretórios temporários. Cobertura: retry/Retry-After/timeout/503, erro permanente, cache válido/corrompido, escrita interrompida, Ctrl+C, refresh interrompido, deduplicação, zero versus ausente, janelas bissextas, resolução UF/legado, chave do merge, PNCP UF/filtro/rejeitados, período independente, cache/paginação SICONFI, identificação e ambiguidade ObrasGov, lote SIDRA, auditoria/correlação e limites/isolamento da CLI.
+Suíte final: **57 testes, todos aprovados**, com HTTP simulado e diretórios temporários. Cobertura: retry/Retry-After/timeout/503, erro permanente, cache válido/corrompido, escrita interrompida, Ctrl+C, refresh interrompido, deduplicação, zero versus ausente, janelas bissextas, resolução UF/legado, chave do merge, PNCP UF/filtro/rejeitados, período independente, cache/paginação SICONFI, identificação e ambiguidade ObrasGov, lote SIDRA, auditoria/correlação e limites/isolamento da CLI. Os testes PNCP adicionais cobrem subdivisão recursiva do HTTP 400, folha diária definitiva, composição de estados, totais declarados, contagem bruta/deduplicada, retomada das filhas, geração compartilhada e compatibilidade com marcadores de refresh anteriores.
+
+Retomada PNCP estadual executada em 22/09/2026, sem `--refresh` e sem reconstrução conjunta das demais fontes:
+
+| Ano | Eventos | Situação municipal final |
+|---|---:|---|
+| 2022 | 1.047 | 45 municípios com registros e 178 sem registros confirmados |
+| 2023 | 2.810 | 81 municípios com registros e 142 sem registros confirmados |
+| 2024 | 20.507 | 217 municípios com registros e 6 sem registros confirmados |
+
+Total: **24.364 eventos**, `erros = 0`, nenhuma cobertura parcial/falha e nenhum zero derivado de cobertura incompleta. O manifesto contém 156 partições trimestrais/modalidade: 62 com páginas reutilizadas e 94 sem registros confirmados. A partição PB/2023-10-01 a 2023-12-31/modalidade 6 respondeu diretamente nesta validação e completou quatro páginas; portanto, o fallback foi comprovado pelos testes determinísticos, mas não precisou ser acionado pela API nessa retomada.
 
 Executado com Python 3.12 ARM64/pandas 3.0.4/requests 2.34.2 e, separadamente, Python 3.12 x64/pandas 2.3.3/requests 2.34.2 com todas as dependências de `requirements.txt`. As mensagens de warning nos testes correspondem às falhas simuladas deliberadamente.
 
