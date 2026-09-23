@@ -132,12 +132,16 @@ python etl_primario.py --only-profile
 | `output/cobertura_fontes.csv` | cobertura observada por fonte/ano e estados dos coletores |
 | `output/rejeitados_pncp.json` | registros sem código municipal válido ou fora do catálogo |
 | `output/rejeitados_obrasgov.json` | registros fora do recorte, ambíguos ou não identificados |
+| `output/projetos_multiterritoriais_obrasgov.json` | projetos com evidência de mais de um município, sem duplicação silenciosa |
+| `output/cobertura_territorial_obrasgov.csv` | coleta da API, atribuição territorial e disponibilidade do agregado por ano |
 
 Os nomes e formatos CSV/JSON existentes foram mantidos; há colunas adicionais de cobertura. O merge usa exclusivamente `codigo_ibge + ano`; nome e UF vêm do catálogo/seleção territorial. Antes de uma execução normal, saídas anteriores são copiadas para `output/historico/`. Dados brutos substituídos são preservados por conteúdo em `data/raw/historico/`.
 
 PNCP só fornece zero quando todas as modalidades, janelas e páginas do ano foram concluídas. Falhas, truncamento do smoke e registros sem identificação municipal deixam os agregados ausentes. O zero significa **nenhum registro retornado no recorte do portal**, e não prova ausência de contratação. Valores monetários faltantes também permanecem ausentes. A deduplicação prioriza `numeroControlePNCP`; na ausência dele usa CNPJ + ano + sequencial da compra, ou hash do JSON completo quando faltam esses campos.
 
-No ObrasGov, códigos oficiais têm prioridade. Nomes são comparados integralmente, com normalização de acentos/caixa e prefixos institucionais, somente em executor/tomador. Ambiguidades não são atribuídas ao primeiro município. Registros comprovadamente de outra cidade são descartados do recorte; registros não identificados tornam a cobertura conservadoramente parcial. Execução física e histórico continuam sendo consultados por projeto, com paginação/cache, apenas fora do smoke.
+No ObrasGov, `status_coleta_api`, `status_atribuicao_territorial` e `status_agregado` são independentes. Código oficial, CNPJ municipal catalogado, executor/tomador concordantes, nome exato, CEP catalogado e ponto em malha oficial formam uma hierarquia conservadora. Não há fuzzy matching nem município mais próximo. Conflitos, projetos multiterritoriais e projetos municipais pendentes não viram zero; entidades positivamente federais/estaduais sem território municipal não bloqueiam todo o ano. A malha é opcional porque a distribuição estável do Shapely não é compatível com Windows ARM64; sem motor espacial, o ETL continua e preserva a pendência.
+
+Em `eventos_obrasgov.csv`, `ano` é um alias legado de `ano_cadastro`. Anos previstos e efetivos ficam separados e datas ausentes não são imputadas. `evento_adverso_execucao` vale 1 para Cancelada, Inacabada ou Paralisada, 0 para Concluída e fica vazio para Cadastrada, Em execução ou estado desconhecido. `obra_parada` permanece como alias temporário. Situação, percentual de execução, datas finais e o alvo são informações de resultado e não são recomendados automaticamente como preditores anteriores ao projeto.
 
 ## Como escolher as variáveis depois do ETL
 

@@ -31,13 +31,14 @@ saldo_a_executar,recursos-e-captacao,Transferegov,municipio-ano,reais,derivada,e
 saldo_a_executar_relativo,recursos-e-captacao,Transferegov,municipio-ano,proporcao,derivada,essencial,ambos,saldo_a_executar/valor_pactuado,
 recursos_federais_per_capita,recursos-e-captacao,Transferegov+IBGE,municipio-ano,reais-por-habitante,derivada,alta,oportunidade,valor_liberado/populacao,
 instrumentos_proximos_vencimento,recursos-e-captacao,Transferegov,municipio-ano,contagem,derivada,alta,maior-eleva,,"Definir janela ex ante, por exemplo 180 dias"
-total_obras,execucao-e-patrimonio,ObrasGov,municipio-ano,contagem,derivada,essencial,controle,,
-obras_paradas,execucao-e-patrimonio,ObrasGov,municipio-ano,contagem,derivada,essencial,maior-eleva,,
-taxa_obras_paradas,execucao-e-patrimonio,ObrasGov,municipio-ano,proporcao,derivada,essencial,maior-eleva,obras_paradas/total_obras,
-valor_obras_paradas,execucao-e-patrimonio,ObrasGov,municipio-ano,reais,derivada,alta,maior-eleva,,
-percentual_execucao_medio,execucao-e-patrimonio,ObrasGov,municipio-ano,percentual,derivada,alta,menor-pode-elevar,,
+total_obras,execucao-e-patrimonio,ObrasGov,municipio-ano,contagem,derivada,essencial,controle,,"Total somente com status_agregado completo_no_escopo"
+obras_paradas,execucao-e-patrimonio,ObrasGov,municipio-ano,contagem,derivada,essencial,maior-eleva,,"Informacao de resultado; nao usar como preditor pre-projeto"
+taxa_obras_paradas,execucao-e-patrimonio,ObrasGov,municipio-ano,proporcao,derivada,essencial,maior-eleva,obras_paradas/total_obras,"Informacao de resultado; nao usar como preditor pre-projeto"
+valor_obras_paradas,execucao-e-patrimonio,ObrasGov,municipio-ano,reais,derivada,alta,maior-eleva,,"Informacao de resultado; nao usar como preditor pre-projeto"
+percentual_execucao_medio,execucao-e-patrimonio,ObrasGov,municipio-ano,percentual,derivada,alta,menor-pode-elevar,,"Informacao de resultado; nao usar como preditor pre-projeto"
 atraso_medio_dias,execucao-e-patrimonio,ObrasGov,municipio-ano,dias,derivada,alta,maior-eleva,data_real-ou-corte_menos_data_prevista,
-obras_sem_estudo_viabilidade,execucao-e-patrimonio,ObrasGov,municipio-ano,contagem,derivada,media,maior-pode-elevar,,
+obras_sem_estudo_viabilidade,execucao-e-patrimonio,ObrasGov,municipio-ano,contagem,derivada,media,maior-pode-elevar,,"Quase constante na coleta auditada; manter para auditoria e nao interpretar causalmente"
+evento_adverso_execucao,alvo-supervisionado,ObrasGov,projeto,binaria,alvo,essencial,evento,,"1 Cancelada/Inacabada/Paralisada; 0 Concluida; vazio para projeto censurado"
 total_contratacoes,contratacao-publica,PNCP,municipio-ano,contagem,derivada,alta,maturidade,,
 valor_estimado_contratacoes,contratacao-publica,PNCP,municipio-ano,reais,derivada,alta,oportunidade,,
 valor_homologado_contratacoes,contratacao-publica,PNCP,municipio-ano,reais,derivada,alta,oportunidade,,
@@ -61,4 +62,3 @@ restricao_ambiental_localizada,risco-especifico-reurb,MapBiomas+ANA+orgaos-locai
 distancia_corpo_hidrico_m,risco-especifico-reurb,ANA+geodados-locais,area-do-projeto,metros,derivada,essencial,menor-eleva,,
 intersecao_app_ha,risco-especifico-reurb,ANA+geodados-locais,area-do-projeto,hectares,derivada,essencial,maior-eleva,,
 evento_risco_t1,alvo-supervisionado,ObrasGov-ou-Transferegov,municipio-ano,binaria,alvo,essencial,evento,,"Definir antes do Elastic Net; deve ocorrer em t+1 e ser observável publicamente"
-

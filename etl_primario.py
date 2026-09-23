@@ -28,6 +28,10 @@ from etl_confiabilidade import (
     FalhaConsulta, salvar_json_atomico, ler_cache, requisitar_json,
     janelas_ano, validar_pagina, atualizar_manifesto, chave_compra, geracao_cache,
 )
+from obrasgov_qualidade import (
+    ResolvedorMalhaIBGE, campos_temporais as campos_temporais_obras,
+    carregar_mapeamento_csv, resolver_atribuicao as resolver_atribuicao_obra,
+)
 
 
 ROOT = Path(__file__).resolve().parent
@@ -714,30 +718,10 @@ def coletar_pncp(sessao, config, erros):
 
 
 def identificar_municipio_obra(item, municipios):
-    campos_codigo = ("codigo_ibge", "codigo_municipio_ibge", "codigoIbge", "cod_ibge", "cod_municipio_ibge")
-    estruturas = [item]
-    for campo in ("executores", "tomadores"):
-        estruturas.extend(x for x in item.get(campo, []) or [] if isinstance(x, dict))
-    codigos = {str(e[c]).strip() for e in estruturas for c in campos_codigo if e.get(c) is not None}
     catalogo = {str(m["codigo_ibge"]): m for m in municipios}
-    if codigos:
-        if len(codigos) == 1 and next(iter(codigos)) in catalogo:
-            return catalogo[next(iter(codigos))], "codigo_oficial"
-        if len(codigos) == 1 and re.fullmatch(r"\d{7}", next(iter(codigos))):
-            return None, "fora_escopo_codigo"
-        return None, "codigo_ambiguo_ou_fora_catalogo"
-    encontrados = set()
-    for chave, campo in (("executores", "organizacao_executor"), ("tomadores", "organizacao_tomador")):
-        for estrutura in item.get(chave, []) or []:
-            nome = texto_busca(estrutura.get(campo))
-            nome = re.sub(r"^(prefeitura municipal de |municipio de |prefeitura de )", "", nome)
-            for m in municipios:
-                nome_base = texto_busca(m["nome"])
-                if nome in {nome_base, nome_base + " - " + m["uf"].lower(), nome_base + "/" + m["uf"].lower()}:
-                    encontrados.add(str(m["codigo_ibge"]))
-    if len(encontrados) == 1:
-        return catalogo[next(iter(encontrados))], "executor_tomador_exato"
-    return None, "ambiguo" if encontrados else "nao_identificado"
+    decisao = resolver_atribuicao_obra(item, municipios)
+    codigo = decisao["codigo_ibge_modelagem"]
+    return (catalogo.get(codigo), decisao["metodo_atribuicao"] or decisao["status_atribuicao_territorial"])
 
 
 def carregar_paginas_obras(sessao, config, endpoint, params, chave, escopo, periodo, erros):
@@ -792,7 +776,19 @@ def carregar_paginas_obras(sessao, config, endpoint, params, chave, escopo, peri
 
 
 def coletar_obrasgov(sessao, config, erros):
-    eventos, agregados, rejeitados = [], [], []
+    eventos, agregados, rejeitados, multiterritoriais, relatorio = [], [], [], [], []
+    referencia = ROOT / "data" / "reference"
+    mapa_cnpj = carregar_mapeamento_csv(Path(config.get("obrasgov_mapeamento_cnpj", referencia / "obrasgov_cnpj_municipal.csv")), "cnpj")
+    mapa_cep = carregar_mapeamento_csv(Path(config.get("obrasgov_mapeamento_cep", referencia / "cep_municipio.csv")), "cep")
+    resolvedor_espacial = config.get("_obrasgov_resolvedor_espacial")
+    if resolvedor_espacial is None:
+        geojson = Path(config.get("obrasgov_malha_geojson", RAW_DIR / "ibge" / "malha_municipal.geojson"))
+        metadados = Path(config.get("obrasgov_malha_metadados", RAW_DIR / "ibge" / "malha_municipal.metadados.json"))
+        if geojson.exists() and metadados.exists():
+            try:
+                resolvedor_espacial = ResolvedorMalhaIBGE(geojson, metadados, config.get("obrasgov_tolerancia_limite_graus", 1e-8))
+            except Exception as exc:
+                LOGGER.warning("ObrasGov | malha municipal indisponivel: %s", exc)
     municipios_por_uf = {}
     for m in config["municipios"]:
         municipios_por_uf.setdefault(m["uf"], []).append(m)
@@ -808,10 +804,13 @@ def coletar_obrasgov(sessao, config, erros):
             unicos = {}
             for item in bruto_ano:
                 unicos[str(item.get("id_projeto_investimento")) if item.get("id_projeto_investimento") else json.dumps(item, sort_keys=True)] = item
-            eventos_ano, nao_identificados = [], 0
+            eventos_ano, pendentes_municipais, fora_escopo = [], 0, 0
+            multiterritoriais_ano = 0
             for item in unicos.values():
-                municipio, motivo = identificar_municipio_obra(item, catalogo_uf)
-                usa_nome = motivo in {"nao_identificado", "executor_tomador_exato", "ambiguo"}
+                decisao = resolver_atribuicao_obra(item, catalogo_uf, mapa_cnpj, mapa_cep, resolvedor_espacial)
+                codigo_decidido = decisao["codigo_ibge_modelagem"]
+                municipio = next((m for m in catalogo_uf if str(m["codigo_ibge"]) == codigo_decidido), None)
+                usa_nome = bool(item.get("executores") or item.get("tomadores") or item.get("contratantes"))
                 if usa_nome and not catalogo_tentado:
                     # Catálogo territorial não amplia a seleção final; serve apenas
                     # para distinguir nomes estruturados de cidades fora do recorte.
@@ -819,17 +818,34 @@ def coletar_obrasgov(sessao, config, erros):
                     try:
                         catalogo_uf = resolver_municipios(sessao, {**config, "escopo": {"tipo": "uf", "ufs": [uf]}})
                         catalogo_carregado = True
-                        municipio, motivo = identificar_municipio_obra(item, catalogo_uf)
+                        decisao = resolver_atribuicao_obra(item, catalogo_uf, mapa_cnpj, mapa_cep, resolvedor_espacial)
+                        codigo_decidido = decisao["codigo_ibge_modelagem"]
+                        municipio = next((m for m in catalogo_uf if str(m["codigo_ibge"]) == codigo_decidido), None)
                     except Exception as exc:
                         registrar_erro(erros, "ObrasGov-catalogo", uf, exc)
                 if usa_nome and not catalogo_carregado:
-                    municipio, motivo = None, "catalogo_territorial_indisponivel"
-                if motivo == "fora_escopo_codigo" or municipio is not None and str(municipio["codigo_ibge"]) not in codigos_selecionados:
-                    rejeitados.append(dict(uf=uf, ano=ano, motivo="fora_escopo", registro=item))
+                    municipio = None
+                    decisao.update(status_atribuicao_territorial="nao_identificada", motivo_nao_atribuicao="catalogo_territorial_indisponivel", indicio_municipal_pendente=True)
+                if decisao["status_atribuicao_territorial"] == "multiterritorial":
+                    multiterritoriais_ano += 1
+                    multiterritoriais.append({"id_projeto_investimento": item.get("id_projeto_investimento"),
+                        "codigos_ibge_envolvidos": sorted({e["codigo_ibge"] for e in decisao["evidencias_atribuicao"] if e.get("codigo_ibge")}),
+                        "quantidade_municipios": decisao["quantidade_municipios_atribuidos"],
+                        "metodo_identificacao": "multiplas_evidencias_territoriais", "evidencias": decisao["evidencias_atribuicao"]})
+                    continue
+                if decisao["status_atribuicao_territorial"] == "fora_escopo_municipal" or municipio is not None and str(municipio["codigo_ibge"]) not in codigos_selecionados:
+                    fora_escopo += 1
+                    rejeitados.append(dict(uf=uf, ano=ano, motivo="fora_escopo_municipal", atribuicao=decisao, registro=item))
                     continue
                 if municipio is None:
-                    rejeitados.append(dict(uf=uf, ano=ano, motivo=motivo, registro=item))
-                    nao_identificados += 1
+                    rejeitados.append(dict(uf=uf, ano=ano, motivo=decisao["motivo_nao_atribuicao"], atribuicao=decisao, registro=item))
+                    pendentes_municipais += int(decisao["indicio_municipal_pendente"] or decisao["status_atribuicao_territorial"] == "conflitante")
+                    continue
+                temporal = campos_temporais_obras(item, ano)
+                if temporal["ano_cadastro"] != int(ano):
+                    rejeitados.append(dict(uf=uf, ano=ano, motivo="ano_cadastro_divergente", atribuicao=decisao,
+                                           ano_cadastro_retornado=temporal["ano_cadastro"], registro=item))
+                    pendentes_municipais += 1
                     continue
                 projeto_id = item.get("id_projeto_investimento")
                 execucoes, historico = [], []
@@ -845,23 +861,30 @@ def coletar_obrasgov(sessao, config, erros):
                 investimentos = [numero(x.get("vl_investimento_previsto")) for x in item.get("investimentos_previstos", []) or []]
                 valor = sum(investimentos) if investimentos and all(v is not None for v in investimentos) else None
                 eventos_ano.append({
-                    "codigo_ibge": str(municipio["codigo_ibge"]), "municipio": municipio["nome"], "uf": municipio["uf"], "ano": ano,
+                    "codigo_ibge": str(municipio["codigo_ibge"]), "municipio": municipio["nome"], "uf": municipio["uf"], **temporal,
                     "id_projeto_investimento": projeto_id, "nome_projeto": item.get("desc_nome"), "situacao_atual": item.get("situacao"),
                     "data_inicial_prevista": item.get("dt_inicial_prevista"), "data_final_prevista": item.get("dt_final_prevista"),
                     "data_inicial_efetiva": item.get("dt_inicial_efetiva"), "data_final_efetiva": item.get("dt_final_efetiva"),
                     "valor_investimento_previsto": valor, "percentual_execucao": max(percentuais) if percentuais else None,
-                    "possui_estudo_viabilidade": item.get("possui_estudo_viabilidade"), "identificacao_municipio": motivo,
+                    "possui_estudo_viabilidade": item.get("possui_estudo_viabilidade"), "identificacao_municipio": decisao["metodo_atribuicao"],
+                    **{k: (json.dumps(v, ensure_ascii=False, sort_keys=True) if k == "evidencias_atribuicao" else v) for k, v in decisao.items() if k != "codigo_ibge_modelagem"},
                     "areas_restricao": "; ".join(str(x["area_restricao"]) for x in item.get("areas_restricao", []) or [] if x.get("area_restricao")),
                     "quantidade_eventos_paralisacao_cancelamento": len(historico) if hist_status in {"completa", "cache_reutilizado", "sem_registros_confirmado"} else None,
-                    "obra_parada": int(texto_busca(item["situacao"]) in {"paralisada", "inacabada", "cancelada"}) if item.get("situacao") else None,
                     "sem_estudo_viabilidade": 1 if texto_busca(item.get("possui_estudo_viabilidade")) == "nao" else 0 if texto_busca(item.get("possui_estudo_viabilidade")) == "sim" else None,
                 })
             eventos.extend(eventos_ano)
-            completa = status in {"completa", "cache_reutilizado", "sem_registros_confirmado"} and not nao_identificados
+            status_api = "completa" if status in {"completa", "cache_reutilizado", "sem_registros_confirmado"} else "falhou" if status == "falhou" else "parcial"
+            incertos = pendentes_municipais + multiterritoriais_ano
+            status_atribuicao = "parcial" if pendentes_municipais else "multiterritorial" if multiterritoriais_ano else "exata"
+            status_agregado = "indisponivel" if status_api != "completa" else "observado_parcial" if incertos else "completo_no_escopo"
+            completa = status_agregado == "completo_no_escopo"
             for m in municipios:
                 registros = [e for e in eventos_ano if e["codigo_ibge"] == str(m["codigo_ibge"])]
                 linha = dict(codigo_ibge=str(m["codigo_ibge"]), municipio=m["nome"], uf=uf, ano=ano,
-                             cobertura_obrasgov=status if completa else "falhou" if status == "falhou" else "parcial")
+                             cobertura_obrasgov="completa" if completa else "falhou" if status_api == "falhou" else "parcial",
+                             status_coleta_api=status_api, status_atribuicao_territorial=status_atribuicao,
+                             status_agregado=status_agregado, cobertura_atribuicao=(len(eventos_ano) / (len(eventos_ano) + incertos)) if len(eventos_ano) + incertos else 1.0,
+                             valor_observado_total_obras=(len(registros) if status_api == "completa" and (registros or completa) else None))
                 metricas = ("total_obras", "obras_paradas", "valor_obras_paradas", "percentual_execucao_medio", "obras_sem_estudo_viabilidade", "taxa_obras_paradas")
                 linha.update({c: None for c in metricas})
                 if completa:
@@ -878,7 +901,16 @@ def coletar_obrasgov(sessao, config, erros):
                         linha["percentual_execucao_medio"] = pd.to_numeric(quadro["percentual_execucao"], errors="coerce").mean() if quadro["percentual_execucao"].notna().all() else None
                         linha["taxa_obras_paradas"] = linha["obras_paradas"] / len(registros)
                 agregados.append(linha)
+            relatorio.append({"ano": ano, "projetos_brutos": len(unicos), "projetos_atribuidos": len(eventos_ano),
+                "projetos_nao_identificados": pendentes_municipais, "projetos_multiterritoriais": multiterritoriais_ano,
+                "projetos_fora_escopo_municipal": fora_escopo,
+                "taxa_atribuicao": len(eventos_ano) / len(unicos) if unicos else 1.0,
+                "municipios_representados": len({e["codigo_ibge"] for e in eventos_ano}),
+                "status_coleta_api": status_api, "status_atribuicao_territorial": status_atribuicao,
+                "status_agregado": status_agregado})
     salvar_json(OUTPUT_DIR / "rejeitados_obrasgov.json", rejeitados)
+    salvar_json(OUTPUT_DIR / "projetos_multiterritoriais_obrasgov.json", multiterritoriais)
+    salvar_csv(pd.DataFrame(relatorio), "cobertura_territorial_obrasgov.csv")
     df = pd.DataFrame(eventos)
     if not df.empty:
         df["valor_obra_parada"] = pd.to_numeric(df["valor_investimento_previsto"], errors="coerce") * pd.to_numeric(df["obra_parada"], errors="coerce")
@@ -1121,6 +1153,11 @@ def auditar_qualidade(
     qualidade: list[dict[str, Any]] = []
     numericas: list[str] = []
     catalogo = pd.read_csv(CATALOGO_VARIAVEIS).fillna("").set_index("variavel").to_dict("index")
+    campos_resultado_obras = {
+        "evento_adverso_execucao", "obra_parada", "obras_paradas", "taxa_obras_paradas",
+        "valor_obras_paradas", "percentual_execucao", "percentual_execucao_medio",
+        "resultado_observavel", "projeto_censurado", "ano_fim_efetivo", "data_observacao_status",
+    }
     for coluna in dict.fromkeys([*base.columns, *catalogo]):
         if coluna in chaves or coluna.startswith("cobertura_") and coluna not in catalogo:
             continue
@@ -1141,6 +1178,8 @@ def auditar_qualidade(
             recomendacao = "nao_usar_ate_melhorar_cobertura"
         if quase_constante:
             recomendacao = "remover_constante_ou_quase_constante"
+        if coluna in campos_resultado_obras:
+            recomendacao = "nao_usar_como_preditor_resultado"
         metadados = catalogo.get(coluna, {})
         fonte = metadados.get("fonte_principal", "SICONFI" if coluna == "populacao_siconfi" else "nao_catalogada")
         anos_validos = base.loc[valida, "ano"]
@@ -1156,7 +1195,7 @@ def auditar_qualidade(
                 "ultimo_ano": anos_validos.max() if len(anos_validos) else None,
                 "percentual_cobertura": cobertura * 100,
                 "percentual_faltantes": (1 - cobertura) * 100,
-                "possivel_vazamento_temporal": "sim: estado atual consultado depois do ano de cadastro" if "Obras" in fonte else "verificar data de publicacao e revisoes antes de modelar",
+                "possivel_vazamento_temporal": "sim: informacao de resultado posterior ao inicio" if coluna in campos_resultado_obras else "sim: estado atual consultado depois do ano de cadastro" if "Obras" in fonte else "verificar data de publicacao e revisoes antes de modelar",
                 "mudanca_metodologica": "Censo 2022 versus estimativas intercensitarias" if coluna in {"populacao", "pib_per_capita", "investimento_per_capita"} else "Transicao SNIS/SINISA: conferir conceitos e referencia" if "SINISA" in fonte or "SNIS" in fonte else metadados.get("observacao", ""),
                 "observacoes": len(base),
                 "validas": int(valida.sum()),
