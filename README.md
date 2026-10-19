@@ -87,6 +87,36 @@ Para rodar tudo o que estiver configurado e perfilar também arquivos manuais:
 python etl_primario.py --sources ibge siconfi pncp obrasgov
 ```
 
+### Fonte político-eleitoral do TSE
+
+A fonte `tse_eleitoral` é opt-in e não integra a lista padrão de `fontes`. Ela usa os arquivos oficiais do TSE para as edições municipais de 2016, 2020 e 2024, valida a correspondência dos 223 municípios da Paraíba e produz:
+
+- `output/eventos_eleitorais_tse.csv`;
+- `output/mandatos_municipais.csv`;
+- `output/municipio_ano_politico.csv`;
+- `output/qualidade_tse_eleitoral.csv`;
+- `output/manifesto_tse_eleitoral.json`.
+
+`municipio_ano_politico.csv` é uma fotografia às 00:00 de 1º de janeiro. Resultados ocorridos durante o ano só entram depois de `data_disponibilidade_adotada`; o resultado municipal de 2020, por exemplo, não altera a fotografia de 2020. Eleições suplementares permanecem eventos separados e só substituem um mandato quando `data/reference/tse_eleitoral/evidencias_posse.csv` contém posse diária validada em fonte oficial.
+
+O coletor prefere HTTP Range e recorre ao ZIP integral quando o servidor não oferece intervalos consistentes. Tamanho e CRC validam o membro; `sha256_local` identifica o artefato persistido, sem ser apresentado como hash oficial do TSE.
+
+No leiaute oficial observado de 2016 e 2020, o denominador de votos válidos é publicado como `QT_TOTAL_VOTOS_VALIDOS`; o esquema o normaliza para `QT_VOTOS_VALIDOS` por alias versionado, preservando o valor original e os metadados de qualidade. Se o denominador não estiver disponível, o evento permanece registrado e percentual/margem ficam ausentes.
+
+O smoke mockado do TSE usa João Pessoa e um município sem segundo turno, consulta somente as edições 2016/2020 e produz 10 fotografias para 2020–2024. O smoke real continua exigindo autorização explícita.
+
+Comandos propostos, ainda condicionados à autorização operacional:
+
+```powershell
+# Smoke isolado: dois municípios e edições 2016/2020
+python etl_primario.py --sources tse_eleitoral --resume --smoke-test
+
+# Coleta PB: executar somente depois de validar e aprovar o smoke
+python etl_primario.py --sources tse_eleitoral --resume
+```
+
+Não use `--refresh` na primeira retomada. Uma correspondência estadual diferente de 223 vínculos válidos bloqueia a integração; falhas e transições pendentes permanecem ausentes e nunca são convertidas em zero.
+
 Para atualizar apenas uma fonte: `python etl_primario.py --sources pncp --refresh`. Reinicie uma atualização interrompida com `--resume`; páginas antigas e novas ficam em gerações separadas. Não execute duas instâncias no mesmo diretório de checkpoints.
 
 O catálogo IBGE e os lotes SIDRA são reutilizados. Use `--sources ibge --refresh` quando precisar atualizar a divisão territorial e as séries. Para qualquer fonte, `<fonte>_ano_inicial` e `<fonte>_ano_final` restringem o período geral; por exemplo, `siconfi_ano_inicial` ou `pncp_ano_final`.
@@ -173,3 +203,16 @@ Nesse caso, o Elastic Net deve estar dentro da validação temporal. Não use di
 - SNIS e SINISA têm transição metodológica; mantenha uma coluna de fonte/metodologia.
 
 
+# Nota de governanÃ§a TSE
+
+As decisÃµes operacionais usam `status_detalhe_apuracao`, `status_denominador`, `status_vencedor`, `status_evento` e `status_transicao`. `status_resultado` Ã© legado, mantido apenas para auditoria e compatibilidade; nÃ£o deve ser usado como filtro nem como preditor. `SQ_CANDIDATO_VENCEDOR` Ã© interno e nÃ£o Ã© publicado nas saÃ­das analÃ­ticas.
+# Runtime validado no Windows ARM
+
+No Windows ARM, o runtime recomendado para o ETL e o Python x64 do ambiente `.validation/venv`:
+
+```powershell
+& ".\.validation\venv\Scripts\python.exe" etl_primario.py --sources tse_eleitoral --resume
+& ".\.validation\venv\Scripts\python.exe" etl_primario.py --sources ibge siconfi pncp obrasgov tse_eleitoral --resume
+```
+
+O ambiente validado usa Python 3.12.10 AMD64, pandas 2.3.3 e numpy 2.5.3. O Python ARM64 global (pandas 3.0.4 e numpy 2.3.5) apresentou encerramento nativo durante `pandas.to_datetime` sobre a serie de datas de mandatos. Essa falha e de runtime e nao deve ser interpretada como erro dos dados eleitorais.

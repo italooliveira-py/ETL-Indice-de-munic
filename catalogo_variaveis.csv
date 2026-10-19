@@ -62,3 +62,16 @@ restricao_ambiental_localizada,risco-especifico-reurb,MapBiomas+ANA+orgaos-locai
 distancia_corpo_hidrico_m,risco-especifico-reurb,ANA+geodados-locais,area-do-projeto,metros,derivada,essencial,menor-eleva,,
 intersecao_app_ha,risco-especifico-reurb,ANA+geodados-locais,area-do-projeto,hectares,derivada,essencial,maior-eleva,,
 evento_risco_t1,alvo-supervisionado,ObrasGov-ou-Transferegov,municipio-ano,binaria,alvo,essencial,evento,,"Definir antes do Elastic Net; deve ocorrer em t+1 e ser observável publicamente"
+ano_fotografia,politico-eleitoral,TSE-ELEITORAL,municipio-ano,ano,bruta,alta,neutro,,"Fotografia às 00:00 de 1º de janeiro"
+ano_eleicao_origem_ciclo,politico-eleitoral,TSE-ELEITORAL,municipio-ano,ano,bruta,alta,neutro,,"Ano da eleição regular que abriu o ciclo"
+numero_ano_ciclo_eleitoral,politico-eleitoral,TSE-ELEITORAL,municipio-ano,ordinal,derivada,alta,neutro,ano_fotografia-ano_eleicao_origem_ciclo,
+numero_ano_gestao_atual,politico-eleitoral,TSE-ELEITORAL,municipio-ano,ordinal,derivada,alta,neutro,ano_fotografia-ano_inicio_vigencia+1,"Somente com início diário validado"
+partido_prefeito_no_pleito_origem,politico-eleitoral,TSE-ELEITORAL,municipio-ano,sigla,bruta,alta,ambigua,,"Ausente quando a transição não puder ser validada"
+origem_gestao,politico-eleitoral,TSE-ELEITORAL,municipio-ano,categoria,bruta,alta,ambigua,,"regular ou suplementar"
+continuidade_partidaria_pleito,politico-eleitoral,TSE-ELEITORAL,municipio-ano,booleana,derivada,media,ambigua,,"Só disponível após a data adotada de disponibilidade do resultado"
+status_detalhe_apuracao,politico-eleitoral,TSE-ELEITORAL,evento,metadado,bruta,baixa,neutro,,Metadado de auditoria; nao e preditor
+status_denominador,politico-eleitoral,TSE-ELEITORAL,evento,metadado,bruta,baixa,neutro,,Metadado de auditoria; nao e preditor
+status_vencedor,politico-eleitoral,TSE-ELEITORAL,evento,metadado,bruta,baixa,neutro,,Status autoritativo; nao e preditor
+status_evento,politico-eleitoral,TSE-ELEITORAL,evento,metadado,derivada,baixa,neutro,,Status autoritativo do turno; nao e preditor
+status_transicao,politico-eleitoral,TSE-ELEITORAL,mandato,metadado,derivada,baixa,neutro,,Valida posse e transicao; nao e preditor
+status_resultado,politico-eleitoral,TSE-ELEITORAL,evento,metadado,bruta,baixa,neutro,,Legado de compatibilidade; nao usar em decisoes nem como preditor

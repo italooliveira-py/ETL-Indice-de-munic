@@ -24,6 +24,7 @@ from typing import Any, Iterable
 import pandas as pd
 import requests
 from requests.adapters import HTTPAdapter
+import etl_tse_eleitoral
 from etl_confiabilidade import (
     FalhaConsulta, salvar_json_atomico, ler_cache, requisitar_json,
     janelas_ano, validar_pagina, atualizar_manifesto, chave_compra, geracao_cache,
@@ -1236,7 +1237,7 @@ def auditar_qualidade(
 
 def cobertura_fontes(base, qualidade, config, fontes):
     linhas = []
-    for fonte in ("ibge", "siconfi", "pncp", "obrasgov"):
+    for fonte in ("ibge", "siconfi", "pncp", "obrasgov", "tse_eleitoral"):
         colunas = [r["variavel"] for r in qualidade.to_dict("records")
                    if fonte in str(r["fonte"]).lower() and r["variavel"] in base]
         for ano, quadro in base.groupby("ano"):
@@ -1267,7 +1268,7 @@ def main() -> int:
     parser.add_argument(
         "--sources",
         nargs="+",
-        choices=("ibge", "siconfi", "pncp", "obrasgov"),
+        choices=("ibge", "siconfi", "pncp", "obrasgov", "tse_eleitoral"),
         help="Sobrescreve a lista de fontes automáticas do config.json",
     )
     parser.add_argument(
@@ -1285,7 +1286,12 @@ def main() -> int:
         parser.error("ano_inicial não pode ser maior que ano_final")
     if args.smoke_test:
         config["_smoke_test"] = True
-        config["ano_inicial"] = config["ano_final"]
+        if fontes == ["tse_eleitoral"]:
+            config["ano_inicial"] = int(config.get("tse_eleitoral_ano_inicial", 2020))
+            config["ano_final"] = int(config.get("tse_eleitoral_ano_final", 2024))
+            config["tse_eleitoral_edicoes"] = [2016, 2020]
+        else:
+            config["ano_inicial"] = config["ano_final"]
         config["pncp_modalidades"] = [8]
         config["pncp_max_tentativas"] = 2
         config["max_tentativas"] = 2
@@ -1317,6 +1323,7 @@ def main() -> int:
     bases: list[pd.DataFrame] = []
     eventos_pncp = pd.DataFrame()
     eventos_obras = pd.DataFrame()
+    resultado_tse = None
 
     if not args.only_profile:
         if "ibge" in fontes:
@@ -1333,6 +1340,24 @@ def main() -> int:
             LOGGER.info("Coletando ObrasGov")
             eventos_obras, obras_ano = coletar_obrasgov(sessao, config, erros)
             bases.append(obras_ano)
+        if "tse_eleitoral" in fontes:
+            LOGGER.info("Coletando TSE eleitoral")
+            try:
+                resultado_tse = etl_tse_eleitoral.executar_tse_eleitoral(
+                    sessao, config, RAW_DIR / "tse_eleitoral", OUTPUT_DIR
+                )
+                if args.smoke_test and fontes == ["tse_eleitoral"]:
+                    codigos_smoke = set(resultado_tse.municipio_ano["codigo_ibge"].astype(str))
+                    config["municipios"] = [
+                        municipio for municipio in config["municipios"]
+                        if str(municipio["codigo_ibge"]) in codigos_smoke
+                    ]
+                    if len(config["municipios"]) != 2:
+                        raise etl_tse_eleitoral.FalhaTSE("Smoke TSE exige exatamente dois municípios")
+                bases.append(etl_tse_eleitoral.adaptar_municipio_ano_para_base(resultado_tse.municipio_ano))
+                etl_tse_eleitoral.gravar_resultado_tse(resultado_tse, OUTPUT_DIR)
+            except etl_tse_eleitoral.FalhaTSE as exc:
+                registrar_erro(erros, "TSE-ELEITORAL", "PB", exc)
 
     LOGGER.info("Perfilando arquivos manuais")
     inventario_arquivos, inventario_colunas = perfilar_manuais(erros)
@@ -1354,14 +1379,21 @@ def main() -> int:
     resumo = {
         "executado_em": datetime.now(timezone.utc).isoformat(),
         "fontes_automaticas": [] if args.only_profile else fontes,
-        "municipios": config["municipios"],
+        "municipios": len(config["municipios"]),
         "periodo": [config["ano_inicial"], config["ano_final"]],
-        "periodos_por_fonte": {f: list(anos_fonte({**config, "pncp_ano_inicial": config.get("pncp_ano_inicial", 2022)}, f)) for f in fontes},
+        "periodos_por_fonte": {
+            f: ([int(ano) for ano in config.get("tse_eleitoral_edicoes", [])]
+                if f == "tse_eleitoral" else
+                list(anos_fonte({**config, "pncp_ano_inicial": config.get("pncp_ano_inicial", 2022)}, f)))
+            for f in fontes
+        },
         "smoke_test": bool(args.smoke_test),
         "linhas_base_municipio_ano": len(base),
         "colunas_base_municipio_ano": len(base.columns),
         "eventos_pncp": len(eventos_pncp),
         "eventos_obrasgov": len(eventos_obras),
+        "eventos_tse_eleitoral": len(resultado_tse.eventos) if resultado_tse is not None else 0,
+        "mandatos_municipais": len(resultado_tse.mandatos) if resultado_tse is not None else 0,
         "arquivos_manuais_lidos": len(inventario_arquivos),
         "erros": len(erros),
         "aviso": "Saídas são exploratórias; não interpretar como score final ou causalidade.",

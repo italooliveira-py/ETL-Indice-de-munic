@@ -8,6 +8,7 @@ output/
 data/raw/
 data/cache/
 .validation/
+.superpowers/
 
 *.log
 .DS_Store

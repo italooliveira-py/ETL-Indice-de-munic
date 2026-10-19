@@ -1,0 +1,23 @@
+{
+  "consulta_cand": {
+    "2016": {"encoding": "latin-1", "separador": ";", "aliases": {"codigo_municipio_tse": ["SG_UE"]}, "campos_obrigatorios": ["SG_UE", "CD_ELEICAO", "CD_TIPO_ELEICAO", "DT_ELEICAO", "NR_TURNO", "CD_CARGO", "SQ_CANDIDATO", "CD_SIT_TOT_TURNO", "DS_SIT_TOT_TURNO", "SG_PARTIDO"], "sentinelas": {}},
+    "2020": {"encoding": "latin-1", "separador": ";", "aliases": {"codigo_municipio_tse": ["SG_UE"]}, "campos_obrigatorios": ["SG_UE", "CD_ELEICAO", "CD_TIPO_ELEICAO", "DT_ELEICAO", "NR_TURNO", "CD_CARGO", "SQ_CANDIDATO", "CD_SIT_TOT_TURNO", "DS_SIT_TOT_TURNO", "SG_PARTIDO"], "sentinelas": {}},
+    "2024": {"encoding": "latin-1", "separador": ";", "aliases": {"codigo_municipio_tse": ["SG_UE"]}, "campos_obrigatorios": ["SG_UE", "CD_ELEICAO", "CD_TIPO_ELEICAO", "DT_ELEICAO", "NR_TURNO", "CD_CARGO", "SQ_CANDIDATO", "CD_SIT_TOT_TURNO", "DS_SIT_TOT_TURNO", "SG_PARTIDO"], "sentinelas": {}}
+  },
+  "votacao_candidato_munzona": {
+    "2016": {"encoding": "latin-1", "separador": ";", "aliases": {"codigo_municipio_tse": ["CD_MUNICIPIO", "SG_UE"]}, "campos_obrigatorios": ["CD_MUNICIPIO", "CD_ELEICAO", "NR_TURNO", "SQ_CANDIDATO", "QT_VOTOS_NOMINAIS"], "sentinelas": {}},
+    "2020": {"encoding": "latin-1", "separador": ";", "aliases": {"codigo_municipio_tse": ["CD_MUNICIPIO", "SG_UE"]}, "campos_obrigatorios": ["CD_MUNICIPIO", "CD_ELEICAO", "NR_TURNO", "SQ_CANDIDATO", "QT_VOTOS_NOMINAIS"], "sentinelas": {}},
+    "2024": {"encoding": "latin-1", "separador": ";", "aliases": {"codigo_municipio_tse": ["CD_MUNICIPIO", "SG_UE"]}, "campos_obrigatorios": ["CD_MUNICIPIO", "CD_ELEICAO", "NR_TURNO", "SQ_CANDIDATO", "QT_VOTOS_NOMINAIS"], "sentinelas": {}}
+  },
+  "detalhe_votacao_munzona": {
+    "2016": {"encoding": "latin-1", "separador": ";", "aliases": {"codigo_municipio_tse": ["CD_MUNICIPIO", "SG_UE"], "QT_VOTOS_VALIDOS": ["QT_VOTOS_VALIDOS", "QT_TOTAL_VOTOS_VALIDOS"]}, "campos_obrigatorios": ["CD_MUNICIPIO", "CD_ELEICAO", "NR_TURNO", "QT_APTOS", "QT_COMPARECIMENTO", "QT_ABSTENCOES"], "campos_opcionais": ["QT_VOTOS_VALIDOS"], "preservar_metadados": ["QT_VOTOS_VALIDOS"], "sentinelas": {}},
+    "2020": {"encoding": "latin-1", "separador": ";", "aliases": {"codigo_municipio_tse": ["CD_MUNICIPIO", "SG_UE"], "QT_VOTOS_VALIDOS": ["QT_VOTOS_VALIDOS", "QT_TOTAL_VOTOS_VALIDOS"]}, "campos_obrigatorios": ["CD_MUNICIPIO", "CD_ELEICAO", "NR_TURNO", "QT_APTOS", "QT_COMPARECIMENTO", "QT_ABSTENCOES"], "campos_opcionais": ["QT_VOTOS_VALIDOS"], "preservar_metadados": ["QT_VOTOS_VALIDOS"], "sentinelas": {}},
+    "2024": {"encoding": "latin-1", "separador": ";", "aliases": {"codigo_municipio_tse": ["CD_MUNICIPIO", "SG_UE"], "QT_VOTOS_VALIDOS": ["QT_VOTOS_VALIDOS", "QT_TOTAL_VOTOS_VALIDOS"]}, "campos_obrigatorios": ["CD_MUNICIPIO", "CD_ELEICAO", "NR_TURNO", "QT_APTOS", "QT_COMPARECIMENTO", "QT_ABSTENCOES"], "campos_opcionais": ["QT_VOTOS_VALIDOS"], "preservar_metadados": ["QT_VOTOS_VALIDOS"], "sentinelas": {}}
+  },
+  "municipio_tse_ibge": {"2024": {"encoding": "latin-1", "separador": ";", "aliases": {}, "campos_obrigatorios": ["CD_MUNICIPIO_TSE", "CD_MUNICIPIO_IBGE", "NM_MUNICIPIO_IBGE", "SG_UF"], "sentinelas": {}}},
+  "eleicoes_suplementares": {
+    "2016": {"encoding": "latin-1", "separador": ";", "aliases": {}, "campos_obrigatorios": ["SG_UF", "CD_MUNICIPIO_TSE", "DT_ELEICAO"], "sentinelas": {}},
+    "2020": {"encoding": "latin-1", "separador": ";", "aliases": {}, "campos_obrigatorios": ["SG_UF", "CD_MUNICIPIO_TSE", "DT_ELEICAO"], "sentinelas": {}},
+    "2024": {"encoding": "latin-1", "separador": ";", "aliases": {}, "campos_obrigatorios": ["SG_UF", "CD_MUNICIPIO_TSE", "DT_ELEICAO"], "sentinelas": {}}
+  }
+}
