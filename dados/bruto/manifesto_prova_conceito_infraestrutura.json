@@ -1,0 +1,115 @@
+{
+  "name": "prova_conceito_infraestrutura",
+  "scope_statement": "O ObrasGov foi utilizado exclusivamente como fonte experimental para validar o fluxo supervisionado, em razão da disponibilidade de desfechos observáveis. A fonte não representa contratos de serviços, programas educacionais, projetos administrativos ou outras modalidades de execução pública. Portanto, os resultados desta entrega são restritos a obras e infraestrutura e não constituem o índice geral proposto pelo projeto.",
+  "snapshot_names": [
+    "base_municipio_ano_snapshot.csv",
+    "eventos_obrasgov_snapshot.csv"
+  ],
+  "sources": {
+    "base_municipio_ano_snapshot.csv": "output\\base_municipio_ano.csv",
+    "eventos_obrasgov_snapshot.csv": "output\\eventos_obrasgov.csv"
+  },
+  "rows": {
+    "base_municipio_ano_snapshot.csv": 1115,
+    "eventos_obrasgov_snapshot.csv": 1638
+  },
+  "columns": {
+    "base_municipio_ano_snapshot.csv": [
+      "codigo_ibge",
+      "municipio",
+      "uf",
+      "ano",
+      "populacao",
+      "pib",
+      "fonte_populacao",
+      "cobertura_siconfi",
+      "populacao_siconfi",
+      "receita_total_realizada",
+      "transferencias_correntes_realizadas",
+      "despesa_total_liquidada",
+      "despesa_pessoal_liquidada",
+      "investimentos_liquidados",
+      "restos_pagar_processados",
+      "restos_pagar_nao_processados",
+      "caixa_equivalentes",
+      "total_contratacoes",
+      "valor_estimado_contratacoes",
+      "valor_homologado_contratacoes",
+      "contratacoes_similares",
+      "valor_contratacoes_similares",
+      "cobertura_pncp",
+      "cobertura_obrasgov",
+      "status_coleta_api",
+      "status_atribuicao_territorial",
+      "status_agregado",
+      "cobertura_atribuicao",
+      "valor_observado_total_obras",
+      "total_obras",
+      "obras_paradas",
+      "valor_obras_paradas",
+      "percentual_execucao_medio",
+      "obras_sem_estudo_viabilidade",
+      "taxa_obras_paradas",
+      "ano_fotografia",
+      "continuidade_partidaria_pleito",
+      "ano_eleicao_origem_ciclo",
+      "numero_ano_ciclo_eleitoral",
+      "numero_ano_gestao_atual",
+      "partido_prefeito_no_pleito_origem",
+      "origem_gestao",
+      "status_transicao",
+      "restos_pagar_total",
+      "pib_per_capita",
+      "dependencia_transferencias",
+      "investimento_per_capita",
+      "restos_pagar_sobre_receita",
+      "caixa_sobre_receita",
+      "pressao_pessoal_proxy",
+      "resultado_orcamentario_proxy"
+    ],
+    "eventos_obrasgov_snapshot.csv": [
+      "codigo_ibge",
+      "municipio",
+      "uf",
+      "ano",
+      "ano_cadastro",
+      "ano_inicio_previsto",
+      "ano_fim_previsto",
+      "ano_inicio_efetivo",
+      "ano_fim_efetivo",
+      "data_observacao_status",
+      "evento_adverso_execucao",
+      "resultado_observavel",
+      "projeto_censurado",
+      "id_projeto_investimento",
+      "situacao_atual",
+      "data_inicial_prevista",
+      "data_final_prevista",
+      "data_inicial_efetiva",
+      "data_final_efetiva",
+      "percentual_execucao",
+      "possui_estudo_viabilidade",
+      "quantidade_eventos_paralisacao_cancelamento",
+      "sem_estudo_viabilidade",
+      "valor_obra_parada",
+      "evento_adverso_obrasgov"
+    ]
+  },
+  "sha256": {
+    "base_municipio_ano_snapshot.csv": "4be0f0b26d4273e957e4fd3727f3628c67b515477f2805cc0206094e597ec6f6",
+    "eventos_obrasgov_snapshot.csv": "c6278cbf2c715d61833cd24c9e2823a8d2fed3d69be4b8590cf25187419ffe3d"
+  },
+  "keys": {
+    "base_municipio_ano_snapshot.csv": [
+      "codigo_ibge",
+      "ano"
+    ],
+    "eventos_obrasgov_snapshot.csv": [
+      "id_projeto_investimento"
+    ]
+  },
+  "limitations": [
+    "ObrasGov é uma fonte experimental restrita a obras e infraestrutura.",
+    "O snapshot não é uma fotografia de contratos de serviços ou programas."
+  ]
+}
