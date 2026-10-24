@@ -1,4 +1,26 @@
-# ETL primário - risco e oportunidade municipal
+# ETL municipal — contexto para execução de projetos
+
+A arquitetura foi reorganizada de forma incremental em `src/etl_municipal`, preservando os comandos anteriores. O produto é um **índice de contexto municipal para execução de projetos**, sem interpretação como probabilidade definitiva de falha.
+
+A publicação Medallion já importa os snapshots verificados, separa eventos ObrasGov do painel municipal e coleta área, população censitária e densidade oficiais do Censo 2022 para os 223 municípios da Paraíba.
+
+```powershell
+# Depois de instalar requirements.txt:
+python -m src.etl_municipal --sources snapshot ibge_territorial --resume
+
+# Reproduzir o mesmo Bronze sem rede, depois da primeira coleta:
+python -m src.etl_municipal --sources snapshot ibge_territorial --offline --resume
+
+python -m unittest discover -s tests -v
+```
+
+As saídas novas ficam em `data/bronze/`, `data/silver/` e `data/gold/`. O painel exploratório mantém 1.115 linhas em 2020–2024; o recorte MVP 2020–2023 tem 892 linhas. `data/gold/CURRENT.json` aponta a geração publicada. Os agregados ObrasGov não entram nesse Gold; as 1.638 obras permanecem como eventos Silver. PIB 2024 é nulo com flag de período. As datas públicas ainda não verificadas impedem o uso direto em treino temporal.
+
+O novo fluxo publica os snapshots versionados e o enriquecimento territorial; a coleta completa abaixo continua produzindo seus arquivos CSV legados. Para publicar uma coleta real, use `python -m src.etl_municipal --sources coleta_legada ibge_territorial --input-dir output --resume`. RGF, Transferegov, MUNIC, SINISA, MapBiomas, bioma e tipologia ainda não estão integrados à publicação.
+
+Consulte [arquitetura e reprodução](docs/ARQUITETURA.md), [plano revisado e pendências](docs/PLANO_MVP.md), [decisões](docs/adr/0001-publicacao-contexto-municipal.md) e [histórico da publicação](CHANGELOG.md).
+
+## Coleta existente e saídas exploratórias
 
 Este pacote monta a primeira base auditável para escolher variáveis do projeto de risco de execução de projetos públicos. Ele não calcula um índice definitivo e não atribui pesos arbitrários.
 
