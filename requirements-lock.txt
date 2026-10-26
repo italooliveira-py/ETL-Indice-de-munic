@@ -1,0 +1,15 @@
+# Runtime validado: CPython 3.12 x64; dependencias do ETL (nao inclui E04).
+certifi==2026.10.23
+charset-normalizer==3.5.2
+et_xmlfile==2.0.0
+idna==3.20
+numpy==2.5.4
+openpyxl==3.1.5
+pandas==2.3.3
+pyarrow==21.0.0
+python-dateutil==3.0.0
+pytz==2026.5
+requests==2.34.2
+six==1.17.0
+tzdata==2026.5
+urllib3==2.8.0

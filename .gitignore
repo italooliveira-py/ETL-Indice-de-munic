@@ -7,6 +7,10 @@ venv/
 output/
 data/raw/
 data/cache/
+data/bronze/
+data/silver/
+data/gold/
+data/ref/
 .validation/
 .superpowers/
 

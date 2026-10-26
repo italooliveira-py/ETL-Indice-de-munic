@@ -1,0 +1,78 @@
+{
+  "data_validacao": "2026-10-24",
+  "python": "3.12.14",
+  "arquitetura": "AMD64",
+  "testes": {
+    "total": 134,
+    "resultado": "OK",
+    "comando": "python -m unittest discover -s tests -q"
+  },
+  "reproducao_offline": {
+    "execucoes": 2,
+    "rede_bloqueada_por_mock": true,
+    "mesma_versao_gold": true,
+    "todos_hashes_parquet_conferidos": true
+  },
+  "publicacao": {
+    "versao_pipeline": "0.2.0",
+    "hashes": {
+      "gold/auditoria_cobertura": "823c92c4636c884ad055dfabdabf6841c8d96d106382b1700aabeb15cc209051",
+      "gold/base_municipio": "4391d6b7a12e8573410c646890d1d7fec5d3585905b77a293381d9ac71a2268b",
+      "gold/base_municipio_ano": "41147901eb02b7d497ba243d9fb9c244fac330da6acf831a8389964d386134ca",
+      "gold/base_municipio_ano_mvp": "7d9e22f352fda92633bfa782dc6300be017f5aaaf08a5c084fb0f220e2aba51c",
+      "ref/municipios_pb": "34c650f3d2ddad3b1503fc7006388dee98a36f5422e7a6377ed40f0330f8b314",
+      "silver/eventos_obrasgov": "3ea90f16a44bf1da0fa41fd240c933d1ac90eae76ba001780dc3cbf6cc723d08",
+      "silver/ibge": "518e5620fba3062f8366a11de6ece7dc36f99556df557e92a42fae94d3eb6df5",
+      "silver/ibge_territorial": "4391d6b7a12e8573410c646890d1d7fec5d3585905b77a293381d9ac71a2268b",
+      "silver/observacoes_municipio_ano": "1d2a9f69c28652d2862d880469f5491a852051b8c799c42ce5f8b2f67e2a2090",
+      "silver/pncp": "ab39cee23d22c15a18f13a239338880911a109b446ab689bc1af10d3237c36ba",
+      "silver/siconfi": "86da04b5dd320c570dfa5c1bd4faa49d647e8b41f4ff306ecba1440c97ff025e",
+      "silver/tse_eleitoral": "06538d0e1713f403fd416a060abd9d576cafae6f537c7c4807b94e6aaf9b69c8"
+    },
+    "proveniencia": {
+      "painel": "snapshot_legado_verificado",
+      "referencia_territorial": "ibge_localidades_oficial",
+      "bronze_painel": {
+        "base_municipio_ano_snapshot.csv": "bronze/snapshot_legado/4be0f0b26d4273e957e4fd3727f3628c67b515477f2805cc0206094e597ec6f6/base_municipio_ano_snapshot.csv",
+        "eventos_obrasgov_snapshot.csv": "bronze/snapshot_legado/c6278cbf2c715d61833cd24c9e2823a8d2fed3d69be4b8590cf25187419ffe3d/eventos_obrasgov_snapshot.csv"
+      },
+      "bronze_territorial": {
+        "municipios": "bronze/ibge_territorial/c87b860e7e08fb934e225e578a4f5fd5ec68e1050ab0f11c9c59e5e0bf61a51c/municipios.json",
+        "metadados": "bronze/ibge_territorial/84f6da58f6b881c4e5b417913605f1a7e3b4b8e70bf889e07e8a4e42a2eee715/metadados.json",
+        "dados": "bronze/ibge_territorial/cb352e45f24ad91ca25daa8a0b1c95624719ab1f16748a1cfcf02d75e08c2f72/dados.json"
+      }
+    },
+    "versao_gold": "cc1982d0b46981676bdc",
+    "linhas": {
+      "gold/base_municipio_ano": 1115,
+      "gold/base_municipio_ano_mvp": 892,
+      "silver/eventos_obrasgov": 1638,
+      "ref/municipios_pb": 223,
+      "silver/ibge": 1115,
+      "silver/siconfi": 1115,
+      "silver/pncp": 1115,
+      "silver/tse_eleitoral": 1115,
+      "gold/auditoria_cobertura": 160,
+      "silver/observacoes_municipio_ano": 35680,
+      "silver/ibge_territorial": 223,
+      "gold/base_municipio": 223
+    },
+    "produto": "indice de contexto municipal para execucao de projetos",
+    "apto_para_treino_temporal": false,
+    "pendencias": [
+      "Datas públicas de disponibilidade das variáveis legadas",
+      "RGF",
+      "Transferegov",
+      "MUNIC",
+      "SINISA",
+      "MapBiomas",
+      "Bioma por interseção espacial e tipologia territorial"
+    ]
+  },
+  "limites": [
+    "Nao foi refeita a coleta integral de PNCP, DCA ou TSE nesta etapa",
+    "Contagens PNCP e mandatos do resumo informado nao foram recontadas",
+    "RGF consultado para verificar filtros; nenhuma serie integrada",
+    "Fontes restantes do MVP seguem no plano, sem dados artificiais"
+  ]
+}
