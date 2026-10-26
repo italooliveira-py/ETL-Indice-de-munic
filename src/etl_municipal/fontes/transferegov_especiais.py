@@ -8,9 +8,10 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlencode
+import pandas as pd
 from etl_confiabilidade import salvar_json_atomico
 from ..core.armazenamento import preservar, sha256
-from ..core.contratos import ViolacaoContrato
+from ..core.contratos import ViolacaoContrato, validar_numerica
 from ..core.http import obter_json
 
 FONTE = 'transferegov_especiais'
@@ -108,3 +109,85 @@ def verificar(raiz: Path) -> dict:
     for registro in estado['paginas'].values():
         caminhos[registro['recurso']].append(_ler(raiz, registro)[0])
     return caminhos
+
+
+# --- Silver -------------------------------------------------------------------
+def _registros(caminhos, recurso):
+    linhas = [linha for p in sorted(caminhos[recurso]) for linha in json.loads(p.read_bytes())]
+    return pd.DataFrame(linhas)
+
+
+def transformar(caminhos, mapa_cnpj):
+    """Cadeia financeira dos municípios da PB; o CNPJ é ligado ao IBGE pelas propostas oficiais.
+
+    Beneficiário fora do mapa municipal só é aceito quando é o próprio Estado.
+    """
+    mapa = dict(zip(mapa_cnpj.cnpj, mapa_cnpj.codigo_ibge))
+    planos = _registros(caminhos, 'plano_acao_especial')
+    if planos.id_plano_acao.duplicated().any():
+        raise ViolacaoContrato('id_plano_acao duplicado')
+    planos['codigo_ibge'] = planos.cnpj_beneficiario_plano_acao.map(mapa)
+    sem_municipio = planos[planos.codigo_ibge.isna()]
+    if not sem_municipio.nome_beneficiario_plano_acao.str.contains('ESTADO', case=False).all():
+        raise ViolacaoContrato('Beneficiário municipal sem CNPJ correspondente nas propostas oficiais')
+    planos = planos[planos.codigo_ibge.notna()]
+    planos_silver = pd.DataFrame({
+        'id_plano_acao': planos.id_plano_acao.astype('int64'), 'codigo_plano_acao': planos.codigo_plano_acao,
+        'ano_plano_acao': planos.ano_plano_acao.astype('int64'), 'codigo_ibge': planos.codigo_ibge,
+        'cnpj_beneficiario': planos.cnpj_beneficiario_plano_acao, 'situacao': planos.situacao_plano_acao,
+        'parlamentar': planos.nome_parlamentar_emenda_plano_acao,
+        'numero_emenda': planos.numero_emenda_parlamentar_plano_acao,
+        'area_politica_publica': planos.codigo_descricao_areas_politicas_publicas_plano_acao,
+        'motivo_impedimento': planos.motivo_impedimento_plano_acao,
+        'valor_custeio': pd.to_numeric(planos.valor_custeio_plano_acao),
+        'valor_investimento': pd.to_numeric(planos.valor_investimento_plano_acao)})
+
+    empenhos = _registros(caminhos, 'empenho_especial')
+    empenhos = empenhos[empenhos.id_plano_acao.isin(planos_silver.id_plano_acao)]
+    if empenhos.id_empenho.duplicated().any():
+        raise ViolacaoContrato('id_empenho duplicado')
+    plano_municipio = dict(zip(planos_silver.id_plano_acao, planos_silver.codigo_ibge))
+    empenhos_silver = pd.DataFrame({
+        'id_empenho': empenhos.id_empenho.astype('int64'), 'id_plano_acao': empenhos.id_plano_acao.astype('int64'),
+        'codigo_ibge': empenhos.id_plano_acao.map(plano_municipio), 'numero_empenho': empenhos.numero_empenho,
+        'situacao_empenho': empenhos.situacao_empenho.astype('int64'),
+        'data_emissao_empenho': pd.to_datetime(empenhos.data_emissao_empenho, format='%Y-%m-%d'),
+        'valor_empenho': pd.to_numeric(empenhos.valor_empenho)})
+
+    documentos = _registros(caminhos, 'documento_habil_especial')
+    ordens = _registros(caminhos, 'ordem_pagamento_ordem_bancaria_especial')
+    if documentos.id_dh.duplicated().any() or ordens.id_op_ob.duplicated().any() or ordens.id_dh.duplicated().any():
+        raise ViolacaoContrato('Documento hábil ou ordem bancária duplicados')
+    # Pagamento = documento hábil com ordem bancária emitida; documento sem ordem ainda não é pagamento.
+    pagos = ordens.merge(documentos, on='id_dh', validate='one_to_one').merge(
+        empenhos_silver[['id_empenho', 'id_plano_acao', 'codigo_ibge']], on='id_empenho', validate='many_to_one')
+    pagamentos = pd.DataFrame({
+        'id_op_ob': pagos.id_op_ob.astype('int64'), 'id_dh': pagos.id_dh.astype('int64'),
+        'id_empenho': pagos.id_empenho.astype('int64'), 'id_plano_acao': pagos.id_plano_acao.astype('int64'),
+        'codigo_ibge': pagos.codigo_ibge, 'situacao_op': pagos.situacao_op.astype('int64'),
+        'data_emissao_ob': pd.to_datetime(pagos.data_emissao_ob, format='%Y-%m-%d'),
+        'valor_pago': pd.to_numeric(pagos.valor_dh)})
+    for quadro, colunas in [(planos_silver, ['valor_custeio', 'valor_investimento']),
+                            (empenhos_silver, ['valor_empenho']), (pagamentos, ['valor_pago'])]:
+        for coluna in colunas:
+            validar_numerica(quadro, coluna)
+    return {
+        'silver/transferegov_especiais_planos': planos_silver.sort_values('id_plano_acao').reset_index(drop=True),
+        'silver/transferegov_especiais_empenhos': empenhos_silver.sort_values('id_empenho').reset_index(drop=True),
+        'silver/transferegov_especiais_pagamentos': pagamentos.sort_values('id_op_ob').reset_index(drop=True),
+    }
+
+
+def painel(silver, codigos, anos):
+    """Município × ano: planos pelo ano do plano; pagamentos pela data da ordem bancária."""
+    planos, pagamentos = silver['silver/transferegov_especiais_planos'], silver['silver/transferegov_especiais_pagamentos']
+    chaves = pd.MultiIndex.from_product([sorted(codigos), anos], names=['codigo_ibge', 'ano'])
+    planejado = planos.assign(ano=planos.ano_plano_acao, valor=planos.valor_custeio + planos.valor_investimento) \
+        .groupby(['codigo_ibge', 'ano']).agg(transferegov_especiais_planos=('id_plano_acao', 'size'),
+                                             transferegov_especiais_valor_planejado=('valor', 'sum'))
+    pago = pagamentos.assign(ano=pagamentos.data_emissao_ob.dt.year).groupby(['codigo_ibge', 'ano']).agg(
+        transferegov_especiais_valor_pago=('valor_pago', 'sum'))
+    quadro = pd.concat([planejado, pago], axis=1).reindex(chaves).fillna(0)
+    quadro['transferegov_especiais_planos'] = quadro.transferegov_especiais_planos.astype('int64')
+    quadro['cobertura_transferegov_especiais'] = 'completa'
+    return quadro.reset_index()

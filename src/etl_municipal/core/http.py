@@ -38,7 +38,8 @@ def obter_bytes(sessao, url, config):
             if not conteudo:
                 raise FalhaConsulta('Arquivo vazio')
             return conteudo
-        except (requests.Timeout, requests.ConnectionError, requests.HTTPError, FalhaConsulta) as exc:
+        # RequestException cobre também conexão cortada no meio do corpo (ChunkedEncodingError).
+        except (requests.RequestException, FalhaConsulta) as exc:
             status = resposta.status_code if resposta is not None else None
             if isinstance(exc, requests.HTTPError) and status not in TRANSITORIOS:
                 raise FalhaConsulta(f'HTTP permanente {status}: {url}', status_code=status) from exc

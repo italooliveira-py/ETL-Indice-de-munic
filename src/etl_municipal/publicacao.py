@@ -35,7 +35,8 @@ GRUPOS = {
 }
 
 
-def construir(base, eventos, referencia, territorial=None):
+def construir(base, eventos, referencia, territorial=None, adicionais=None):
+    """`adicionais`: {fonte: (painel município-ano, tabelas Silver)} de fontes integradas ao painel."""
     universo = set(referencia.codigo_ibge)
     validar_tabela(referencia, ['codigo_ibge'], universo, completa=True)
     if len(universo) != 223:
@@ -51,7 +52,18 @@ def construir(base, eventos, referencia, territorial=None):
     for coluna in ['pib', 'pib_per_capita']:
         if coluna in gold:
             gold.loc[gold.ano == 2024, coluna] = float('nan')
-    for fonte, colunas in GRUPOS.items():
+    grupos, extras = dict(GRUPOS), {}
+    for fonte, (painel_fonte, tabelas_fonte) in (adicionais or {}).items():
+        validar_painel(painel_fonte, universo, list(range(2020, 2025)))
+        gold = gold.merge(painel_fonte, on=['codigo_ibge', 'ano'], validate='one_to_one')
+        grupos[fonte] = [c for c in painel_fonte.columns if c not in ('codigo_ibge', 'ano') and not c.startswith('cobertura_')]
+        for coluna in grupos[fonte]:
+            validar_numerica(gold, coluna, nulos=False)
+        for nome, quadro in tabelas_fonte.items():
+            # A primeira coluna de cada tabela adicional é a sua chave de grão.
+            validar_tabela(quadro, [quadro.columns[0]], universo)
+            extras[nome] = quadro
+    for fonte, colunas in grupos.items():
         disponiveis = [c for c in colunas if c in gold]
         alguma = gold[disponiveis].notna().any(axis=1)
         todas = gold[disponiveis].notna().all(axis=1)
@@ -75,7 +87,7 @@ def construir(base, eventos, referencia, territorial=None):
                'ref/municipios_pb': referencia.sort_values('codigo_ibge').reset_index(drop=True)}
     auditoria = []
     observacoes = []
-    for fonte, colunas in GRUPOS.items():
+    for fonte, colunas in grupos.items():
         existentes = [c for c in colunas if c in gold]
         tabelas['silver/' + fonte] = gold[['codigo_ibge', 'ano', *existentes, 'status_' + fonte]].copy()
         for coluna in existentes:
@@ -90,6 +102,9 @@ def construir(base, eventos, referencia, territorial=None):
                 confirmado = ((gold.total_contratacoes == 0) &
                               (gold.cobertura_pncp == 'completa') & (gold[coluna] == 0))
                 status.loc[confirmado] = 'sem_registro_confirmado'
+            if fonte in (adicionais or {}):
+                # Recorte completo da fonte: zero é ausência de registro confirmada, não falha.
+                status.loc[gold[coluna] == 0] = 'sem_registro_confirmado'
             detalhe = gold[['codigo_ibge', 'ano']].copy()
             detalhe['fonte'] = fonte
             detalhe['variavel'] = coluna
@@ -103,6 +118,7 @@ def construir(base, eventos, referencia, territorial=None):
                                   'cobertura': float(grupo[coluna].notna().mean()),
                                   'data_disponibilidade': None,
                                   'status_temporal': 'pendente_validacao_publicacao'})
+    tabelas.update(extras)
     tabelas['gold/auditoria_cobertura'] = pd.DataFrame(auditoria)
     tabelas['silver/observacoes_municipio_ano'] = pd.concat(observacoes, ignore_index=True)
     if territorial is not None:
@@ -149,9 +165,10 @@ def publicar(tabelas, raiz: Path, proveniencia: dict):
                  'linhas': {nome: len(quadro) for nome, quadro in tabelas.items()},
                  'produto': 'indice de contexto municipal para execucao de projetos',
                  'apto_para_treino_temporal': False,
-                 'pendencias': ['Datas públicas de disponibilidade das variáveis legadas',
-                                'RGF', 'Transferegov', 'MUNIC', 'SINISA', 'MapBiomas',
-                                'Bioma por interseção espacial e tipologia territorial']}
+                 'pendencias': [p for p in ['Datas públicas de disponibilidade das variáveis legadas',
+                                            'RGF', 'Transferegov', 'MUNIC', 'SINISA', 'MapBiomas',
+                                            'Bioma por interseção espacial e tipologia territorial']
+                                if not (p == 'Transferegov' and 'silver/transferegov_instrumentos' in tabelas)]}
     salvar_json_atomico(pasta / 'manifesto.json', manifesto)
     # Atalhos convenientes; consumidores transacionais devem seguir CURRENT.json.
     for nome, quadro in tabelas.items():

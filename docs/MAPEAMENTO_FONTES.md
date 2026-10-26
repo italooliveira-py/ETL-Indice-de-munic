@@ -10,7 +10,7 @@ Evidência própria marcada como **[verificado]** foi obtida diretamente das API
 |---|---|---|---|---|---|---|
 | SICONFI DCA | coleta legada | anual; entrega até 30/abr de t+1 | 222–223/223 por ano (2020–2024) | RCL ajustada, layout estável nas contas usadas | essencial (dimensão fiscal) | extrair do legado com datas de entrega |
 | SICONFI RGF | ausente | Q3 e S2 até 30/jan de t+1 | 222–223/223 por ano; ~10–13% semestrais | coexistem RGF quadrimestral e RGF Simplificado semestral; quadro de trajetória (LC 178/2021) incluído e removido em 2026 | essencial: único DTP/RCL legal | integrar Anexo 01 do Executivo, harmonizando Q3 e S2 |
-| Transferegov Discricionárias | ausente | CSV diário — **parado desde 17/07/2026** | 223/223 (código IBGE na proposta); 122–208 municípios com instrumento assinado por ano | modelo de dados só ganhou campos (v13→v25); APIs só a partir de nov/2026 | essencial (recursos e captação) | Bronze dos 5 CSV com `data_carga` |
+| Transferegov Discricionárias | ausente | CSV diário — **parado desde 17/07/2026** | 223/223 (código IBGE na proposta); 122–208 municípios com instrumento assinado por ano | modelo de dados só ganhou campos (v13→v25); APIs só a partir de nov/2026 | essencial (recursos e captação) | Bronze: recorte PB dos 4 CSV + `data_carga` (ADR 0002) |
 | Transferegov Especiais (Pix) | ausente | API pública ativa | 223/223 em 2020–2026; 17 municípios em 2020 → 206 em 2024 | modalidade criada pela EC 105/2019; cresce 15× no período | alta, e ausente do plano atual | Bronze da cadeia plano → empenho → pagamento |
 | MUNIC | ausente | edições irregulares; publicação 10–13 meses após a referência | universal (5.570 municípios) | sem edição 2022; temas mudam por edição; bases revisadas após publicação | média: capacidade institucional | usar só blocos repetidos (RH) e como contexto por edição |
 | IBGE territorial — área, população, densidade | **integrado** | Censo 2022 | 223/223 | — | controle | manter |
@@ -104,26 +104,28 @@ Os quatro primeiros formam a cadeia financeira (planejado → empenhado → pago
 
 **Cobertura PB.** Os 223 municípios aparecem como beneficiários ao menos uma vez em 2020–2026. Não há código IBGE: a identidade é pelo CNPJ do beneficiário, e o nome aparece ora como "MUNICIPIO DE X", ora só como "X". Isso exige o catálogo CNPJ → IBGE.
 
-| Ano | Planos | Municípios | Empenhado (R$ mi) | Pagamentos (OB) | Municípios pagos | Pago (R$ mi) |
-|---|---|---|---|---|---|---|
-| 2020 | 18 | 17 | 15,7 | 20 | 18 | 15,7 |
-| 2021 | 79 | 66 | 44,6 | 83 | 65 | 42,9 |
-| 2022 | 207 | 121 | 86,8 | 113 | 82 | 42,6 |
-| 2023 | 383 | 192 | 239,1 | 539 | 203 | 272,9 |
-| 2024 | 375 | 206 | 239,3 | 418 | 207 | 237,6 |
+Somente beneficiários municipais (os pagamentos ao Estado da Paraíba, de R$ 1 mi a R$ 30 mi por ano, ficam fora); valores do Gold publicado:
+
+| Ano | Planos | Municípios com plano | Planejado (R$ mi) | Municípios pagos | Pago (R$ mi) |
+|---|---|---|---|---|---|
+| 2020 | 18 | 17 | 9,1 | 17 | 9,1 |
+| 2021 | 79 | 66 | 43,3 | 64 | 42,0 |
+| 2022 | 207 | 121 | 85,0 | 81 | 40,4 |
+| 2023 | 383 | 192 | 226,0 | 202 | 259,8 |
+| 2024 | 375 | 206 | 209,5 | 206 | 207,8 |
 
 O empenho sai sempre no mesmo ano do plano de ação. Já o pagamento pode escorregar para o ano seguinte, como em 2022 → 2023. Todas as ordens de pagamento da PB estão na situação 5 (concluída).
 
-**Relevância.** Alta para a dimensão de recursos e captação, nos dois módulos. Na PB, as Especiais passaram a pagar quase tanto quanto as Discricionárias desembolsam (R$ 238 mi contra R$ 307 mi em 2024). Contar só as Discricionárias criaria uma falsa tendência de queda. A mudança de regime (as Pix não exigem convênio nem projeto prévio) é, ela própria, relevante para risco de execução. O plano atual (etapa D) não menciona as Especiais.
+**Relevância.** Alta para a dimensão de recursos e captação, nos dois módulos. Na PB, as Especiais passaram a pagar quase tanto quanto as Discricionárias desembolsam (R$ 208 mi pagos a municípios contra R$ 307 mi desembolsados em 2024). Contar só as Discricionárias criaria uma falsa tendência de queda. A mudança de regime (as Pix não exigem convênio nem projeto prévio) é, ela própria, relevante para risco de execução. O plano atual (etapa D) não menciona as Especiais.
 
 ### O que carregar no Bronze
 
 | Módulo | Artefatos | Volume | Retomada |
 |---|---|---|---|
-| Discricionárias | os 5 zips acima, como baixados (bytes originais), mais a `data_carga` | ~230 MB por carga | o `data_carga` identifica a geração; mesmo `data_carga` + mesmo SHA-256 = nada a baixar |
+| Discricionárias | recorte PB das 4 tabelas (CSV gzip, textos originais), mais a `data_carga`; o índice guarda SHA-256, tamanho e linhas do zip nacional | poucos MB por carga | o `data_carga` identifica a geração; mesma `data_carga` = nada a baixar |
 | Especiais | uma página JSON por requisição: `plano_acao` e `empenho` filtrados por PB; `documento_habil` e `ordem_pagamento` filtrados pelos identificadores | ~30 requisições por carga | cada página é preservada com URL e parâmetros; a retomada recomeça da página que faltou |
 
-Não filtrar nem converter nada antes do Bronze. Filtros de PB nos CSV nacionais, exclusão de pré-convênios, conversão de valores e ligação CNPJ → IBGE ficam para o Silver.
+No Bronze entra só o recorte PB, sem conversão de tipos ([ADR 0002](adr/0002-bronze-recorte-pb-transferegov.md)). Filtro municipal por natureza jurídica, exclusão de pré-convênios, conversão de valores e ligação CNPJ → IBGE ficam para o Silver.
 
 ## MUNIC
 
