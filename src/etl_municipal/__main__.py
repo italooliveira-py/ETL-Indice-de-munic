@@ -4,12 +4,14 @@ import json
 from pathlib import Path
 import requests
 from etl_confiabilidade import FalhaConsulta
-from .fontes import snapshot, ibge_territorial, coleta_legada, transferegov_discricionarias, transferegov_especiais
+from .fontes import (snapshot, ibge_territorial, coleta_legada, siconfi, munic,
+                     transferegov_discricionarias, transferegov_especiais)
 from .publicacao import construir, publicar
 
 ROOT = Path(__file__).resolve().parents[2]
 # Fontes com extração para o Bronze e transformação ainda pendente.
-SOMENTE_BRONZE = {'transferegov_discricionarias': transferegov_discricionarias,
+SOMENTE_BRONZE = {'siconfi': siconfi, 'munic': munic,
+                  'transferegov_discricionarias': transferegov_discricionarias,
                   'transferegov_especiais': transferegov_especiais}
 
 

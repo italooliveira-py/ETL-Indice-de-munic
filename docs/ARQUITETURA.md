@@ -17,6 +17,8 @@ src/
       snapshot.py               importação verificável dos snapshots
       coleta_legada.py          importação das saídas de uma coleta real
       ibge_territorial.py        API oficial → Bronze → contexto 2022
+      siconfi.py                 extrato de entregas, DCA e RGF do Executivo → Bronze (transformação pendente)
+      munic.py                   bases xlsx por edição, revisões preservadas → Bronze (transformação pendente)
       transferegov_discricionarias.py  CSV nacionais → Bronze (transformação pendente)
       transferegov_especiais.py  API, filtro PB na consulta → Bronze (transformação pendente)
     publicacao.py               Silver/Gold, auditoria e versionamento
@@ -87,8 +89,8 @@ python -m src.etl_municipal --sources snapshot ibge_territorial --refresh
 python -m src.etl_municipal --sources coleta_legada ibge_territorial --input-dir output --resume
 
 # Fontes ainda sem transformação: somente carga no Bronze
-python -m src.etl_municipal --bronze-only --sources transferegov_discricionarias transferegov_especiais
-python -m src.etl_municipal --bronze-only --offline --sources transferegov_discricionarias transferegov_especiais
+python -m src.etl_municipal --bronze-only --sources siconfi munic transferegov_discricionarias transferegov_especiais
+python -m src.etl_municipal --bronze-only --offline --sources siconfi munic transferegov_discricionarias transferegov_especiais
 
 # Isolar uma experiência
 python -m src.etl_municipal --sources snapshot --offline --data-dir output/experimento_medallion

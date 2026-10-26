@@ -5,6 +5,8 @@
 - Carga somente no Bronze (`--bronze-only`) para fontes ainda sem transformação.
 - Transferegov Discricionárias: zips nacionais de proposta, convênio, desembolso e emenda, uma geração por `data_carga`; o recorte da PB fica para o Silver.
 - Transferegov Transferências Especiais: plano de ação, empenho, documento hábil e ordem de pagamento, com filtro `eq.PB` aplicado pela API e retomada por página.
+- SICONFI: extrato de entregas, DCA e RGF do último período do Executivo (Q3 ou Simplificado S2, conforme o extrato), por município e exercício; falhas registradas e repetidas na retomada, nunca tratadas como ausência.
+- MUNIC: base xlsx de cada edição desde 2019, descoberta pelas listagens do FTP; revisões do IBGE entram sem apagar a versão anterior.
 - Mapeamento de disponibilidade, cobertura e mudanças das fontes em `docs/MAPEAMENTO_FONTES.md`.
 
 ## 0.2.0 — 2026-10-24
