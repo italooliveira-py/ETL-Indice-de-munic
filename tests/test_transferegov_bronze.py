@@ -215,8 +215,19 @@ class SilverDiscricionarias(unittest.TestCase):
         self.assertEqual(quadro.loc[(JP, 2022), 'transferegov_valor_desembolsado'], 25000)
         self.assertEqual(list(quadro.loc[JP, 'transferegov_instrumentos_vigentes']), [0, 1, 1, 1, 0])
         self.assertEqual(quadro.loc[(CONDE, 2022), 'transferegov_instrumentos_assinados'], 1)
-        self.assertEqual(quadro.loc[CONDE, 'transferegov_instrumentos_vigentes'].sum(), 0)  # anulado
+        # Anulado conta como vigente: a anulação posterior é desfecho, não contexto do ano.
+        self.assertEqual(list(quadro.loc[CONDE, 'transferegov_instrumentos_vigentes']), [0, 0, 1, 1, 1])
+        self.assertEqual(quadro.loc[(JP, 2021), 'transferegov_valor_global_assinado'], 120000.50)
+        self.assertEqual(set(disc.TEMPORALIDADE), set(quadro.columns) - {'cobertura_transferegov_discricionarias'})
         self.assertTrue((quadro.loc[AGUA_BRANCA].drop(columns='cobertura_transferegov_discricionarias') == 0).all().all())
+
+    def test_desfechos_ficam_no_silver_como_resultado(self):
+        inst = self.silver['silver/transferegov_instrumentos'].set_index('nr_convenio')
+        self.assertTrue(inst.loc['30', 'resultado_anulado'])
+        self.assertFalse(inst.loc['10', 'resultado_anulado'])
+        self.assertTrue(inst.loc['10', 'resultado_prorrogado'])  # fim 2023 > fim original 2022
+        self.assertFalse(inst.loc['30', 'resultado_prorrogado'])
+        self.assertEqual(inst.loc['30', 'valor_global_assinatura'], 500000)
 
     def test_cnpj_em_dois_municipios_bloqueia(self):
         dados = dict(TABELAS)
@@ -350,8 +361,8 @@ class Publicacao(unittest.TestCase):
             s_disc = disc.transformar(disc.extrair(PortalCsv(), raiz))
             s_esp = esp.transformar(esp.extrair(ApiEspeciais(), raiz), s_disc['ref/transferegov_cnpj_municipio'])
             tabelas = construir(base, eventos, referencia, adicionais={
-                'transferegov_discricionarias': (disc.painel(s_disc, codigos, anos), s_disc),
-                'transferegov_especiais': (esp.painel(s_esp, codigos, anos), s_esp)})
+                'transferegov_discricionarias': (disc.painel(s_disc, codigos, anos), s_disc, disc.TEMPORALIDADE),
+                'transferegov_especiais': (esp.painel(s_esp, codigos, anos), s_esp, esp.TEMPORALIDADE)})
             gold = tabelas['gold/base_municipio_ano'].set_index(['codigo_ibge', 'ano'])
             self.assertEqual(len(gold), 1115)
             self.assertEqual(gold.loc[(JP, 2021), 'transferegov_valor_desembolsado'], 50000.25)
@@ -359,8 +370,26 @@ class Publicacao(unittest.TestCase):
             obs = tabelas['silver/observacoes_municipio_ano']
             linha = obs[(obs.codigo_ibge == AGUA_BRANCA) & (obs.ano == 2021) & (obs.variavel == 'transferegov_instrumentos_assinados')]
             self.assertEqual(linha.status.item(), 'sem_registro_confirmado')
+            auditoria = tabelas['gold/auditoria_cobertura'].drop_duplicates('variavel').set_index('variavel')
+            self.assertEqual(auditoria.loc['transferegov_valor_repasse_atual', 'status_temporal'], 'somente_descritiva')
+            self.assertEqual(auditoria.loc['transferegov_instrumentos_vigentes', 'status_temporal'], 'apta_regra_legal')
+            self.assertEqual(auditoria.loc['pib', 'status_temporal'], 'pendente_validacao_publicacao')
             manifesto = publicar(tabelas, raiz, {'teste': True})
             self.assertNotIn('Transferegov', manifesto['pendencias'])
+            self.assertFalse(manifesto['apto_para_treino_temporal'])
+            self.assertIn('transferegov_valor_desembolsado', manifesto['variaveis_aptas_treino_temporal'])
+            self.assertNotIn('transferegov_especiais_valor_planejado', manifesto['variaveis_aptas_treino_temporal'])
+
+    def test_variavel_sem_classificacao_temporal_bloqueia(self):
+        with tempfile.TemporaryDirectory() as temp:
+            raiz = Path(temp)
+            base, eventos = snapshot.transformar(snapshot.extrair(ROOT, raiz))
+            referencia = base[['codigo_ibge', 'municipio', 'uf']].drop_duplicates()
+            s_disc = disc.transformar(disc.extrair(PortalCsv(), raiz))
+            painel = disc.painel(s_disc, set(referencia.codigo_ibge), list(range(2020, 2025)))
+            incompleta = dict(list(disc.TEMPORALIDADE.items())[:-1])
+            with self.assertRaises(ViolacaoContrato):
+                construir(base, eventos, referencia, adicionais={'transferegov_discricionarias': (painel, s_disc, incompleta)})
 
     def test_sem_transferegov_gold_nao_muda(self):
         with tempfile.TemporaryDirectory() as temp:

@@ -226,6 +226,13 @@ def transformar(caminhos):
     instrumentos['origem_emenda'] = instrumentos.id_proposta.isin(indicadores.index)
     instrumentos['emenda_individual'] = instrumentos.id_proposta.map(indicadores.individual).fillna(False).astype(bool)
     instrumentos['emenda_impositiva'] = instrumentos.id_proposta.map(indicadores.impositiva).fillna(False).astype(bool)
+    # O original só é publicado quando um aditivo alterou o valor; sem ele, o valor atual é o da assinatura.
+    instrumentos['valor_global_assinatura'] = instrumentos.valor_global_original.fillna(instrumentos.valor_global)
+    # Desfechos do processo (fotografia da data_carga): candidatos a alvo, nunca preditores de X(t).
+    instrumentos['resultado_anulado'] = instrumentos.situacao == 'Convênio Anulado'
+    instrumentos['resultado_rescindido'] = instrumentos.situacao == 'Convênio Rescindido'
+    instrumentos['resultado_contas_rejeitadas'] = instrumentos.situacao == 'Prestação de Contas Rejeitada'
+    instrumentos['resultado_prorrogado'] = (instrumentos.data_fim_vigencia > instrumentos.data_fim_vigencia_original).fillna(False).astype(bool)
     instrumentos['data_carga'] = data_carga
 
     desembolso = ler_recorte(caminhos['siconv_desembolso_pb.csv.gz'], ['ID_DESEMBOLSO', 'NR_CONVENIO', 'DATA_DESEMBOLSO', 'VL_DESEMBOLSADO'])
@@ -248,18 +255,33 @@ def transformar(caminhos):
     }
 
 
+# Uso temporal de cada variável do painel: (classificação, motivo).
+TEMPORALIDADE = {
+    'transferegov_instrumentos_assinados': ('apta_data_do_evento', 'contagem pela data de assinatura'),
+    'transferegov_valor_global_assinado': (
+        'apta_data_do_evento', 'valor global na assinatura (original quando houve aditivo de valor)'),
+    'transferegov_valor_repasse_atual': (
+        'somente_descritiva', 'repasse da data_carga, inclui aditivos posteriores à assinatura'),
+    'transferegov_valor_desembolsado': ('apta_data_do_evento', 'soma pela data de cada desembolso'),
+    'transferegov_instrumentos_vigentes': (
+        'apta_regra_legal', 'prorrogação só ocorre antes do fim da vigência (PC 33/2023, arts. 35 e 46); anulados incluídos'),
+}
+
+
 def painel(silver, codigos, anos):
     """Município × ano pela data do evento; sem registro no recorte completo da PB é zero confirmado."""
     instrumentos, desembolsos = silver['silver/transferegov_instrumentos'], silver['silver/transferegov_desembolsos']
     chaves = pd.MultiIndex.from_product([sorted(codigos), anos], names=['codigo_ibge', 'ano'])
     assinados = instrumentos.assign(ano=instrumentos.data_assinatura.dt.year).groupby(['codigo_ibge', 'ano']).agg(
         transferegov_instrumentos_assinados=('nr_convenio', 'size'),
-        transferegov_valor_repasse_assinado=('valor_repasse', 'sum'))
+        transferegov_valor_global_assinado=('valor_global_assinatura', 'sum'),
+        transferegov_valor_repasse_atual=('valor_repasse', 'sum'))
     liberado = desembolsos.assign(ano=desembolsos.data_desembolso.dt.year).groupby(['codigo_ibge', 'ano']).agg(
         transferegov_valor_desembolsado=('valor_desembolsado', 'sum'))
-    validos = instrumentos[instrumentos.situacao != 'Convênio Anulado']
+    # Anulados contam: estavam formalmente vigentes; a anulação posterior é desfecho, não contexto.
     vigentes = pd.concat([
-        validos[(validos.data_inicio_vigencia <= pd.Timestamp(ano, 12, 31)) & (validos.data_fim_vigencia >= pd.Timestamp(ano, 1, 1))]
+        instrumentos[(instrumentos.data_inicio_vigencia <= pd.Timestamp(ano, 12, 31))
+                     & (instrumentos.data_fim_vigencia >= pd.Timestamp(ano, 1, 1))]
         .groupby('codigo_ibge').size().rename('transferegov_instrumentos_vigentes').reset_index().assign(ano=ano)
         for ano in anos]).set_index(['codigo_ibge', 'ano'])
     quadro = pd.concat([assinados, liberado, vigentes], axis=1).reindex(chaves).fillna(0)

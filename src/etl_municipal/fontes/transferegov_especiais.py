@@ -178,6 +178,14 @@ def transformar(caminhos, mapa_cnpj):
     }
 
 
+TEMPORALIDADE = {
+    'transferegov_especiais_planos': ('apta_data_do_evento', 'contagem pelo ano do plano de ação'),
+    'transferegov_especiais_valor_planejado': (
+        'somente_descritiva', 'valores do plano na data da extração, podem ter sido ajustados depois'),
+    'transferegov_especiais_valor_pago': ('apta_data_do_evento', 'soma pela data da ordem bancária'),
+}
+
+
 def painel(silver, codigos, anos):
     """Município × ano: planos pelo ano do plano; pagamentos pela data da ordem bancária."""
     planos, pagamentos = silver['silver/transferegov_especiais_planos'], silver['silver/transferegov_especiais_pagamentos']

@@ -6,6 +6,9 @@
 - Transferegov Discricionárias: recorte PB de proposta, convênio, desembolso e emenda no Bronze, com hash do arquivo nacional no índice (ADR 0002); uma geração por `data_carga`.
 - Transferegov no Silver: instrumentos assinados de administrações municipais, desembolsos, mapa CNPJ → IBGE pelas propostas oficiais, planos, empenhos e pagamentos das Transferências Especiais.
 - Transferegov no Gold: painel município × ano por data do evento (instrumentos assinados e vigentes, repasse assinado, valor desembolsado, planos e valores planejado e pago das Especiais); zero no recorte completo é `sem_registro_confirmado`.
+- Uso temporal por variável na auditoria (`status_temporal`, `motivo_temporal`) e lista `variaveis_aptas_treino_temporal` no manifesto; o Gold como um todo segue não apto por causa das variáveis legadas.
+- Transferegov: instrumentos anulados contam como vigentes (anulação é desfecho); valor global na assinatura no lugar do repasse atual para uso preditivo; desfechos `resultado_*` no Silver como candidatos a alvo.
+- Brief de negócio do Transferegov em `docs/BRIEF_TRANSFEREGOV.md`.
 - Transferegov Transferências Especiais: plano de ação, empenho, documento hábil e ordem de pagamento, com filtro `eq.PB` aplicado pela API e retomada por página.
 - SICONFI: extrato de entregas, DCA e RGF do último período do Executivo (Q3 ou Simplificado S2, conforme o extrato), por município e exercício; falhas registradas e repetidas na retomada, nunca tratadas como ausência.
 - MUNIC: base xlsx de cada edição desde 2019, descoberta pelas listagens do FTP; revisões do IBGE entram sem apagar a versão anterior.

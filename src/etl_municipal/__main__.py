@@ -32,13 +32,15 @@ def transferegov(parser, args, raiz, codigos):
         if 'transferegov_discricionarias' in args.sources:
             caminhos = bronze(transferegov_discricionarias, sessao, raiz, args)
             silver = transferegov_discricionarias.transformar(caminhos)
-            adicionais['transferegov_discricionarias'] = (transferegov_discricionarias.painel(silver, codigos, anos), silver)
+            adicionais['transferegov_discricionarias'] = (transferegov_discricionarias.painel(silver, codigos, anos), silver,
+                                                          transferegov_discricionarias.TEMPORALIDADE)
             proveniencia['bronze_transferegov_discricionarias'] = {k: p.relative_to(raiz).as_posix() for k, p in caminhos.items()}
             proveniencia['transferegov_data_carga'] = silver['silver/transferegov_instrumentos'].data_carga.iloc[0]
         if 'transferegov_especiais' in args.sources:
             caminhos = bronze(transferegov_especiais, sessao, raiz, args)
             silver = transferegov_especiais.transformar(caminhos, adicionais['transferegov_discricionarias'][1]['ref/transferegov_cnpj_municipio'])
-            adicionais['transferegov_especiais'] = (transferegov_especiais.painel(silver, codigos, anos), silver)
+            adicionais['transferegov_especiais'] = (transferegov_especiais.painel(silver, codigos, anos), silver,
+                                                    transferegov_especiais.TEMPORALIDADE)
             proveniencia['bronze_transferegov_especiais'] = sorted(p.relative_to(raiz).as_posix() for ps in caminhos.values() for p in ps)
     return adicionais, proveniencia
 
