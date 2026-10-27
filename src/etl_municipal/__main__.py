@@ -14,7 +14,7 @@ EXTRACAO = {'siconfi': siconfi, 'munic': munic,
             'transferegov_discricionarias': transferegov_discricionarias,
             'transferegov_especiais': transferegov_especiais}
 # Transformação ainda pendente: só podem ser carregadas no Bronze.
-# Do SICONFI, só o RGF (Anexo 1) é transformado; DCA e demais anexos seguem apenas no Bronze.
+# Do SICONFI, só RGF (Anexo 1) e DCA (Anexo I-C, apoio ao Transferegov) são transformados; o resto fica no Bronze.
 SOMENTE_BRONZE = {'munic'}
 
 
@@ -48,6 +48,16 @@ def fontes_adicionais(parser, args, raiz, codigos):
             silver = siconfi.transformar_rgf(caminhos)
             adicionais['siconfi_rgf'] = (siconfi.painel_rgf(silver, codigos, anos), silver, siconfi.TEMPORALIDADE_RGF)
             proveniencia['bronze_siconfi_rgf'] = sorted(p.relative_to(raiz).as_posix() for p in caminhos['rgf'])
+            # DCA no recorte de apoio ao Transferegov; indicadores cruzados só com as duas modalidades.
+            silver = siconfi.transformar_dca(caminhos)
+            transferegov = None
+            temporalidade = dict(siconfi.TEMPORALIDADE_DCA)
+            if {'transferegov_discricionarias', 'transferegov_especiais'} <= set(adicionais):
+                transferegov = adicionais['transferegov_discricionarias'][0].merge(
+                    adicionais['transferegov_especiais'][0], on=['codigo_ibge', 'ano'], validate='one_to_one')
+                temporalidade.update(siconfi.TEMPORALIDADE_DCA_TRANSFEREGOV)
+            adicionais['siconfi_dca'] = (siconfi.painel_dca(silver, codigos, anos, transferegov), silver, temporalidade)
+            proveniencia['bronze_siconfi_dca'] = sorted(p.relative_to(raiz).as_posix() for p in caminhos['dca'])
     return adicionais, proveniencia
 
 

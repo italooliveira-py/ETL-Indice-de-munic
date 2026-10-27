@@ -17,7 +17,7 @@ src/
       snapshot.py               importação verificável dos snapshots
       coleta_legada.py          importação das saídas de uma coleta real
       ibge_territorial.py        API oficial → Bronze → contexto 2022
-      siconfi.py                 extrato de entregas, DCA e RGF do Executivo → Bronze; RGF Anexo 1 → Silver/Gold (ADR 0003)
+      siconfi.py                 extrato de entregas, DCA e RGF do Executivo → Bronze; RGF Anexo 1 e DCA Anexo I-C (apoio ao Transferegov) → Silver/Gold (ADRs 0003 e 0004)
       munic.py                   bases xlsx por edição, revisões preservadas → Bronze (transformação pendente)
       transferegov_discricionarias.py  CSV nacionais → recorte PB no Bronze (ADR 0002) → Silver/Gold
       transferegov_especiais.py  API, filtro PB na consulta → Bronze → Silver/Gold

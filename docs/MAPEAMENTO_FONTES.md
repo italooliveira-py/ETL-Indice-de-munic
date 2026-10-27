@@ -8,7 +8,7 @@ Evidência própria marcada como **[verificado]** foi obtida diretamente das API
 
 | Fonte | Situação no repo | Disponibilidade / defasagem | Cobertura PB | Mudanças relevantes 2020–2024 | Relevância | Recomendação |
 |---|---|---|---|---|---|---|
-| SICONFI DCA | coleta legada | anual; entrega até 30/abr de t+1 | 222–223/223 por ano (2020–2024) | RCL ajustada, layout estável nas contas usadas | essencial (dimensão fiscal) | extrair do legado com datas de entrega |
+| SICONFI DCA | coleta legada; Anexo I-C de apoio ao Transferegov integrado (ADR 0004) | anual; entrega até 30/abr de t+1 | 222–223/223 por ano (2020–2024) | RCL ajustada, layout estável nas contas usadas | essencial (dimensão fiscal) | extrair do legado com datas de entrega |
 | SICONFI RGF | Anexo 1 integrado (Silver/Gold) | Q3 e S2 até 30/jan de t+1 | 222–223/223 por ano; ~10–13% semestrais | coexistem RGF quadrimestral e RGF Simplificado semestral; quadro de trajetória (LC 178/2021) incluído e removido em 2026 | essencial: único DTP/RCL legal | integrar Anexo 01 do Executivo, harmonizando Q3 e S2 |
 | Transferegov Discricionárias | ausente | CSV diário — **parado desde 17/07/2026** | 223/223 (código IBGE na proposta); 122–208 municípios com instrumento assinado por ano | modelo de dados só ganhou campos (v13→v25); APIs só a partir de nov/2026 | essencial (recursos e captação) | Bronze: recorte PB dos 4 CSV + `data_carga` (ADR 0002) |
 | Transferegov Especiais (Pix) | ausente | API pública ativa | 223/223 em 2020–2026; 17 municípios em 2020 → 206 em 2024 | modalidade criada pela EC 105/2019; cresce 15× no período | alta, e ausente do plano atual | Bronze da cadeia plano → empenho → pagamento |

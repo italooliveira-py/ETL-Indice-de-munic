@@ -254,3 +254,128 @@ def painel_rgf(silver, codigos, anos):
     for coluna in ['rgf_pessoal_rcl_declarada', 'rgf_pessoal_rcl_harmonizada']:
         validar_numerica(quadro, coluna)
     return quadro.reset_index()
+
+
+# --- Silver: DCA, Anexo I-C, no recorte de apoio ao Transferegov ---------------
+# Contas agregadoras por leiaute da natureza de receita (o ementário mudou em 2022).
+# Na PB, a agregadora está sempre presente quando há contas-filhas: soma-se só a agregadora.
+MAPA_RECEITA = (
+    ('convenios_uniao', 'corrente', '2020-2021', '1.7.1.8.10.0.0'),
+    ('convenios_uniao', 'capital', '2020-2021', '2.4.1.8.10.0.0'),
+    ('convenios_uniao', 'corrente', '2022+', '1.7.1.7.00.0.0'),
+    ('convenios_uniao', 'capital', '2022+', '2.4.1.4.00.0.0'),
+    ('convenios_estado', 'corrente', '2020-2021', '1.7.2.8.10.0.0'),
+    ('convenios_estado', 'capital', '2020-2021', '2.4.2.8.10.0.0'),
+    ('convenios_estado', 'corrente', '2022+', '1.7.2.4.00.0.0'),
+    ('convenios_estado', 'capital', '2022+', '2.4.2.2.00.0.0'),
+    ('transferencia_especial', 'corrente', '2022+', '1.7.1.9.57.0.0'),
+    ('transferencia_especial', 'capital', '2022+', '2.4.1.9.51.0.0'),
+)
+RECEITA_TOTAL = 'ReceitasExcetoIntraOrcamentarias'
+RECEITA_BRUTA = 'Receitas Brutas Realizadas'
+GRUPOS_RECEITA = ('convenios_uniao', 'convenios_estado', 'transferencia_especial')
+
+
+def leiaute_receita(ano):
+    return '2020-2021' if ano <= 2021 else '2022+'
+
+
+def _entregas_dca(caminhos):
+    linhas = [{'codigo_ibge': str(i['cod_ibge']), 'ano': int(i['exercicio']), 'status_relatorio': i.get('status_relatorio'),
+               'data_envio': pd.to_datetime(i.get('data_status'), utc=True)}
+              for i in _itens(caminhos, 'extrato_entregas')
+              if i.get('entregavel') == 'Balanço Anual (DCA)' and (i.get('instituicao') or '').startswith('Prefeitura')]
+    quadro = pd.DataFrame(linhas, columns=['codigo_ibge', 'ano', 'status_relatorio', 'data_envio'])
+    if quadro.duplicated(['codigo_ibge', 'ano']).any():
+        raise ViolacaoContrato('Mais de uma DCA da prefeitura no mesmo exercício')
+    return quadro
+
+
+def transformar_dca(caminhos):
+    """Receita total e transferências de convênios e especiais declaradas na DCA, por município e exercício."""
+    mapa = pd.DataFrame(MAPA_RECEITA, columns=['grupo', 'categoria', 'leiaute', 'natureza'])
+    mapa['cod_conta'] = 'RO' + mapa.natureza
+    itens = [i for i in _itens(caminhos, 'dca') if i['anexo'] == 'DCA-Anexo I-C']
+    ic = pd.DataFrame(itens, columns=['cod_ibge', 'exercicio', 'cod_conta', 'conta', 'coluna', 'valor'])
+    ic['codigo_ibge'], ic['ano'] = ic.cod_ibge.astype(str), ic.exercicio.astype(int)
+    chave = ['codigo_ibge', 'ano', 'cod_conta', 'coluna']
+    if ic.duplicated(chave).any():
+        raise ViolacaoContrato('Conta e coluna repetidas na DCA, Anexo I-C')
+    # Código do leiaute errado para o ano indica mudança de ementário não mapeada.
+    mapeadas = ic.merge(mapa, on='cod_conta')
+    if (mapeadas.ano.map(leiaute_receita) != mapeadas.leiaute).any():
+        raise ViolacaoContrato('Natureza de receita fora do leiaute do exercício')
+    apoio = ic[ic.cod_conta.isin(mapa.cod_conta) | (ic.cod_conta == RECEITA_TOTAL)] \
+        .merge(mapa[['cod_conta', 'grupo', 'categoria']], on='cod_conta', how='left')
+    apoio = apoio[['codigo_ibge', 'ano', 'cod_conta', 'conta', 'coluna', 'valor', 'grupo', 'categoria']] \
+        .sort_values(chave).reset_index(drop=True)
+    apoio.attrs['chave'] = chave
+
+    total = ic[ic.cod_conta == RECEITA_TOTAL]
+    bruta = total[total.coluna == RECEITA_BRUTA].set_index(['codigo_ibge', 'ano']).valor
+    deducoes = total[total.coluna.str.contains('Dedu', case=False)].groupby(['codigo_ibge', 'ano']).valor.sum()
+    municipio = pd.DataFrame({'receita_bruta': bruta}).assign(
+        deducoes=deducoes.reindex(bruta.index).fillna(0.0))
+    municipio['receita_liquida'] = municipio.receita_bruta - municipio.deducoes
+    valores = apoio[apoio.grupo.notna() & (apoio.coluna == RECEITA_BRUTA)]
+    for (grupo, categoria), parte in valores.groupby(['grupo', 'categoria']):
+        municipio[f'{grupo}_{categoria}'] = parte.set_index(['codigo_ibge', 'ano']).valor
+    for grupo in GRUPOS_RECEITA:
+        colunas = [f'{grupo}_{c}' for c in ('corrente', 'capital')]
+        for coluna in colunas:
+            if coluna not in municipio:
+                municipio[coluna] = float('nan')
+        # DCA entregue sem a conta: zero declarado; conta inexistente no leiaute do ano: nulo.
+        existe = municipio.index.get_level_values('ano').map(leiaute_receita).isin(mapa[mapa.grupo == grupo].leiaute)
+        municipio.loc[existe, colunas] = municipio.loc[existe, colunas].fillna(0.0)
+        municipio[grupo] = municipio[colunas].sum(axis=1, min_count=1)
+    municipio = municipio.reset_index().merge(_entregas_dca(caminhos), on=['codigo_ibge', 'ano'], how='left',
+                                               validate='one_to_one')
+    if municipio.receita_liquida.isna().any() or (municipio.receita_liquida <= 0).any():
+        raise ViolacaoContrato('DCA sem receita líquida positiva')
+    for coluna in ['receita_bruta', 'receita_liquida', *GRUPOS_RECEITA]:
+        validar_numerica(municipio, coluna)
+    municipio = municipio.sort_values(['codigo_ibge', 'ano']).reset_index(drop=True)
+    municipio.attrs['chave'] = ['codigo_ibge', 'ano']
+    mapa_ref = mapa[['natureza', 'grupo', 'categoria', 'leiaute']].sort_values('natureza').reset_index(drop=True)
+    return {'silver/siconfi_dca_receita_apoio': apoio, 'silver/siconfi_dca_receita_municipio': municipio,
+            'ref/siconfi_mapa_receita': mapa_ref}
+
+
+TEMPORALIDADE_DCA = {
+    'dca_receita_liquida_total': (
+        'apta_defasagem_t_mais_1', 'DCA enviada até abr/t+1; data em silver.data_envio (retificação substitui)'),
+    'dca_convenios_uniao': ('apta_defasagem_t_mais_1', 'receita de convênios da União declarada na DCA'),
+    'dca_convenios_estado': ('apta_defasagem_t_mais_1', 'receita de convênios do Estado declarada na DCA'),
+    'dca_dependencia_convenios_uniao': ('apta_defasagem_t_mais_1', 'convênios da União ÷ receita líquida'),
+    'dca_transferencia_especial': (
+        'somente_descritiva', 'conta só existe desde 2022 e há Pix contabilizado em outra natureza; nulo em 2020–2021'),
+}
+TEMPORALIDADE_DCA_TRANSFEREGOV = {
+    'dca_convenios_uniao_fora_transferegov': (
+        'apta_defasagem_t_mais_1', 'DCA menos desembolsos do Transferegov; pode ser negativo por diferença de data'),
+    'dca_pix_divergente': (
+        'somente_descritiva', '1 quando recebeu Pix no Transferegov e declarou zero na conta própria da DCA; nulo antes de 2022'),
+}
+
+
+def painel_dca(silver, codigos, anos, transferegov=None):
+    """Município × ano; DCA não entregue fica nula. `transferegov`: painel com desembolsos e Pix pagos."""
+    dca = silver['silver/siconfi_dca_receita_municipio'].set_index(['codigo_ibge', 'ano'])
+    chaves = pd.MultiIndex.from_product([sorted(codigos), anos], names=['codigo_ibge', 'ano'])
+    quadro = pd.DataFrame({
+        'dca_receita_liquida_total': dca.receita_liquida,
+        'dca_convenios_uniao': dca.convenios_uniao,
+        'dca_convenios_estado': dca.convenios_estado,
+        'dca_dependencia_convenios_uniao': dca.convenios_uniao / dca.receita_liquida,
+        'dca_transferencia_especial': dca.transferencia_especial,
+    }).reindex(chaves)
+    if transferegov is not None:
+        tg = transferegov.set_index(['codigo_ibge', 'ano']).reindex(chaves)
+        quadro['dca_convenios_uniao_fora_transferegov'] = quadro.dca_convenios_uniao - tg.transferegov_valor_desembolsado
+        divergente = (tg.transferegov_especiais_valor_pago > 0) & (quadro.dca_transferencia_especial == 0)
+        quadro['dca_pix_divergente'] = divergente.astype(float).where(quadro.dca_transferencia_especial.notna())
+    for coluna in ['dca_receita_liquida_total', 'dca_convenios_uniao', 'dca_convenios_estado', 'dca_transferencia_especial']:
+        validar_numerica(quadro, coluna)
+    validar_numerica(quadro, 'dca_dependencia_convenios_uniao', maximo=1)
+    return quadro.reset_index()
