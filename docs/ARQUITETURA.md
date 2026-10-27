@@ -17,6 +17,10 @@ src/
       snapshot.py               importação verificável dos snapshots
       coleta_legada.py          importação das saídas de uma coleta real
       ibge_territorial.py        API oficial → Bronze → contexto 2022
+      siconfi.py                 extrato de entregas, DCA e RGF do Executivo → Bronze; RGF Anexo 1 e DCA Anexo I-C (apoio ao Transferegov) → Silver/Gold (ADRs 0003 e 0004)
+      munic.py                   bases xlsx por edição, revisões preservadas → Bronze (transformação pendente)
+      transferegov_discricionarias.py  CSV nacionais → recorte PB no Bronze (ADR 0002) → Silver/Gold
+      transferegov_especiais.py  API, filtro PB na consulta → Bronze → Silver/Gold
     publicacao.py               Silver/Gold, auditoria e versionamento
     legado/                     implementação anterior preservada
   e04_baseline_obras_publicas.py experimento supervisionado independente
@@ -84,13 +88,20 @@ python -m src.etl_municipal --sources snapshot ibge_territorial --refresh
 # Depois de uma coleta completa pelo comando legado:
 python -m src.etl_municipal --sources coleta_legada ibge_territorial --input-dir output --resume
 
+# Transferegov e RGF (despesa com pessoal) integrados ao painel (Silver e Gold)
+python -m src.etl_municipal --sources snapshot ibge_territorial transferegov_discricionarias transferegov_especiais siconfi --resume
+
+# Somente carga no Bronze (obrigatório para fontes ainda sem transformação: munic)
+python -m src.etl_municipal --bronze-only --sources siconfi munic transferegov_discricionarias transferegov_especiais
+python -m src.etl_municipal --bronze-only --offline --sources siconfi munic transferegov_discricionarias transferegov_especiais
+
 # Isolar uma experiência
 python -m src.etl_municipal --sources snapshot --offline --data-dir output/experimento_medallion
 
 python -m unittest discover -s tests -v
 ```
 
-Bronze guarda os bytes HTTP originais e metadados de origem, tamanho e SHA-256. Na importação local, a origem é explicitamente `repositorio:...`. Retomada verifica os hashes. Cada versão Gold identifica os hashes Parquet e a proveniência; reexecutar o mesmo Bronze com o mesmo runtime deve produzir a mesma versão. Mudanças de pandas/pyarrow podem alterar a serialização: compare também conteúdo e schema ao migrar o runtime.
+Bronze guarda os bytes HTTP originais e metadados de origem, tamanho e SHA-256. Filtros só entram no Bronze quando a própria fonte os aplica na consulta, como `eq.PB` nas Transferências Especiais. A exceção são as Discricionárias do Transferegov, cujo Bronze guarda o recorte PB dos CSV nacionais com o hash do original no índice ([ADR 0002](adr/0002-bronze-recorte-pb-transferegov.md)). Na importação local, a origem é explicitamente `repositorio:...`. Retomada verifica os hashes. Cada versão Gold identifica os hashes Parquet e a proveniência; reexecutar o mesmo Bronze com o mesmo runtime deve produzir a mesma versão. Mudanças de pandas/pyarrow podem alterar a serialização: compare também conteúdo e schema ao migrar o runtime.
 
 Todos os contratos são avaliados antes da publicação. `CURRENT.json` só muda depois de todas as tabelas da geração existirem. Para uma leitura consistente, abra esse ponteiro e leia as tabelas dentro de `gold/versoes/<versao>/`; os caminhos diretos Silver/Gold são atalhos com substituição atômica individual, não uma transação de múltiplos arquivos. Não executar dois escritores no mesmo `--data-dir`.
 
