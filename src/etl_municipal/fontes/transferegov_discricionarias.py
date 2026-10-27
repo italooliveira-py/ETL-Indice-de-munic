@@ -287,5 +287,7 @@ def painel(silver, codigos, anos):
     quadro = pd.concat([assinados, liberado, vigentes], axis=1).reindex(chaves).fillna(0)
     for coluna in ['transferegov_instrumentos_assinados', 'transferegov_instrumentos_vigentes']:
         quadro[coluna] = quadro[coluna].astype('int64')
+    for coluna in TEMPORALIDADE:
+        validar_numerica(quadro, coluna, nulos=False)
     quadro['cobertura_transferegov_discricionarias'] = 'completa'
     return quadro.reset_index()

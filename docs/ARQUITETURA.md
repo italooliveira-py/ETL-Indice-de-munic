@@ -17,7 +17,7 @@ src/
       snapshot.py               importação verificável dos snapshots
       coleta_legada.py          importação das saídas de uma coleta real
       ibge_territorial.py        API oficial → Bronze → contexto 2022
-      siconfi.py                 extrato de entregas, DCA e RGF do Executivo → Bronze (transformação pendente)
+      siconfi.py                 extrato de entregas, DCA e RGF do Executivo → Bronze; RGF Anexo 1 → Silver/Gold (ADR 0003)
       munic.py                   bases xlsx por edição, revisões preservadas → Bronze (transformação pendente)
       transferegov_discricionarias.py  CSV nacionais → recorte PB no Bronze (ADR 0002) → Silver/Gold
       transferegov_especiais.py  API, filtro PB na consulta → Bronze → Silver/Gold
@@ -88,10 +88,10 @@ python -m src.etl_municipal --sources snapshot ibge_territorial --refresh
 # Depois de uma coleta completa pelo comando legado:
 python -m src.etl_municipal --sources coleta_legada ibge_territorial --input-dir output --resume
 
-# Transferegov integrado ao painel (Silver e Gold)
-python -m src.etl_municipal --sources snapshot ibge_territorial transferegov_discricionarias transferegov_especiais --resume
+# Transferegov e RGF (despesa com pessoal) integrados ao painel (Silver e Gold)
+python -m src.etl_municipal --sources snapshot ibge_territorial transferegov_discricionarias transferegov_especiais siconfi --resume
 
-# Somente carga no Bronze (obrigatório para fontes ainda sem transformação: siconfi, munic)
+# Somente carga no Bronze (obrigatório para fontes ainda sem transformação: munic)
 python -m src.etl_municipal --bronze-only --sources siconfi munic transferegov_discricionarias transferegov_especiais
 python -m src.etl_municipal --bronze-only --offline --sources siconfi munic transferegov_discricionarias transferegov_especiais
 

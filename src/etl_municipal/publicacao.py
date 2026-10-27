@@ -61,11 +61,12 @@ def construir(base, eventos, referencia, territorial=None, adicionais=None):
         if set(grupos[fonte]) != set(uso_temporal):
             raise ViolacaoContrato(f'{fonte}: toda variável do painel precisa de classificação temporal')
         temporalidade.update(uso_temporal)
+        # Faixas e nulos são validados pela fonte no próprio painel; aqui, só o tipo numérico.
         for coluna in grupos[fonte]:
-            validar_numerica(gold, coluna, nulos=False)
+            validar_numerica(gold, coluna, minimo=-float('inf'))
         for nome, quadro in tabelas_fonte.items():
-            # A primeira coluna de cada tabela adicional é a sua chave de grão.
-            validar_tabela(quadro, [quadro.columns[0]], universo)
+            # Chave de grão declarada em attrs['chave']; sem declaração, a primeira coluna.
+            validar_tabela(quadro, quadro.attrs.get('chave', [quadro.columns[0]]), universo)
             extras[nome] = quadro
     for fonte, colunas in grupos.items():
         disponiveis = [c for c in colunas if c in gold]
@@ -106,7 +107,8 @@ def construir(base, eventos, referencia, territorial=None, adicionais=None):
                 confirmado = ((gold.total_contratacoes == 0) &
                               (gold.cobertura_pncp == 'completa') & (gold[coluna] == 0))
                 status.loc[confirmado] = 'sem_registro_confirmado'
-            if fonte in (adicionais or {}):
+            cobertura_fonte = 'cobertura_' + fonte
+            if fonte in (adicionais or {}) and cobertura_fonte in gold and gold[cobertura_fonte].eq('completa').all():
                 # Recorte completo da fonte: zero é ausência de registro confirmada, não falha.
                 status.loc[gold[coluna] == 0] = 'sem_registro_confirmado'
             detalhe = gold[['codigo_ibge', 'ano']].copy()

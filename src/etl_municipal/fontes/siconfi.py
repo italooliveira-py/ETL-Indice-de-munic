@@ -8,9 +8,10 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlencode
+import pandas as pd
 from etl_confiabilidade import FalhaConsulta, salvar_json_atomico
 from ..core.armazenamento import preservar, sha256
-from ..core.contratos import ViolacaoContrato
+from ..core.contratos import ViolacaoContrato, validar_numerica
 from ..core.http import obter_json
 from .ibge_territorial import CATALOGO_URL
 
@@ -155,3 +156,101 @@ def verificar(raiz: Path) -> dict:
     if sha256(municipios.read_bytes()) != municipios.parent.name:
         raise ViolacaoContrato(f'Bronze {FONTE} corrompido: {municipios}')
     return {'municipios': municipios, **caminhos}
+
+
+# --- Silver: RGF, Anexo 1 (despesa com pessoal) --------------------------------
+# Contas novas a partir do leiaute de 2024 (CF, art. 198, § 11, agentes comunitários; piso da
+# enfermagem). A harmonização devolve essas deduções para manter a regra de 2020–2023 (ADR 0003).
+DEDUCAO_ACS = 'AgentesComunitariosDeSaudeEDeCombateAsEndemiasComRecursosVinculados'
+DEDUCAO_ENFERMAGEM = 'ParcelaDedutivelReferenteAoPisoSalarialDoEnfermeiroTecnicoDeEnfermagemAuxiliarDeEnfermagemEParteira'
+RCL_ACS = 'TransferenciasDaUniaoRelativasARemuneracaoDosAgentesComunitariosDeSaude'
+TOTAL_12_MESES = 'TOTAL (ÚLTIMOS 12 MESES)'
+TOLERANCIA_PP = 0.01
+
+
+def _itens(caminhos, recurso):
+    return [item for p in sorted(caminhos[recurso]) for item in json.loads(p.read_bytes())['items']]
+
+
+def _entregas_rgf(caminhos):
+    """Data e status do envio do RGF do último período do Executivo, pelo extrato de entregas."""
+    linhas = []
+    for item in _itens(caminhos, 'extrato_entregas'):
+        entregavel, instituicao = item.get('entregavel') or '', item.get('instituicao') or ''
+        periodicidade = item.get('periodicidade')
+        if (entregavel.startswith('Relatório de Gestão Fiscal') and instituicao.startswith('Prefeitura')
+                and ULTIMO_PERIODO.get(periodicidade) == item.get('periodo')):
+            linhas.append({'codigo_ibge': str(item['cod_ibge']), 'ano': int(item['exercicio']),
+                           'periodicidade': periodicidade, 'status_relatorio': item.get('status_relatorio'),
+                           'data_envio': pd.to_datetime(item.get('data_status'), utc=True)})
+    return pd.DataFrame(linhas, columns=['codigo_ibge', 'ano', 'periodicidade', 'status_relatorio', 'data_envio'])
+
+
+def transformar_rgf(caminhos):
+    """Componentes do Anexo 1 por município e exercício, com a razão declarada e a harmonizada."""
+    itens = [i for i in _itens(caminhos, 'rgf') if i['anexo'] == 'RGF-Anexo 01']
+    a1 = pd.DataFrame(itens, columns=['cod_ibge', 'exercicio', 'periodicidade', 'cod_conta', 'coluna', 'valor'])
+    a1['codigo_ibge'], a1['ano'] = a1.cod_ibge.astype(str), a1.exercicio.astype(int)
+    chaves = ['codigo_ibge', 'ano']
+    if a1.groupby(chaves).periodicidade.nunique().gt(1).any():
+        raise ViolacaoContrato('Município-ano com mais de um RGF do último período')
+
+    def componente(cod, coluna, *, total=False):
+        filtro = a1.coluna.str.startswith(TOTAL_12_MESES) if total else a1.coluna == coluna
+        linhas = a1[(a1.cod_conta == cod) & filtro]
+        if linhas.duplicated(chaves).any():
+            raise ViolacaoContrato(f'Conta {cod} repetida no mesmo RGF')
+        return linhas.set_index(chaves).valor
+
+    base = a1.drop_duplicates(chaves).set_index(chaves)[['periodicidade']]
+    silver = base.assign(
+        despesa_pessoal_bruta=componente('DespesaComPessoalBruta', None, total=True),
+        despesa_pessoal_total=componente('DespesaComPessoalTotal', 'Valor'),
+        razao_declarada_publicada=componente('DespesaComPessoalTotal', '% sobre a RCL Ajustada'),
+        rcl_legal=componente('ReceitaCorrenteLiquidaLimiteLegal', 'Valor'),
+        rcl_ajustada=componente('ReceitaCorrenteLiquidaAjustada', 'Valor'),
+        deducao_acs=componente(DEDUCAO_ACS, None, total=True),
+        deducao_piso_enfermagem=componente(DEDUCAO_ENFERMAGEM, None, total=True),
+        rcl_excluida_repasse_acs=componente(RCL_ACS, 'Valor'),
+    ).reset_index()
+    if silver[['despesa_pessoal_total', 'rcl_ajustada']].isna().any().any() or (silver.rcl_ajustada <= 0).any():
+        raise ViolacaoContrato('RGF sem despesa total com pessoal ou RCL ajustada válida')
+    # Conta ausente no leiaute do ano não é dedução: vale zero para a harmonização.
+    novas = ['deducao_acs', 'deducao_piso_enfermagem', 'rcl_excluida_repasse_acs']
+    silver[novas] = silver[novas].fillna(0.0)
+    silver['razao_declarada'] = silver.despesa_pessoal_total / silver.rcl_ajustada * 100
+    if ((silver.razao_declarada - silver.razao_declarada_publicada).abs() > TOLERANCIA_PP).any():
+        raise ViolacaoContrato('Razão calculada difere do percentual publicado no RGF')
+    silver['razao_harmonizada'] = ((silver.despesa_pessoal_total + silver.deducao_acs + silver.deducao_piso_enfermagem)
+                                   / (silver.rcl_ajustada + silver.rcl_excluida_repasse_acs) * 100)
+    silver = silver.merge(_entregas_rgf(caminhos), on=['codigo_ibge', 'ano', 'periodicidade'],
+                          how='left', validate='one_to_one')
+    for coluna in ['despesa_pessoal_total', 'rcl_ajustada', *novas, 'razao_declarada', 'razao_harmonizada']:
+        validar_numerica(silver, coluna)
+    silver = silver.sort_values(chaves).reset_index(drop=True)
+    silver.attrs['chave'] = chaves
+    return {'silver/siconfi_rgf_pessoal': silver}
+
+
+TEMPORALIDADE_RGF = {
+    'rgf_pessoal_rcl_declarada': (
+        'apta_defasagem_t_mais_1', 'RGF do último período enviado em jan/t+1; data em silver.data_envio (retificação substitui)'),
+    'rgf_pessoal_rcl_harmonizada': (
+        'apta_defasagem_t_mais_1', 'regra de 2020–2023: devolve deduções de ACS/ACE e piso da enfermagem (ADR 0003)'),
+    'rgf_deducoes_novas_pp': (
+        'apta_defasagem_t_mais_1', 'harmonizada menos declarada; zero antes de 2024, quando as contas não existiam'),
+}
+
+
+def painel_rgf(silver, codigos, anos):
+    """Município × ano; RGF não entregue fica nulo (indisponível), nunca zero."""
+    rgf = silver['silver/siconfi_rgf_pessoal'].set_index(['codigo_ibge', 'ano'])
+    chaves = pd.MultiIndex.from_product([sorted(codigos), anos], names=['codigo_ibge', 'ano'])
+    quadro = pd.DataFrame({
+        'rgf_pessoal_rcl_declarada': rgf.razao_declarada,
+        'rgf_pessoal_rcl_harmonizada': rgf.razao_harmonizada,
+        'rgf_deducoes_novas_pp': rgf.razao_harmonizada - rgf.razao_declarada,
+    }).reindex(chaves)
+    for coluna in ['rgf_pessoal_rcl_declarada', 'rgf_pessoal_rcl_harmonizada']:
+        validar_numerica(quadro, coluna)
+    return quadro.reset_index()

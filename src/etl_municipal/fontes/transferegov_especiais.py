@@ -197,5 +197,7 @@ def painel(silver, codigos, anos):
         transferegov_especiais_valor_pago=('valor_pago', 'sum'))
     quadro = pd.concat([planejado, pago], axis=1).reindex(chaves).fillna(0)
     quadro['transferegov_especiais_planos'] = quadro.transferegov_especiais_planos.astype('int64')
+    for coluna in TEMPORALIDADE:
+        validar_numerica(quadro, coluna, nulos=False)
     quadro['cobertura_transferegov_especiais'] = 'completa'
     return quadro.reset_index()

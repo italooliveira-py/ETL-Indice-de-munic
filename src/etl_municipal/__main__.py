@@ -14,15 +14,16 @@ EXTRACAO = {'siconfi': siconfi, 'munic': munic,
             'transferegov_discricionarias': transferegov_discricionarias,
             'transferegov_especiais': transferegov_especiais}
 # Transformação ainda pendente: só podem ser carregadas no Bronze.
-SOMENTE_BRONZE = {'siconfi', 'munic'}
+# Do SICONFI, só o RGF (Anexo 1) é transformado; DCA e demais anexos seguem apenas no Bronze.
+SOMENTE_BRONZE = {'munic'}
 
 
 def bronze(modulo, sessao, raiz, args):
     return modulo.verificar(raiz) if args.offline else modulo.extrair(sessao, raiz, refresh=args.refresh)
 
 
-def transferegov(parser, args, raiz, codigos):
-    """Silver e painéis do Transferegov; as Especiais dependem do mapa CNPJ → IBGE das Discricionárias."""
+def fontes_adicionais(parser, args, raiz, codigos):
+    """Silver e painéis de Transferegov e RGF; as Especiais dependem do mapa CNPJ → IBGE das Discricionárias."""
     if 'transferegov_especiais' in args.sources and 'transferegov_discricionarias' not in args.sources:
         parser.error('transferegov_especiais exige transferegov_discricionarias (mapa CNPJ → IBGE)')
     if args.offline and args.refresh:
@@ -42,6 +43,11 @@ def transferegov(parser, args, raiz, codigos):
             adicionais['transferegov_especiais'] = (transferegov_especiais.painel(silver, codigos, anos), silver,
                                                     transferegov_especiais.TEMPORALIDADE)
             proveniencia['bronze_transferegov_especiais'] = sorted(p.relative_to(raiz).as_posix() for ps in caminhos.values() for p in ps)
+        if 'siconfi' in args.sources:
+            caminhos = bronze(siconfi, sessao, raiz, args)
+            silver = siconfi.transformar_rgf(caminhos)
+            adicionais['siconfi_rgf'] = (siconfi.painel_rgf(silver, codigos, anos), silver, siconfi.TEMPORALIDADE_RGF)
+            proveniencia['bronze_siconfi_rgf'] = sorted(p.relative_to(raiz).as_posix() for p in caminhos['rgf'])
     return adicionais, proveniencia
 
 
@@ -106,7 +112,7 @@ def main(argv=None):
             referencia, territorial = ibge_territorial.transformar(fontes)
             proveniencia['referencia_territorial'] = 'ibge_localidades_oficial'
             proveniencia['bronze_territorial'] = {k: p.relative_to(raiz).as_posix() for k, p in fontes.items()}
-        adicionais, extra = transferegov(parser, args, raiz, set(referencia.codigo_ibge))
+        adicionais, extra = fontes_adicionais(parser, args, raiz, set(referencia.codigo_ibge))
         proveniencia.update(extra)
         tabelas = construir(base, eventos, referencia, territorial, adicionais)
         resultado = publicar(tabelas, raiz, proveniencia)
