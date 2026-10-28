@@ -1,0 +1,5 @@
+﻿nome,n,classe_0,classe_1,acuracia_balanceada,roc_auc,average_precision,status_ajuste
+Baseline trivial (prevalência do treino),242,1,241,0.5,0.5,0.9958677685950413,estimado
+Baseline operacional (Regressão Logística),242,1,241,,,,nao_estimavel_treino_classe_unica
+Decision Tree Classifier,242,1,241,0.5,0.5,0.9958677685950413,degenerado_treino_classe_unica
+Random Forest Classifier,242,1,241,0.5,0.5,0.9958677685950413,degenerado_treino_classe_unica
