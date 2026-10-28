@@ -128,6 +128,39 @@ source .venv/bin/activate
 python -m pip install -r requirements.txt
 ```
 
+## Regressão Logística e KNN (ObrasGov)
+
+Os modelos solicitados estão separados em `src/modelos_obrasgov/regressao_logistica.py` e
+`src/modelos_obrasgov/k_nearest_neighbors.py`. Eles estimam `evento_adverso_obrasgov`: 1 para obra
+cancelada, inacabada ou paralisada e 0 para concluída. A unidade é um projeto
+ObrasGov; esta abordagem substitui o experimento anterior de ausência de
+repasse do Transferegov, que não tinha as duas classes no treino.
+
+Use a base congelada `dados/modelagem/e05_revisao/principal.parquet`; o CSV
+`principal_particoes.csv` confere os mesmos IDs e cortes. As duas hashes são
+validadas antes da execução. São usados cinco preditores disponíveis antes do
+corte da coorte: população, PIB per capita, histórico de assinaturas,
+desembolso per capita e Pix per capita. Imputação e escala vivem dentro de
+`ColumnTransformer` e `Pipeline`, portanto não vazam informação de validação
+ou teste para o treino.
+
+```powershell
+python -m pip install -r requirements-modelos-obrasgov.txt
+python -m src.modelos_obrasgov.executar_modelos
+python -m unittest tests.test_modelos_obrasgov -v
+```
+
+O protocolo temporal é treino em 2022, validação em 2023, reajuste em
+2022--2023 e teste em 2024. A busca de hiperparâmetros ocorre apenas no treino,
+com `StratifiedGroupKFold` por município e Average Precision como critério.
+Logística testa regularização e peso balanceado; KNN testa número de vizinhos,
+ponderação por distância e distância Manhattan/Euclidiana. Os arquivos gerados
+em `output/modelos_obrasgov/` incluem métricas, predições, modelos e a
+auditoria dos parâmetros escolhidos.
+
+A coorte é pequena e desbalanceada: há 12 eventos adversos no treino, 5 na
+validação e 11 no teste. ROC-AUC, AP, acurácia balanceada e F1 devem ser lidos
+como benchmark retrospectivo, não como promessa de uso operacional ou causal.
 ## Escopo e primeiro teste
 
 O `config.json` usa todos os municípios da **Paraíba**, resolvidos pelo catálogo oficial do IBGE, de 2020 a 2024. PNCP inicia em 2022. `escopo.tipo = "uf"` tem precedência sobre a lista `municipios`. Para o recorte original de Lucas do Rio Verde, use `--config config.municipio.json`, ou retire `escopo` e mantenha sua lista de municípios.

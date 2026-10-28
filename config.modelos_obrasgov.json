@@ -1,0 +1,23 @@
+{
+  "versao": "1.0.0",
+  "random_state": 42,
+  "alvo": "evento_adverso_obrasgov",
+  "coluna_id": "id_projeto_investimento",
+  "coluna_grupo": "codigo_ibge",
+  "limiar_classificacao": 0.5,
+  "preditores_numericos": [
+    "populacao_ibge",
+    "pib_pc_ibge",
+    "historico_assinados_365d",
+    "desembolso_365d_percap",
+    "pix_365d_percap"
+  ],
+  "particoes": {
+    "treino": "treino_validacao",
+    "validacao": "validacao",
+    "treino_final": "treino_final",
+    "teste": "teste"
+  },
+  "sha256_base": "e83225b87a6096b6558c256515e493983277e2e495078c22fc43fcbfcabfaca4",
+  "sha256_particoes": "697c10abe0da68028ae86d054019f05258e5e8c12b4dbee3c63ec16f54e16f13"
+}
