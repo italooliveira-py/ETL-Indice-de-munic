@@ -2,6 +2,63 @@
 
 A arquitetura foi reorganizada de forma incremental em `src/etl_municipal`, preservando os comandos anteriores. O produto é um **índice de contexto municipal para execução de projetos**, sem interpretação como probabilidade definitiva de falha.
 
+## Entrega 5 versão 2 — risco observado em obras e sensibilidade de 180 dias
+
+O [novo notebook de benchmarking](notebooks/03_E05_benchmark_risco_obras_180dias.ipynb) retoma o alvo da E04: **evento adverso observado em obra**. Ausência de repasse em **180 dias** é uma análise secundária separada. A escolha foi confirmada após a revisão dos documentos e do artigo do índice; ela não corresponde a prever o próprio índice, os pesos das variáveis ou estouro de custo.
+
+```powershell
+python -m pip install -r requirements-e05-lock.txt
+python -m src.e05.revisao executar
+python -m src.e05.revisao executar-notebook
+```
+
+Os snapshots públicos e as partições estão versionados em `dados/modelagem/e05_revisao/`; a execução comum é offline e usa seed 42. O novo [quadro para comparação coletiva](docs/e05/revisao_v2/quadro_comparacao_2024.csv) e a [nota metodológica](docs/e05/revisao_v2/README.md) separam os resultados de cada tarefa. Não comparar uma AUC do repasse com outra do evento adverso como se fossem o mesmo problema.
+
+Foram preservados os 358 IDs da E04, com 127 projetos de 2022, 121 de 2023 e 110 de 2024. Os baselines são recalculados com o mesmo contexto e ajuste final das árvores. O contexto foi corrigido para não reutilizar 21 casos cujo ano de referência avançava até ou além da coorte. Ainda há limitações na data de observação dos rótulos: o benchmark é retrospectivo, não uma comprovação de previsão operacional de todas as obras. O teste de 2024 já havia sido consultado na E04.
+
+MAE e RMSE aparecem apenas como erros auxiliares das **probabilidades**, em escala 0–1; o RMSE é a raiz do Brier. Não são erros de um desfecho financeiro contínuo. Prospecção, Escuta, Canvas e os documentos fornecidos não foram reescritos nesta revisão.
+
+## Histórico da Entrega 5 versão 1 — repasse em 90 dias
+
+A E05 usa exclusivamente dados públicos. O alvo é **`sem_repasse_90d`: 1 se não houver desembolso positivo até 90 dias após a assinatura; 0 se houver**. A unidade é o instrumento municipal da PB. IBGE, SICONFI e histórico do Transferegov entram como contexto anterior à assinatura. O experimento não mede diretamente estouro financeiro ou margem e não transforma a previsão em um risco definitivo do município.
+
+O [notebook da E05](notebooks/02_E05_classificacao_risco_municipal.ipynb) compara Decision Tree Classifier e Random Forest Classifier com o baseline trivial e a Regressão Logística. A [Prospecção](docs/e05/PROSPECCAO.md), a [Escuta documental](docs/e05/ESCUTA.md) e o [Canvas atualizado](docs/e05/CANVAS_ML.md) estão consolidados e datados de 28/10/2026. Não foram inventados dados internos nem entrevistas.
+
+**Reprodução rápida:** a base pública derivada, seu manifesto SHA-256 e os IDs das partições estão versionados em `dados/modelagem/e05/`. Depois de instalar as dependências, execute `python -m src.e05 executar --offline` e `python -m src.e05 executar-notebook --offline`. Na ausência da preparação local, os comandos usam esse snapshot, sem nova coleta e sem modificar os arquivos versionados. Isso permite ao Jorge usar exatamente os mesmos instrumentos de teste. Os comandos completos abaixo são para reconstruir/atualizar a coleta; uma carga posterior pode exigir uma nova versão do experimento.
+
+```powershell
+# Instalar as dependências da análise no Python x64 do projeto.
+uv pip install --python .venv/Scripts/python.exe -r requirements-e05.txt
+
+# Coleta longa, com retomada. Não usar --refresh na primeira execução.
+& ".\.venv\Scripts\python.exe" -m src.etl_municipal --bronze-only --sources transferegov_discricionarias transferegov_especiais siconfi --resume
+
+# Publicar o Gold enriquecido sem rede, depois da conclusão do Bronze.
+& ".\.venv\Scripts\python.exe" -m src.etl_municipal --sources snapshot ibge_territorial transferegov_discricionarias transferegov_especiais siconfi --offline --resume
+
+# Completar PIB/população 2019 do IBGE e congelar a base por instrumento.
+& ".\.venv\Scripts\python.exe" -m src.e05 preparar-dados
+
+# Treinar, avaliar e exportar o quadro com as mesmas linhas do teste de 2024.
+& ".\.venv\Scripts\python.exe" -m src.e05 executar --offline
+
+# Executar todas as células e salvar o notebook com suas saídas.
+& ".\.venv\Scripts\python.exe" -m src.e05 executar-notebook --offline
+
+# Testes do ETL e dos contratos da modelagem, sem coleta real.
+& ".\.venv\Scripts\python.exe" -m unittest discover -s tests -v
+```
+
+Depois da primeira preparação, `python -m src.e05 preparar-dados --offline` reconstitui a base usando somente o Bronze local. O notebook reproduz os ajustes sem rede, a partir da base congelada em `output/e05/`. Os hashes e a configuração são conferidos antes da execução. Não executar dois coletores da mesma fonte no mesmo diretório.
+
+`requirements-e05-lock.txt` registra o ambiente completo resolvido nesta validação; pode substituir `requirements-e05.txt` para reproduzir essas versões exatas. O lock anterior do ETL permanece separado.
+
+**Partições:** desenvolvimento em 2022, validação em 2023 e reajuste em 2022–2023, sempre excluindo rótulos ainda não conhecidos na data de corte; teste nas assinaturas de 2024. Anos anteriores fornecem contexto, não exemplos adicionais de treino. Imputação e categorias são ajustadas dentro do pipeline. Poucos preditores foram pré-declarados; não há seleção baseada no teste.
+
+**Limitação encontrada:** no treino de 2022–2023, o alvo de 90 dias possui somente a classe sem repasse. As árvores ajustam regras constantes; a Logística não é estimável e não é substituída artificialmente por outro modelo. A auditoria e as métricas executadas ficam em [resultados E05](docs/e05/RESULTADOS.md), e o quadro para comparação coletiva em `docs/e05/quadro_comparacao_2024.csv`. Uma acurácia elevada por prevalência não demonstra discriminação. Outros integrantes precisam usar o mesmo alvo e os mesmos IDs, não apenas o mesmo nome de ano.
+
+## ETL e publicação municipal
+
 A publicação Medallion já importa os snapshots verificados, separa eventos ObrasGov do painel municipal e coleta área, população censitária e densidade oficiais do Censo 2022 para os 223 municípios da Paraíba.
 
 ```powershell
@@ -16,7 +73,7 @@ python -m unittest discover -s tests -v
 
 As saídas novas ficam em `data/bronze/`, `data/silver/` e `data/gold/`. O painel exploratório mantém 1.115 linhas em 2020–2024; o recorte MVP 2020–2023 tem 892 linhas. `data/gold/CURRENT.json` aponta a geração publicada. Os agregados ObrasGov não entram nesse Gold; as 1.638 obras permanecem como eventos Silver. PIB 2024 é nulo com flag de período. As datas públicas ainda não verificadas impedem o uso direto em treino temporal.
 
-O novo fluxo publica os snapshots versionados e o enriquecimento territorial; a coleta completa abaixo continua produzindo seus arquivos CSV legados. Para publicar uma coleta real, use `python -m src.etl_municipal --sources coleta_legada ibge_territorial --input-dir output --resume`. RGF, Transferegov, MUNIC, SINISA, MapBiomas, bioma e tipologia ainda não estão integrados à publicação.
+O novo fluxo publica os snapshots versionados e o enriquecimento territorial; a coleta completa abaixo continua produzindo seus arquivos CSV legados. Para publicar uma coleta real, use `python -m src.etl_municipal --sources coleta_legada ibge_territorial --input-dir output --resume`. Transferegov e os recortes de DCA/RGF possuem transformação e publicação próprias quando selecionados. MUNIC permanece Bronze; SINISA, MapBiomas, bioma e tipologia continuam pendentes.
 
 Consulte [arquitetura e reprodução](docs/ARQUITETURA.md), [plano revisado e pendências](docs/PLANO_MVP.md), [decisões](docs/adr/0001-publicacao-contexto-municipal.md) e [histórico da publicação](CHANGELOG.md).
 

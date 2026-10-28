@@ -1,5 +1,21 @@
 # Histórico da publicação
 
+## E05 2.0.0 — 2026-10-28
+
+- Benchmark principal retoma o evento adverso ObrasGov e os 358 IDs da E04; ausência de repasse em 180 dias passa a ser sensibilidade separada.
+- Contexto municipal corrigido para o corte da coorte, sem reutilizar 21 referências de ano igual ou posterior; dados públicos de IBGE, SICONFI e histórico do Transferegov.
+- Oito preditores pré-declarados, configurações conservadoras, CV municipal apenas em 2022, validação temporal 2023 e reajuste 2022–2023 comum aos baselines e modelos.
+- MAE/RMSE de probabilidade e Brier como diagnósticos auxiliares, sem afirmar regressão de custo ou validação de índice.
+- Novo notebook, snapshots versionados e nota técnica; documentos de prospecção já feitos e a análise de 90 dias preservados.
+
+## E05 1.0.0 — 2026-10-28
+
+- Alvo binário por instrumento: ausência de desembolso positivo em 90 dias após a assinatura; nenhuma previsão direta de custo ou margem.
+- Preparação temporal com contexto público IBGE, SICONFI DCA/RGF e histórico das duas modalidades do Transferegov.
+- Classificadores Árvore de Decisão e Random Forest, baseline trivial e protocolo de Regressão Logística nas mesmas partições.
+- Auditoria explícita de classe única: árvores constantes, Logística não estimável e proibição de fabricar métricas ou alterar o horizonte para melhorar resultados.
+- Notebook reproduzível, exportações de comparação em 2024, testes de vazamento e documentos de Prospecção, Escuta documental e Canvas atualizados.
+
 ## Não publicado
 
 - Carga somente no Bronze (`--bronze-only`) para fontes ainda sem transformação.
