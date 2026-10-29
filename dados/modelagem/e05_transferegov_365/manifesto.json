@@ -1,0 +1,114 @@
+{
+  "contrato": "e05_transferegov_365",
+  "gold_version": "65260a170ee18cd79501",
+  "gold_manifest_sha256": "28E24585431DC29B0DA53B10FD0811B91A02BA79BD00484EA6297D9ABB84F5B5",
+  "gold_load_date": "17/07/2026 06:30:47",
+  "rows": 867,
+  "columns": 20,
+  "snapshot_sha256": "6A8432CDA7D37B12E59E44486579CDD47C7DEDB4431D5B916A3200FDF56691BB",
+  "config_sha256": "E5B65B8E00774CF2797F324048221B079E9094A8CC48AF33DDAF01AADCCF1B80",
+  "code_sha256": "A44DB6947BBF5DFAE788A3E7AD8C7BCF7A0F3960E1C201C5B955278F89A8AD39",
+  "partitions": {
+    "backtest_2024": 242,
+    "treino_2022": 239,
+    "validacao_2023": 386
+  },
+  "classes": {
+    "0": 135,
+    "1": 732
+  },
+  "cohorts": {
+    "2022": {
+      "0": 28,
+      "1": 211
+    },
+    "2023": {
+      "0": 77,
+      "1": 309
+    },
+    "2024": {
+      "0": 30,
+      "1": 212
+    }
+  },
+  "predictors": [
+    "valor_global_original",
+    "valor_global_assinatura",
+    "valor_contrapartida",
+    "duracao_original_dias",
+    "dias_proposta_ate_assinatura",
+    "modalidade",
+    "orgao_superior",
+    "orgao",
+    "origem_emenda",
+    "emenda_individual",
+    "emenda_impositiva"
+  ],
+  "audit": {
+    "source": "Transferegov",
+    "features": [
+      "valor_global_original",
+      "valor_global_assinatura",
+      "valor_contrapartida",
+      "duracao_original_dias",
+      "dias_proposta_ate_assinatura",
+      "modalidade",
+      "orgao_superior",
+      "orgao",
+      "origem_emenda",
+      "emenda_individual",
+      "emenda_impositiva"
+    ],
+    "excluded": [
+      "cnpj_proponente",
+      "codigo_ibge",
+      "data_assinatura",
+      "data_carga",
+      "data_fim_vigencia",
+      "data_fim_vigencia_original",
+      "data_primeiro_desembolso",
+      "data_proposta",
+      "data_publicacao",
+      "dias_ate_primeiro_desembolso",
+      "id_desembolso",
+      "id_proposta",
+      "instrumento_ativo",
+      "nr_convenio",
+      "qtd_desembolsos",
+      "resultado_anulado",
+      "resultado_contas_rejeitadas",
+      "resultado_prorrogado",
+      "resultado_rescindido",
+      "situacao",
+      "subsituacao",
+      "valor_desembolsado"
+    ],
+    "preprocessing": "ColumnTransformer ajustado somente no treino",
+    "integration_point": "substituir pelo pipeline coletivo quando integrado",
+    "target_report": {
+      "duplicate_disbursements": 0,
+      "unmatched_disbursements": 0,
+      "before_signature": 0,
+      "invalid_disbursement_dates": 0,
+      "invalid_disbursement_values": 0,
+      "instruments_with_first_disbursement": 4592,
+      "instruments_without_first_disbursement": 1590,
+      "unmatched_instruments": 1590,
+      "invalid_instrument_values": 4263,
+      "boundary_365": 7,
+      "boundary_gt_365": 5,
+      "reason_counts": {
+        "desembolso_apos_365": 3383,
+        "sem_desembolso_ate_365": 1152,
+        "desembolso_ate_365": 1100,
+        "censurado_365_incompleto": 547
+      },
+      "observed": 5635,
+      "censored": 547,
+      "horizon_days": 365,
+      "data_carga": "2026-07-17"
+    }
+  },
+  "source_scope": "Transferegov only; ObrasGov excluded",
+  "generated_at": "2026-10-29T00:00:00Z"
+}

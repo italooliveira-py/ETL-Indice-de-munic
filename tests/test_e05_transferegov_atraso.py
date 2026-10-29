@@ -1,3 +1,4 @@
+import os
 import unittest
 
 import pandas as pd
@@ -117,7 +118,9 @@ class TestValidacaoEModelos(unittest.TestCase):
     def test_frozen_version_is_explicit(self):
         from src.e05_transferegov_atraso import GOLD_VERSION, frozen_paths
 
-        paths = frozen_paths("data")
+        if not os.getenv("E05_GOLD_ROOT"):
+            self.skipTest("integração externa não executada: E05_GOLD_ROOT ausente")
+        paths = frozen_paths(os.environ["E05_GOLD_ROOT"])
         self.assertEqual(GOLD_VERSION, "65260a170ee18cd79501")
         self.assertIn(GOLD_VERSION, str(paths["manifesto"]))
 

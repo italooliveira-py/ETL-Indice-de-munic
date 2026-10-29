@@ -1,0 +1,23 @@
+{
+  "contrato": "e05_transferegov_365",
+  "gold_version": "65260a170ee18cd79501",
+  "gold_manifest_sha256": "28E24585431DC29B0DA53B10FD0811B91A02BA79BD00484EA6297D9ABB84F5B5",
+  "data_carga": "17/07/2026 06:30:47",
+  "unidade_analitica": "instrumento municipal da Paraiba assinado no Transferegov",
+  "target": "risco_atraso_primeiro_desembolso_365d",
+  "classes": {
+    "0": "primeiro desembolso positivo valido ate o dia 365, inclusive",
+    "1": "ausencia ate o dia 365 ou primeiro desembolso apos o dia 365"
+  },
+  "boundary_days": {"365": 0, "366": 1},
+  "zero_disbursement_counts": false,
+  "censored_excluded": true,
+  "partitions": {"train": 2022, "validation": 2023, "backtest": 2024},
+  "primary_metric": "average_precision",
+  "secondary_metrics": ["roc_auc", "balanced_accuracy", "precision", "recall", "specificity", "f1", "brier_score", "log_loss"],
+  "tie_breakers": ["specificity", "f1", "threshold_ascending"],
+  "seed": 42,
+  "cross_validation": {"splitter": "StratifiedGroupKFold", "groups": "codigo_ibge", "preferred_splits": 5, "minimum_splits": 3},
+  "preprocessing": {"numeric_imputation": "median_fit_on_train", "categorical_imputation": "constant_fit_on_train", "encoder": "OneHotEncoder(handle_unknown=ignore)", "scaling": ["logistic", "knn", "svc", "mlp"]},
+  "source_scope": "Transferegov only; ObrasGov excluded"
+}

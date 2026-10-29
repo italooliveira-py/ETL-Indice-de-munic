@@ -1,0 +1,12 @@
+preditor,tipo
+valor_global_original,numerica
+valor_global_assinatura,numerica
+valor_contrapartida,numerica
+duracao_original_dias,numerica
+dias_proposta_ate_assinatura,numerica
+modalidade,categorica
+orgao_superior,categorica
+orgao,categorica
+origem_emenda,categorica
+emenda_individual,categorica
+emenda_impositiva,categorica

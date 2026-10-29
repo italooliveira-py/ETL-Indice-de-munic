@@ -410,7 +410,9 @@ def diagnose_errors(frame: pd.DataFrame, probabilities, threshold: float, model:
 
 
 def frozen_paths(data_root: str | Path) -> dict[str, Path]:
-    root = Path(data_root) / "gold" / "versoes" / GOLD_VERSION
+    root_input = Path(data_root)
+    gold_root = root_input if root_input.name.lower() == "gold" else root_input / "gold"
+    root = gold_root / "versoes" / GOLD_VERSION
     if not (root / "manifesto.json").exists():
         raise FileNotFoundError(f"geração Gold congelada ausente: {root}")
     return {

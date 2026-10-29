@@ -1,11 +1,16 @@
 """Revisão E05: continuidade da E04, alvos separados e métricas corretas."""
 import unittest
+from pathlib import Path
 import numpy as np
 import pandas as pd
 
 from src.e05.revisao import base_180, configuracoes
 from src.e05.experimento import criar_pipeline, metricas, treinar
 from src.e05.dados import NUMERICAS, CATEGORICAS
+
+CONFIG_AUSENTE = Path("config.e05.revisao.json")
+MANIFESTO_AUSENTE = Path("dados/modelagem/e05_revisao/manifesto.json")
+HISTORICO_INDISPONIVEL = "reprodução histórica do PR #5 indisponível: artefato ausente"
 
 
 class RevisaoE05(unittest.TestCase):
@@ -34,6 +39,7 @@ class RevisaoE05(unittest.TestCase):
         self.assertAlmostEqual(m['mae_probabilidade'], np.abs(y-p).mean())
         self.assertAlmostEqual(m['rmse_probabilidade'] ** 2, m['brier'])
 
+    @unittest.skipUnless(CONFIG_AUSENTE.exists(), f"{HISTORICO_INDISPONIVEL}: config.e05.revisao.json")
     def test_alvo_principal_e_allowlist_nao_sao_trocados_por_indice(self):
         cfg = configuracoes()
         c = cfg['principal']
@@ -45,6 +51,7 @@ class RevisaoE05(unittest.TestCase):
         self.assertEqual(c['random_state'], 42)
         self.assertFalse(c['busca_hiperparametros'])
 
+    @unittest.skipUnless(CONFIG_AUSENTE.exists(), f"{HISTORICO_INDISPONIVEL}: config.e05.revisao.json")
     def test_pipeline_numerico_sem_categorias_e_alvo_configurado(self):
         c = configuracoes()['principal']
         q = pd.DataFrame({coluna: np.arange(30, dtype=float) for coluna in c['numericas']})
@@ -54,6 +61,7 @@ class RevisaoE05(unittest.TestCase):
         self.assertEqual(set(modelo.classes_), {0, 1})
         self.assertEqual(modelo.named_steps['limpar'].transform(q).columns.tolist(), c['numericas'])
 
+    @unittest.skipUnless(MANIFESTO_AUSENTE.exists(), f"{HISTORICO_INDISPONIVEL}: dados/modelagem/e05_revisao/manifesto.json")
     def test_snapshot_principal_tem_as_coortes_e_publicacao_anterior(self):
         from src.e05.revisao import carregar
         bases, m = carregar()

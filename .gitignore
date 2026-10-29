@@ -13,6 +13,7 @@ data/gold/
 data/ref/
 .validation/
 .superpowers/
+.local/e05_contrato_unico/
 
 *.log
 .DS_Store

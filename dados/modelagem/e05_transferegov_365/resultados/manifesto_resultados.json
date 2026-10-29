@@ -1,0 +1,42 @@
+{
+  "snapshot_sha256": "6A8432CDA7D37B12E59E44486579CDD47C7DEDB4431D5B916A3200FDF56691BB",
+  "manifesto_gold_sha256": "28E24585431DC29B0DA53B10FD0811B91A02BA79BD00484EA6297D9ABB84F5B5",
+  "gold_version": "65260a170ee18cd79501",
+  "commit_base": "5e8ed87f067a8a8f08866f29f30290995a40182c",
+  "seed": 42,
+  "folds": 5,
+  "modelos_candidatos": [
+    "logistica",
+    "knn",
+    "xgboost",
+    "lightgbm",
+    "random_forest",
+    "decision_tree",
+    "svc",
+    "mlp"
+  ],
+  "baselines": [
+    "dummy_prior",
+    "dummy_most_frequent"
+  ],
+  "bibliotecas": {
+    "python": "3.12.10",
+    "pandas": "2.3.3",
+    "scikit_learn": "1.9.1",
+    "xgboost": "2.1.4",
+    "lightgbm": "4.7.0"
+  },
+  "executado_em_utc": "2026-10-29T13:18:05.255552+00:00",
+  "regra_selecao": "Average Precision na validação 2023; limiar por balanced accuracy, desempate por especificidade e F1; 2024 somente backtest",
+  "conclusao_metodologica": "Nenhum dos oito modelos demonstrou superioridade preditiva consolidada sob o contrato Transferegov de 365 dias.",
+  "arquivos_sha256": {
+    "bootstrap_pareado.csv": "F14EF337014774B5C6A35DF3D1B03AD76D3F822C9E66C3FE4260B153265DC9D6",
+    "hiperparametros_selecionados.json": "03A618397E2297882117973A38F2A5CF88C6172AF5D702E048ACEE9704BFC6F1",
+    "limiares_2023.csv": "97B9F300EEA11A396B825422C2CC0EA74080F62AA63BB4B2ACFE6E20C6A9BBAD",
+    "matrizes_confusao.csv": "DBE179733F551257DF55DD004821DAA1598A664F38831B4BEB19E3F9F2DB0484",
+    "metricas_validacao_backtest.csv": "508F923FFEFDD2708A9C45C2A539821F0747ED67A421FE2C75307E5274B13A2C",
+    "preditores_utilizados.csv": "04EB9F99B5D3E30A270D7F07C3FC5C82F8CF06E59C7D55C9A0204FD6D055ED24",
+    "resultados_folds.csv": "118875A3428D693727389C1ED6CED791304BCFC7C36F3D367675E49FD2181A3C",
+    "teste_permutacao.csv": "48A0B11F9E6722A61D26C4AB75EF008F2805B755001EBF7E16F22A20D55E4FF3"
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "logistica": {
+    "parametros": {
+      "model__C": 1.0,
+      "model__class_weight": "balanced"
+    },
+    "tempo_ajuste_segundos": 0.6272134999744594
+  },
+  "knn": {
+    "parametros": {
+      "model__n_neighbors": 15,
+      "model__p": 1,
+      "model__weights": "uniform"
+    },
+    "tempo_ajuste_segundos": 1.074637700105086
+  },
+  "xgboost": {
+    "parametros": {
+      "model__learning_rate": 0.05,
+      "model__max_depth": 3,
+      "model__n_estimators": 140,
+      "model__reg_lambda": 1.0,
+      "model__scale_pos_weight": 1.0,
+      "model__subsample": 0.8
+    },
+    "tempo_ajuste_segundos": 7.964632200077176
+  },
+  "lightgbm": {
+    "parametros": {
+      "model__learning_rate": 0.05,
+      "model__max_depth": -1,
+      "model__n_estimators": 140,
+      "model__num_leaves": 15,
+      "model__reg_lambda": 0.0,
+      "model__scale_pos_weight": 1.0
+    },
+    "tempo_ajuste_segundos": 13.103061500005424
+  },
+  "random_forest": {
+    "parametros": {
+      "model__class_weight": null,
+      "model__max_depth": 8,
+      "model__max_features": "sqrt",
+      "model__min_samples_leaf": 2,
+      "model__n_estimators": 300
+    },
+    "tempo_ajuste_segundos": 28.564356199931357
+  },
+  "decision_tree": {
+    "parametros": {
+      "model__class_weight": "balanced",
+      "model__criterion": "gini",
+      "model__max_depth": 4,
+      "model__min_samples_leaf": 8
+    },
+    "tempo_ajuste_segundos": 1.330270899925381
+  },
+  "svc": {
+    "parametros": {
+      "model__C": 0.1,
+      "model__class_weight": "balanced",
+      "model__gamma": "scale",
+      "model__kernel": "linear"
+    },
+    "tempo_ajuste_segundos": 1.2010185001417994
+  },
+  "mlp": {
+    "parametros": {
+      "model__alpha": 0.0001,
+      "model__hidden_layer_sizes": [
+        8,
+        4
+      ],
+      "model__learning_rate_init": 0.001
+    },
+    "tempo_ajuste_segundos": 1.322452299995348
+  }
+}

@@ -2,7 +2,7 @@
 pandas==2.3.3
 numpy==2.5.4
 scikit-learn==1.9.1
-xgboost==3.4.1
+xgboost==2.1.4
 lightgbm==4.7.0
 nbformat==5.10.4
 nbclient==0.10.2

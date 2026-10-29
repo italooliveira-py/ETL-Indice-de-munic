@@ -1,0 +1,6 @@
+fold,n_treino,n_validacao,classes_treino,classes_validacao,grupos_disjuntos
+0,191,48,2,2,True
+1,190,49,2,2,True
+2,192,47,2,2,True
+3,192,47,2,2,True
+4,191,48,2,2,True
