@@ -1,0 +1,46 @@
+corte,conjunto,min_freq,penalidade,C,c_index,reducao_brier_24m,municipios_ativos,municipios_no_modelo
+teste_2022,porte + fonte,15,ridge,0.1,0.5679127134724857,0.05856847798840936,,
+teste_2022,porte + fonte,15,elastic net,0.1,0.5657495256166983,0.053027275332929724,,
+teste_2022,porte + fonte,15,lasso,0.1,0.5611954459203036,0.04917314397243877,,
+teste_2022,município + fonte + modalidade,15,ridge,0.01,0.5059582542694497,-0.007472788976576661,202.0,202.0
+teste_2022,município + fonte + modalidade,15,elastic net,0.01,0.49117647058823527,-0.003764132704634493,0.0,202.0
+teste_2022,município + fonte + modalidade,15,lasso,0.01,0.5,-0.006900706353472952,0.0,202.0
+teste_2022,município + fonte + modalidade,1,ridge,0.01,0.5061290322580645,-0.007576368386692955,221.0,221.0
+teste_2022,município + fonte + modalidade,1,elastic net,0.01,0.49117647058823527,-0.0038581026723851775,0.0,221.0
+teste_2022,município + fonte + modalidade,1,lasso,0.01,0.5,-0.007005599376503691,0.0,221.0
+teste_2022,porte + município + fonte + modalidade,15,ridge,0.01,0.521157495256167,-0.0018437311302232917,202.0,202.0
+teste_2022,porte + município + fonte + modalidade,15,elastic net,0.01,0.49117647058823527,-0.00445018543494724,0.0,202.0
+teste_2022,porte + município + fonte + modalidade,15,lasso,0.01,0.5,-0.0070098568809964235,0.0,202.0
+teste_2022,porte + município + fonte + modalidade,1,ridge,0.01,0.5200569259962049,-0.00272237418267518,221.0,221.0
+teste_2022,porte + município + fonte + modalidade,1,elastic net,0.01,0.49117647058823527,-0.004632455003450664,0.0,221.0
+teste_2022,porte + município + fonte + modalidade,1,lasso,0.01,0.5,-0.007053620766865665,0.0,221.0
+teste_2023,porte + fonte,15,ridge,0.1,0.5228024068054499,0.01789078972777569,,
+teste_2023,porte + fonte,15,elastic net,0.3,0.5217442423404108,0.0027831876137435207,,
+teste_2023,porte + fonte,15,lasso,1.0,0.5226986651912304,-0.009285416496781052,,
+teste_2023,município + fonte + modalidade,15,ridge,0.1,0.5412960785669825,0.05590573763923823,206.0,206.0
+teste_2023,município + fonte + modalidade,15,elastic net,0.3,0.550501417802061,0.045355144155734606,116.0,206.0
+teste_2023,município + fonte + modalidade,15,lasso,0.3,0.5391313368836019,0.035021717800378105,55.0,206.0
+teste_2023,município + fonte + modalidade,1,ridge,0.1,0.5410747631233142,0.05306949482510537,223.0,223.0
+teste_2023,município + fonte + modalidade,1,elastic net,0.3,0.5516010789127879,0.03942515960853199,115.0,223.0
+teste_2023,município + fonte + modalidade,1,lasso,0.3,0.539677709385158,0.029717223943040216,54.0,223.0
+teste_2023,porte + município + fonte + modalidade,15,ridge,0.1,0.5394356456186459,0.05262863664427675,206.0,206.0
+teste_2023,porte + município + fonte + modalidade,15,elastic net,0.3,0.5482260183968463,0.04494712495825426,118.0,206.0
+teste_2023,porte + município + fonte + modalidade,15,lasso,0.3,0.5364133065910506,0.03529605952784065,56.0,206.0
+teste_2023,porte + município + fonte + modalidade,1,ridge,0.1,0.5395324711252507,0.05145870701820121,223.0,223.0
+teste_2023,porte + município + fonte + modalidade,1,elastic net,0.3,0.5489452935887682,0.038736830998461924,118.0,223.0
+teste_2023,porte + município + fonte + modalidade,1,lasso,0.3,0.5361989072549969,0.029503981700851667,55.0,223.0
+checagem_2024,porte + fonte,15,ridge,0.01,0.5797401453424356,0.016030752503337076,,
+checagem_2024,porte + fonte,15,elastic net,0.01,0.5538207443294428,0.051953009406240036,,
+checagem_2024,porte + fonte,15,lasso,0.01,0.5538207443294428,0.08385358580521218,,
+checagem_2024,município + fonte + modalidade,15,ridge,0.1,0.5959260074873376,-0.023759647100244363,214.0,214.0
+checagem_2024,município + fonte + modalidade,15,elastic net,0.01,0.5208324157674521,0.05290955761790128,0.0,214.0
+checagem_2024,município + fonte + modalidade,15,lasso,0.01,0.5538207443294428,0.0838932475717965,0.0,214.0
+checagem_2024,município + fonte + modalidade,1,ridge,0.01,0.5533142479630038,0.010940207583641004,223.0,223.0
+checagem_2024,município + fonte + modalidade,1,elastic net,0.01,0.5208324157674521,0.053387467039114456,0.0,223.0
+checagem_2024,município + fonte + modalidade,1,lasso,0.01,0.5538207443294428,0.08481117640236813,0.0,223.0
+checagem_2024,porte + município + fonte + modalidade,15,ridge,0.01,0.5732658004844747,0.00623673706347061,214.0,214.0
+checagem_2024,porte + município + fonte + modalidade,15,elastic net,0.01,0.5208324157674521,0.05497835373782478,0.0,214.0
+checagem_2024,porte + município + fonte + modalidade,15,lasso,0.01,0.5538207443294428,0.08508661663160677,0.0,214.0
+checagem_2024,porte + município + fonte + modalidade,1,ridge,0.01,0.567628275710196,0.0005215785012468999,223.0,223.0
+checagem_2024,porte + município + fonte + modalidade,1,elastic net,0.01,0.5208324157674521,0.054239426445725436,0.0,223.0
+checagem_2024,porte + município + fonte + modalidade,1,lasso,0.01,0.5538207443294428,0.08705938251858869,0.0,223.0
