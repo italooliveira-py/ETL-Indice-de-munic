@@ -1,0 +1,239 @@
+{
+  "arquivos": {
+    "cobertura_variaveis.csv": {
+      "bytes": 16290,
+      "sha256": "6702b812c4f2e7a632c13d9a5fad7ce10ac39584d51426eb235e8a5f8fed26da"
+    },
+    "dicionario_variaveis.csv": {
+      "bytes": 18601,
+      "sha256": "f6f17d58040fda6293275dc58afb0d34631387e51100bfd7623e97a69237d040"
+    },
+    "painel_municipio_ano_2020_2024.csv": {
+      "bytes": 462715,
+      "sha256": "eb2baf26280ab557da79cfb465acf66a040d012e7b8ef358c404598ad1f8650a"
+    },
+    "painel_municipio_ano_2020_2024.parquet": {
+      "bytes": 202959,
+      "sha256": "1be6f49430278be54e79b1e649c8a22bbc9c9b1d176c41473ee97cd3d7bd41cb"
+    }
+  },
+  "comando_reproducao": "venv\\Scripts\\python.exe -m etl_municipal.exportacao_visualizacao --data-dir data --gold-version 30466c6928c682d66a66 --output dados/visualizacao",
+  "commit_base": "5e8ed87",
+  "condicao_temporal_munic": "apta_com_ressalva_documentada",
+  "csv": {
+    "decimal": ",",
+    "encoding": "UTF-8 with BOM",
+    "separador": ";"
+  },
+  "finalidade": "pacote analítico determinístico para visualização descritiva",
+  "fontes": [
+    "Gold consolidado",
+    "IBGE MUNIC",
+    "contrato de qualidade"
+  ],
+  "limitacao_originais_munic": "originais de 2019 e 2021 indisponíveis no FTP consultado; revisões preservadas sem hash original inventado",
+  "linhas": 1115,
+  "municipios": 223,
+  "nome_pacote": "painel_municipio_ano_2020_2024",
+  "ordenacao": [
+    "codigo_ibge",
+    "ano"
+  ],
+  "periodo": [
+    2020,
+    2024
+  ],
+  "quantidade_colunas": 43,
+  "regra_point_in_time": "última informação elegível até 31/12; MUNIC 2024 não entra em 2024",
+  "schema": [
+    {
+      "dtype": "string",
+      "nome": "codigo_ibge"
+    },
+    {
+      "dtype": "object",
+      "nome": "municipio"
+    },
+    {
+      "dtype": "object",
+      "nome": "uf"
+    },
+    {
+      "dtype": "int64",
+      "nome": "ano"
+    },
+    {
+      "dtype": "float64",
+      "nome": "populacao_siconfi"
+    },
+    {
+      "dtype": "float64",
+      "nome": "receita_total_realizada"
+    },
+    {
+      "dtype": "float64",
+      "nome": "transferencias_correntes_realizadas"
+    },
+    {
+      "dtype": "float64",
+      "nome": "despesa_total_liquidada"
+    },
+    {
+      "dtype": "float64",
+      "nome": "despesa_pessoal_liquidada"
+    },
+    {
+      "dtype": "float64",
+      "nome": "investimentos_liquidados"
+    },
+    {
+      "dtype": "float64",
+      "nome": "restos_pagar_processados"
+    },
+    {
+      "dtype": "float64",
+      "nome": "restos_pagar_nao_processados"
+    },
+    {
+      "dtype": "float64",
+      "nome": "caixa_equivalentes"
+    },
+    {
+      "dtype": "float64",
+      "nome": "restos_pagar_total"
+    },
+    {
+      "dtype": "float64",
+      "nome": "dependencia_transferencias"
+    },
+    {
+      "dtype": "float64",
+      "nome": "investimento_per_capita"
+    },
+    {
+      "dtype": "float64",
+      "nome": "restos_pagar_sobre_receita"
+    },
+    {
+      "dtype": "float64",
+      "nome": "caixa_sobre_receita"
+    },
+    {
+      "dtype": "float64",
+      "nome": "pressao_pessoal_proxy"
+    },
+    {
+      "dtype": "float64",
+      "nome": "resultado_orcamentario_proxy"
+    },
+    {
+      "dtype": "float64",
+      "nome": "total_contratacoes"
+    },
+    {
+      "dtype": "float64",
+      "nome": "valor_estimado_contratacoes"
+    },
+    {
+      "dtype": "float64",
+      "nome": "valor_homologado_contratacoes"
+    },
+    {
+      "dtype": "float64",
+      "nome": "contratacoes_similares"
+    },
+    {
+      "dtype": "float64",
+      "nome": "valor_contratacoes_similares"
+    },
+    {
+      "dtype": "object",
+      "nome": "cobertura_pncp"
+    },
+    {
+      "dtype": "float64",
+      "nome": "pessoal_ativo"
+    },
+    {
+      "dtype": "float64",
+      "nome": "pessoal_celetista"
+    },
+    {
+      "dtype": "float64",
+      "nome": "pessoal_comissionado"
+    },
+    {
+      "dtype": "float64",
+      "nome": "pessoal_estagiario"
+    },
+    {
+      "dtype": "float64",
+      "nome": "pessoal_estatutario"
+    },
+    {
+      "dtype": "float64",
+      "nome": "pessoal_sem_vinculo"
+    },
+    {
+      "dtype": "float64",
+      "nome": "proporcao_pessoal_estatutario"
+    },
+    {
+      "dtype": "float64",
+      "nome": "pessoal_ativo_por_mil_habitantes"
+    },
+    {
+      "dtype": "float64",
+      "nome": "populacao"
+    },
+    {
+      "dtype": "object",
+      "nome": "cobertura_siconfi"
+    },
+    {
+      "dtype": "object",
+      "nome": "status_ibge"
+    },
+    {
+      "dtype": "object",
+      "nome": "status_munic"
+    },
+    {
+      "dtype": "object",
+      "nome": "status_pib"
+    },
+    {
+      "dtype": "object",
+      "nome": "status_pncp"
+    },
+    {
+      "dtype": "object",
+      "nome": "status_siconfi"
+    },
+    {
+      "dtype": "object",
+      "nome": "status_transicao"
+    },
+    {
+      "dtype": "object",
+      "nome": "status_tse_eleitoral"
+    }
+  ],
+  "sem_score_nem_causalidade": true,
+  "variaveis_excluidas": [
+    "MREG0151",
+    "MREG0152",
+    "MREG0153",
+    "MCUL42",
+    "score",
+    "pesos",
+    "ranking",
+    "ambientais"
+  ],
+  "versao_gold": "30466c6928c682d66a66",
+  "versoes_runtime": {
+    "pandas": "2.3.3",
+    "pyarrow": "21.0.0",
+    "python": "3.12"
+  }
+}

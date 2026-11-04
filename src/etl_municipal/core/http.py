@@ -22,7 +22,7 @@ def obter_json(sessao, url, config, params=None, fonte='', contexto='', estado=N
     return dados, captura.resposta.content
 
 
-def obter_bytes(sessao, url, config):
+def obter_bytes(sessao, url, config, *, retornar_metadados=False):
     """Arquivo binário completo; tamanho divergente do Content-Length é falha, não arquivo."""
     tentativas = max(1, int(config.get('max_tentativas', 4)))
     base = max(0.0, float(config.get('backoff_base_segundos', 3)))
@@ -37,6 +37,8 @@ def obter_bytes(sessao, url, config):
                 raise FalhaConsulta(f'Download incompleto: {len(conteudo)} de {esperado} bytes')
             if not conteudo:
                 raise FalhaConsulta('Arquivo vazio')
+            if retornar_metadados:
+                return conteudo, dict(resposta.headers)
             return conteudo
         # RequestException cobre também conexão cortada no meio do corpo (ChunkedEncodingError).
         except (requests.RequestException, FalhaConsulta) as exc:

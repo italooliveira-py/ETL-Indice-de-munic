@@ -12,12 +12,22 @@ from etl_confiabilidade import salvar_json_atomico
 from ..core.armazenamento import preservar, sha256
 from ..core.contratos import ViolacaoContrato
 from ..core.http import obter_bytes
+from .munic_catalogo import EDICOES_AUTORIZADAS
 
 FONTE = 'munic'
 BASE_URL = 'https://ftp.ibge.gov.br/Perfil_Municipios/'
 # A edição 2019 é a última publicada antes de 2021; serve à fotografia de 2020.
 ANO_MINIMO = 2019
 CONFIG = {'max_tentativas': 4, 'timeout_segundos': 600, 'backoff_base_segundos': 5}
+DATA_PUBLICACAO_EDICAO = {
+    2019: '2020-12-02', 2020: '2021-11-10', 2021: '2022-12-08',
+    2023: '2024-10-31', 2024: '2025-10-31',
+}
+NOTA_CORRECAO_URL = 'https://www.ibge.gov.br/estatisticas/sociais/saude/10586-pesquisa-de-informacoes-basicas-municipais.html?edicao=32141'
+ESCOPO_CORRECAO = {
+    2019: 'MREG0151,MREG0152,MREG0153',
+    2021: 'MCUL42',
+}
 
 
 def _indice(raiz: Path) -> Path:
@@ -29,7 +39,8 @@ def _hrefs(html: bytes):
 
 
 def edicoes(listagem: bytes):
-    return sorted(int(h[:4]) for h in _hrefs(listagem) if re.fullmatch(r'\d{4}/', h) and int(h[:4]) >= ANO_MINIMO)
+    return sorted(int(h[:4]) for h in _hrefs(listagem)
+                  if re.fullmatch(r'\d{4}/', h) and int(h[:4]) in EDICOES_AUTORIZADAS)
 
 
 def base_da_edicao(listagem: bytes, ano: int) -> str:
@@ -40,6 +51,11 @@ def base_da_edicao(listagem: bytes, ano: int) -> str:
     return nomes[0]
 
 
+def _versao_base(nome: str) -> str:
+    revisao = re.search(r'_(\d{4})(\d{2})(\d{2})\.xlsx$', nome)
+    return f'revisao_{revisao.group(1)}_{revisao.group(2)}_{revisao.group(3)}' if revisao else 'original'
+
+
 def _verificado(raiz, rel):
     caminho = raiz / rel
     if not caminho.exists() or sha256(caminho.read_bytes()) != caminho.parent.name:
@@ -47,12 +63,13 @@ def _verificado(raiz, rel):
     return caminho
 
 
-def extrair(sessao, raiz: Path, *, refresh=False):
+def extrair(sessao, raiz: Path, *, refresh=False, anos=None):
     indice = _indice(raiz)
     estado = json.loads(indice.read_text(encoding='utf-8')) if indice.exists() else {'edicoes': {}, 'historico': []}
     raiz_listagem = obter_bytes(sessao, BASE_URL, CONFIG)
     preservar(raiz, FONTE, 'listagem_perfil_municipios.html', raiz_listagem, BASE_URL)
-    anos = edicoes(raiz_listagem)
+    disponiveis = edicoes(raiz_listagem)
+    anos = disponiveis if anos is None else [ano for ano in anos if ano in disponiveis]
     if not anos:
         raise ViolacaoContrato('Nenhuma edição MUNIC encontrada na listagem oficial')
     for ano in anos:
@@ -64,12 +81,33 @@ def extrair(sessao, raiz: Path, *, refresh=False):
         if atual and atual['nome'] == nome and not refresh:
             _verificado(raiz, atual['arquivo'])
             continue
-        destino = preservar(raiz, FONTE, nome, obter_bytes(sessao, url_pasta + nome, CONFIG), url_pasta + nome)
+        conteudo, cabecalhos = obter_bytes(sessao, url_pasta + nome, CONFIG, retornar_metadados=True)
+        destino = preservar(raiz, FONTE, nome, conteudo, url_pasta + nome)
         if atual and atual['arquivo'] != destino.relative_to(raiz).as_posix():
             estado['historico'].append({**atual, 'substituido_em_utc': datetime.now(timezone.utc).isoformat(timespec='seconds')})
         estado['edicoes'][str(ano)] = {
             'nome': nome, 'url': url_pasta + nome, 'arquivo': destino.relative_to(raiz).as_posix(),
             'listagem': caminho_listagem.relative_to(raiz).as_posix(),
+            'versao_base': _versao_base(nome),
+            'data_publicacao': DATA_PUBLICACAO_EDICAO[ano],
+            'data_publicacao_versao': (re.search(r'_(\d{4})(\d{2})(\d{2})\.xlsx$', nome).group(1) + '-' +
+                                       re.search(r'_(\d{4})(\d{2})(\d{2})\.xlsx$', nome).group(2) + '-' +
+                                       re.search(r'_(\d{4})(\d{2})(\d{2})\.xlsx$', nome).group(3)
+                                       if re.search(r'_(\d{4})(\d{2})(\d{2})\.xlsx$', nome) else DATA_PUBLICACAO_EDICAO[ano]),
+            'data_coleta_utc': datetime.now(timezone.utc).isoformat(timespec='seconds'),
+            'last_modified': cabecalhos.get('Last-Modified'),
+            'sha256': sha256(conteudo), 'tamanho_bytes': len(conteudo),
+            'status_versao': 'revisao_unica_disponivel' if _versao_base(nome) != 'original' else 'original_disponivel',
+            'original_disponivel': _versao_base(nome) == 'original',
+            'original_bytes_disponiveis': _versao_base(nome) == 'original',
+            'motivo_original_ausente': (
+                'arquivo_original_indisponivel_no_ftp_oficial_consultado'
+                if _versao_base(nome) != 'original' else None
+            ),
+            'data_verificacao_evidencia': datetime.now(timezone.utc).date().isoformat(),
+            'precisao_evidencia_temporal': 'dia',
+            'escopo_correcao_oficial': ESCOPO_CORRECAO.get(ano),
+            'url_nota_oficial': NOTA_CORRECAO_URL if ano in ESCOPO_CORRECAO else None,
             'verificado_em_utc': datetime.now(timezone.utc).isoformat(timespec='seconds')}
         salvar_json_atomico(indice, estado)
     salvar_json_atomico(indice, estado)

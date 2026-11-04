@@ -1,5 +1,7 @@
 # Arquitetura do ETL municipal
 
+MUNIC adiciona Bronze persistente por hash, Silver versionado por edição/revisão e Gold largo/longa de disponibilidade temporal. A integração é opcional no CLI (`snapshot munic`) e usa merge `one_to_one` no painel município × ano.
+
 O produto é um **índice de contexto municipal para execução de projetos**. A publicação não calcula probabilidade de falha, pesos ou imputações. A migração é incremental: os coletores existentes continuam disponíveis; a nova publicação é validada separadamente.
 
 ```text

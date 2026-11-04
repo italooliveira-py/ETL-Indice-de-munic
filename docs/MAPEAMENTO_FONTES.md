@@ -130,6 +130,8 @@ No Bronze entra só o recorte PB, sem conversão de tipos ([ADR 0002](adr/0002-b
 
 ## MUNIC
 
+Estado atualizado: MUNIC integrada em Bronze, Silver e Gold para 2019, 2020, 2021, 2023 e 2024. Revisões 2019/2021 são as únicas versões disponíveis no FTP consultado; originais não são alegados como preservados. A condição temporal é `apta_com_ressalva_documentada`; `MREG0151`, `MREG0152`, `MREG0153` e `MCUL42` permanecem somente na auditoria.
+
 **Acesso.** FTP `ftp.ibge.gov.br/Perfil_Municipios/<ano>/Base_de_Dados/` (xlsx/ods). Questionário respondido pela prefeitura, cobertura universal.
 
 **Edições e publicação** **[verificado no FTP]**:

@@ -1,5 +1,12 @@
 # Histórico da publicação
 
+## MUNIC institucional — 2026-11-04
+
+- Bronze persistente das edições 2019, 2020, 2021, 2023 e 2024 com SHA-256, revisão, datas e `Last-Modified`.
+- Silver versionado e Gold institucional por edição/ano, com painel 1.115 chaves e auditoria temporal longa.
+- Revisões 2019/2021 tratadas com ressalva oficial; códigos corrigidos pelo IBGE ficam fora do Gold largo.
+- Sem score, pesos, ranking, variáveis ambientais ou interpretação causal.
+
 ## E05 2.0.0 — 2026-10-28
 
 - Benchmark principal retoma o evento adverso ObrasGov e os 358 IDs da E04; ausência de repasse em 180 dias passa a ser sensibilidade separada.

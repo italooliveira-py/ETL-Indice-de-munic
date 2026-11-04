@@ -187,7 +187,8 @@ def publicar(tabelas, raiz: Path, proveniencia: dict):
                  'pendencias': [p for p in ['Datas públicas de disponibilidade das variáveis legadas',
                                             'RGF', 'Transferegov', 'MUNIC', 'SINISA', 'MapBiomas',
                                             'Bioma por interseção espacial e tipologia territorial']
-                                if not (p == 'Transferegov' and 'silver/transferegov_instrumentos' in tabelas)]}
+                                 if not ((p == 'Transferegov' and 'silver/transferegov_instrumentos' in tabelas) or
+                                         (p == 'MUNIC' and 'silver/munic_observacoes' in tabelas))]}
     salvar_json_atomico(pasta / 'manifesto.json', manifesto)
     # Atalhos convenientes; consumidores transacionais devem seguir CURRENT.json.
     for nome, quadro in tabelas.items():
