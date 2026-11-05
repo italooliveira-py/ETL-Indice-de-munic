@@ -1,0 +1,627 @@
+{
+  "versao_metodologia_indice": "indice-contexto-municipal-v0",
+  "input_sha256": "31825e179a70ebe3cca98984ef702b82d070b98994d125075328c586bcbb322b",
+  "config_sha256": "affac85f21532dd671ee81e958b5ba126dc0eefd87615bc747dd54df2302e452",
+  "rows": 1115,
+  "municipios": 223,
+  "anos": [
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "aptos": {
+    "analise_descritiva": true,
+    "predicao_point_in_time": false
+  },
+  "formulas_direcoes": {
+    "fiscal": {
+      "dependencia_transferencias": {
+        "direcao": "direta"
+      },
+      "restos_pagar_sobre_receita": {
+        "direcao": "direta"
+      },
+      "caixa_sobre_receita": {
+        "direcao": "inversa"
+      },
+      "pressao_pessoal_proxy": {
+        "direcao": "direta"
+      },
+      "resultado_orcamentario_proxy": {
+        "direcao": "inversa",
+        "conteudo": "margem_relativa"
+      }
+    },
+    "institucional": {
+      "proporcao_pessoal_estatutario": {
+        "direcao": "inversa"
+      },
+      "proporcao_pessoal_comissionado": {
+        "direcao": "direta"
+      },
+      "proporcao_pessoal_sem_vinculo": {
+        "direcao": "direta"
+      }
+    }
+  },
+  "pesos": {
+    "intensidade_geral": 0.5,
+    "similaridade": 0.5
+  },
+  "periodos": {
+    "indice_estrutural": [
+      2020,
+      2024
+    ],
+    "indice_intensidade_contratual_pncp": [
+      2022,
+      2024
+    ]
+  },
+  "limites_p1_p99": {
+    "dependencia_transferencias": {
+      "2020": {
+        "method": "linear",
+        "lower": 0.6799435961229683,
+        "upper": 0.9789603813348147,
+        "below": 3,
+        "above": 3
+      },
+      "2021": {
+        "method": "linear",
+        "lower": 0.6819970027581208,
+        "upper": 0.9750599809453424,
+        "below": 3,
+        "above": 3
+      },
+      "2022": {
+        "method": "linear",
+        "lower": 0.6010089241206732,
+        "upper": 0.9503062509672069,
+        "below": 3,
+        "above": 3
+      },
+      "2023": {
+        "method": "linear",
+        "lower": 0.6551411920666936,
+        "upper": 0.9470168036299718,
+        "below": 3,
+        "above": 3
+      },
+      "2024": {
+        "method": "linear",
+        "lower": 0.6190095710409765,
+        "upper": 0.961280544647571,
+        "below": 3,
+        "above": 3
+      }
+    },
+    "restos_pagar_sobre_receita": {
+      "2020": {
+        "method": "linear",
+        "lower": 0.002124510314383841,
+        "upper": 0.1450411039009466,
+        "below": 2,
+        "above": 2
+      },
+      "2021": {
+        "method": "linear",
+        "lower": 0.0014444643795140193,
+        "upper": 0.14207434456863346,
+        "below": 2,
+        "above": 2
+      },
+      "2022": {
+        "method": "linear",
+        "lower": 0.0006789685570747547,
+        "upper": 0.15482108548528142,
+        "below": 2,
+        "above": 2
+      },
+      "2023": {
+        "method": "linear",
+        "lower": 0.00508740176505216,
+        "upper": 0.14128335469652128,
+        "below": 2,
+        "above": 2
+      },
+      "2024": {
+        "method": "linear",
+        "lower": 0.0003899838014088012,
+        "upper": 0.0913930373699339,
+        "below": 2,
+        "above": 2
+      }
+    },
+    "caixa_sobre_receita": {
+      "2020": {
+        "method": "linear",
+        "lower": 0.011219795250600864,
+        "upper": 0.9436085120361178,
+        "below": 3,
+        "above": 3
+      },
+      "2021": {
+        "method": "linear",
+        "lower": 0.019535793446162516,
+        "upper": 0.9630779603738834,
+        "below": 3,
+        "above": 3
+      },
+      "2022": {
+        "method": "linear",
+        "lower": 0.03515981929614932,
+        "upper": 0.8711369330178491,
+        "below": 3,
+        "above": 3
+      },
+      "2023": {
+        "method": "linear",
+        "lower": 0.050708115260059125,
+        "upper": 1.4511375103136739,
+        "below": 3,
+        "above": 3
+      },
+      "2024": {
+        "method": "linear",
+        "lower": 0.02915738732812738,
+        "upper": 0.8818441193606031,
+        "below": 3,
+        "above": 3
+      }
+    },
+    "pressao_pessoal_proxy": {
+      "2020": {
+        "method": "linear",
+        "lower": 0.3709280573149604,
+        "upper": 0.8657343746180164,
+        "below": 3,
+        "above": 3
+      },
+      "2021": {
+        "method": "linear",
+        "lower": 0.3271384473197331,
+        "upper": 0.8857331995855714,
+        "below": 3,
+        "above": 3
+      },
+      "2022": {
+        "method": "linear",
+        "lower": 0.31704152322801793,
+        "upper": 0.7865997786648947,
+        "below": 3,
+        "above": 3
+      },
+      "2023": {
+        "method": "linear",
+        "lower": 0.33541673798715915,
+        "upper": 0.8134654659352085,
+        "below": 3,
+        "above": 3
+      },
+      "2024": {
+        "method": "linear",
+        "lower": 0.2814108142426104,
+        "upper": 0.7329884515795924,
+        "below": 3,
+        "above": 3
+      }
+    },
+    "resultado_orcamentario_proxy": {
+      "2020": {
+        "method": "linear",
+        "lower": -0.22101981822847666,
+        "upper": 0.14596804584808765,
+        "below": 3,
+        "above": 3
+      },
+      "2021": {
+        "method": "linear",
+        "lower": -0.2476912434764874,
+        "upper": 0.20377921454918665,
+        "below": 3,
+        "above": 3
+      },
+      "2022": {
+        "method": "linear",
+        "lower": -0.14110600785047553,
+        "upper": 0.17697130684677448,
+        "below": 3,
+        "above": 3
+      },
+      "2023": {
+        "method": "linear",
+        "lower": -0.22647291200207634,
+        "upper": 0.21825114937467727,
+        "below": 3,
+        "above": 3
+      },
+      "2024": {
+        "method": "linear",
+        "lower": -0.170162586485751,
+        "upper": 0.12863778653336452,
+        "below": 3,
+        "above": 3
+      }
+    },
+    "proporcao_pessoal_estatutario": {
+      "2020": {
+        "method": "linear",
+        "lower": 0.27733542319749216,
+        "upper": 0.8986288867530015,
+        "below": 3,
+        "above": 3
+      },
+      "2021": {
+        "method": "linear",
+        "lower": 0.30321399796658294,
+        "upper": 0.9015121430823273,
+        "below": 3,
+        "above": 3
+      },
+      "2022": {
+        "method": "linear",
+        "lower": 0.22823250838722225,
+        "upper": 0.8674045098941555,
+        "below": 3,
+        "above": 3
+      },
+      "2023": {
+        "method": "linear",
+        "lower": 0.22823250838722225,
+        "upper": 0.8674045098941555,
+        "below": 3,
+        "above": 3
+      },
+      "2024": {
+        "method": "linear",
+        "lower": 0.23981712758562385,
+        "upper": 0.8522730717274554,
+        "below": 3,
+        "above": 3
+      }
+    },
+    "proporcao_pessoal_comissionado": {
+      "2020": {
+        "method": "linear",
+        "lower": 0.033735553109521185,
+        "upper": 0.44237502509536203,
+        "below": 3,
+        "above": 3
+      },
+      "2021": {
+        "method": "linear",
+        "lower": 0.026450988699096553,
+        "upper": 0.4827346149471047,
+        "below": 3,
+        "above": 3
+      },
+      "2022": {
+        "method": "linear",
+        "lower": 0.03559687840334798,
+        "upper": 0.4505970368197154,
+        "below": 3,
+        "above": 3
+      },
+      "2023": {
+        "method": "linear",
+        "lower": 0.03559687840334798,
+        "upper": 0.4505970368197154,
+        "below": 3,
+        "above": 3
+      },
+      "2024": {
+        "method": "linear",
+        "lower": 0.03889902280130293,
+        "upper": 0.4758002132954142,
+        "below": 3,
+        "above": 3
+      }
+    },
+    "proporcao_pessoal_sem_vinculo": {
+      "2020": {
+        "method": "linear",
+        "lower": 0.0,
+        "upper": 0.5407213266322125,
+        "below": 0,
+        "above": 3
+      },
+      "2021": {
+        "method": "linear",
+        "lower": 0.0,
+        "upper": 0.5764951362558371,
+        "below": 0,
+        "above": 3
+      },
+      "2022": {
+        "method": "linear",
+        "lower": 0.0,
+        "upper": 0.5683027085674429,
+        "below": 0,
+        "above": 3
+      },
+      "2023": {
+        "method": "linear",
+        "lower": 0.0,
+        "upper": 0.5683027085674429,
+        "below": 0,
+        "above": 3
+      },
+      "2024": {
+        "method": "linear",
+        "lower": 0.0,
+        "upper": 0.640746435492658,
+        "below": 0,
+        "above": 3
+      }
+    }
+  },
+  "limites_faixas": {
+    "indice_vulnerabilidade_fiscal": {
+      "2020": {
+        "q1": 39.84052248758131,
+        "q2": 50.042162395103574,
+        "q3": 62.21107257871964,
+        "distinct": 223,
+        "contagens_faixa": {
+          "moderado": 56,
+          "baixo": 56,
+          "muito_alto": 56,
+          "alto": 55
+        }
+      },
+      "2021": {
+        "q1": 39.72537053182214,
+        "q2": 51.297587910491146,
+        "q3": 60.178363847718686,
+        "distinct": 222,
+        "contagens_faixa": {
+          "muito_alto": 56,
+          "moderado": 56,
+          "baixo": 56,
+          "alto": 55
+        }
+      },
+      "2022": {
+        "q1": 38.369570135746606,
+        "q2": 49.01425339366516,
+        "q3": 61.66165158371041,
+        "distinct": 222,
+        "contagens_faixa": {
+          "muito_alto": 56,
+          "baixo": 56,
+          "moderado": 55,
+          "alto": 55
+        }
+      },
+      "2023": {
+        "q1": 38.28451940216646,
+        "q2": 50.47209653092006,
+        "q3": 61.71740024681202,
+        "distinct": 221,
+        "contagens_faixa": {
+          "baixo": 56,
+          "muito_alto": 55,
+          "moderado": 55,
+          "alto": 55
+        }
+      },
+      "2024": {
+        "q1": 40.92791036345943,
+        "q2": 50.138085322118556,
+        "q3": 62.02288038707307,
+        "distinct": 220,
+        "contagens_faixa": {
+          "moderado": 55,
+          "baixo": 55,
+          "alto": 55,
+          "muito_alto": 55
+        }
+      }
+    },
+    "indice_estrutura_vinculos_institucionais": {
+      "2020": {
+        "q1": 33.5972850678733,
+        "q2": 51.35746606334841,
+        "q3": 65.98793363499246,
+        "distinct": 193,
+        "contagens_faixa": {
+          "muito_alto": 56,
+          "baixo": 56,
+          "alto": 55,
+          "moderado": 55
+        }
+      },
+      "2021": {
+        "q1": 34.709653092006036,
+        "q2": 52.11161387631975,
+        "q3": 65.42232277526395,
+        "distinct": 197,
+        "contagens_faixa": {
+          "muito_alto": 56,
+          "baixo": 56,
+          "alto": 55,
+          "moderado": 55
+        }
+      },
+      "2022": {
+        "q1": 34.90990990990991,
+        "q2": 50.15015015015015,
+        "q3": 65.61561561561561,
+        "distinct": 206,
+        "contagens_faixa": {
+          "muito_alto": 56,
+          "baixo": 56,
+          "moderado": 56,
+          "alto": 55
+        }
+      },
+      "2023": {
+        "q1": 34.90990990990991,
+        "q2": 50.15015015015015,
+        "q3": 65.61561561561561,
+        "distinct": 206,
+        "contagens_faixa": {
+          "muito_alto": 56,
+          "baixo": 56,
+          "moderado": 56,
+          "alto": 55
+        }
+      },
+      "2024": {
+        "q1": 34.98498498498499,
+        "q2": 51.2012012012012,
+        "q3": 64.33933933933935,
+        "distinct": 198,
+        "contagens_faixa": {
+          "moderado": 57,
+          "baixo": 56,
+          "muito_alto": 56,
+          "alto": 54
+        }
+      }
+    },
+    "indice_contexto_estrutural_municipal": {
+      "2020": {
+        "q1": 40.58946733579087,
+        "q2": 50.83896396396396,
+        "q3": 60.6630513431984,
+        "distinct": 222,
+        "contagens_faixa": {
+          "muito_alto": 56,
+          "baixo": 56,
+          "alto": 55,
+          "moderado": 55
+        }
+      },
+      "2021": {
+        "q1": 41.837418355444925,
+        "q2": 50.084576986854024,
+        "q3": 58.26228103742335,
+        "distinct": 222,
+        "contagens_faixa": {
+          "muito_alto": 56,
+          "baixo": 56,
+          "alto": 55,
+          "moderado": 55
+        }
+      },
+      "2022": {
+        "q1": 40.49286548992431,
+        "q2": 49.54183855801503,
+        "q3": 59.05686868995693,
+        "distinct": 222,
+        "contagens_faixa": {
+          "muito_alto": 56,
+          "baixo": 56,
+          "moderado": 55,
+          "alto": 55
+        }
+      },
+      "2023": {
+        "q1": 41.20973276855629,
+        "q2": 50.360501801678275,
+        "q3": 59.10148383677796,
+        "distinct": 221,
+        "contagens_faixa": {
+          "baixo": 56,
+          "muito_alto": 55,
+          "alto": 55,
+          "moderado": 55
+        }
+      },
+      "2024": {
+        "q1": 41.88125167100016,
+        "q2": 49.51434758053891,
+        "q3": 59.038840862099065,
+        "distinct": 220,
+        "contagens_faixa": {
+          "alto": 55,
+          "moderado": 55,
+          "muito_alto": 55,
+          "baixo": 55
+        }
+      }
+    },
+    "indice_intensidade_contratual_pncp": {
+      "2020": {
+        "reason": "valores_distintos_insuficientes",
+        "distinct": 0
+      },
+      "2021": {
+        "reason": "valores_distintos_insuficientes",
+        "distinct": 0
+      },
+      "2022": {
+        "q1": 40.90909090909091,
+        "q2": 50.56818181818181,
+        "q3": 58.522727272727266,
+        "distinct": 36,
+        "contagens_faixa": {
+          "moderado": 12,
+          "baixo": 12,
+          "muito_alto": 11,
+          "alto": 10
+        }
+      },
+      "2023": {
+        "q1": 35.328322784810126,
+        "q2": 49.09414556962025,
+        "q3": 61.11946202531645,
+        "distinct": 80,
+        "contagens_faixa": {
+          "baixo": 20,
+          "moderado": 20,
+          "muito_alto": 20,
+          "alto": 20
+        }
+      },
+      "2024": {
+        "q1": 35.51185531325718,
+        "q2": 50.15576323987539,
+        "q3": 63.62279335410176,
+        "distinct": 217,
+        "contagens_faixa": {
+          "baixo": 55,
+          "moderado": 54,
+          "alto": 54,
+          "muito_alto": 54
+        }
+      }
+    }
+  },
+  "cobertura_por_ano": {
+    "2020": {
+      "cobertura_fiscal": 0.950673,
+      "cobertura_institucional": 0.995516,
+      "cobertura_indice_pncp": 0.0
+    },
+    "2021": {
+      "cobertura_fiscal": 0.967713,
+      "cobertura_institucional": 0.995516,
+      "cobertura_indice_pncp": 0.0
+    },
+    "2022": {
+      "cobertura_fiscal": 0.976682,
+      "cobertura_institucional": 1.0,
+      "cobertura_indice_pncp": 0.201794
+    },
+    "2023": {
+      "cobertura_fiscal": 0.9713,
+      "cobertura_institucional": 1.0,
+      "cobertura_indice_pncp": 0.240658
+    },
+    "2024": {
+      "cobertura_fiscal": 0.956951,
+      "cobertura_institucional": 1.0,
+      "cobertura_indice_pncp": 0.970105
+    }
+  },
+  "hashes_finais": {
+    "csv_sha256": "03c33239ce2d793e5c9ef1735ed154a707f4059feb05db164ea2da58df76c379",
+    "parquet_sha256": "e0efb5efcd27cf0fbed7795e28654293b4d4c792833cd0b3e2c82f71b8bbbd12"
+  },
+  "sem_historico_execucao_transferegov": true
+}

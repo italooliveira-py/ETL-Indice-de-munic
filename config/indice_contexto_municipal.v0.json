@@ -1,0 +1,37 @@
+{
+  "versao_metodologia_indice": "indice-contexto-municipal-v0",
+  "periodo": [2020, 2024],
+  "fiscal": {
+    "min_componentes_validos": 4,
+    "componentes": {
+      "dependencia_transferencias": {"direcao": "direta"},
+      "restos_pagar_sobre_receita": {"direcao": "direta"},
+      "caixa_sobre_receita": {"direcao": "inversa"},
+      "pressao_pessoal_proxy": {"direcao": "direta"},
+      "resultado_orcamentario_proxy": {"direcao": "inversa", "conteudo": "margem_relativa"}
+    }
+  },
+  "institucional": {
+    "min_componentes_validos": 2,
+    "componentes": {
+      "proporcao_pessoal_estatutario": {"direcao": "inversa"},
+      "proporcao_pessoal_comissionado": {"direcao": "direta"},
+      "proporcao_pessoal_sem_vinculo": {"direcao": "direta"}
+    },
+    "sensibilidades": ["sem_estatutarios", "sem_pessoal_sem_vinculo"]
+  },
+  "pncp": {
+    "periodo": [2022, 2024],
+    "subgrupos": {
+      "subindice_intensidade_geral_pncp": ["contratacoes_por_mil_habitantes", "exposicao_contratual_sobre_receita"],
+      "subindice_similaridade_pncp": ["proporcao_contratacoes_similares"]
+    },
+    "pesos": {"intensidade_geral": 0.5, "similaridade": 0.5},
+    "log1p": ["contratacoes_por_mil_habitantes", "exposicao_contratual_sobre_receita"]
+  },
+  "temporalidade": {
+    "data_corte": "31-12",
+    "status_retrospectivo": "descritivo_retrospectivo",
+    "apto_predicao_point_in_time": false
+  }
+}
