@@ -404,10 +404,10 @@ class Cli(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp, self.assertRaises(SystemExit):
             main(['--data-dir', temp, '--sources', 'snapshot', 'transferegov_especiais', '--offline'])
 
-    def test_fonte_sem_transformacao_exige_bronze_only(self):
+    def test_munic_offline_sem_bronze_bloqueia_publicacao(self):
         with tempfile.TemporaryDirectory() as temp, patch('requests.Session.get') as rede:
             with self.assertRaises(SystemExit):
-                main(['--data-dir', temp, '--sources', 'snapshot', 'munic'])
+                main(['--data-dir', temp, '--sources', 'snapshot', 'munic', '--offline'])
             rede.assert_not_called()
 
     def test_bronze_only_nao_aceita_fonte_publicada(self):

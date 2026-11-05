@@ -6,6 +6,7 @@ import requests
 from etl_confiabilidade import FalhaConsulta
 from .fontes import (snapshot, ibge_territorial, coleta_legada, siconfi, munic,
                      transferegov_discricionarias, transferegov_especiais)
+from .fontes.munic_transformacao import construir_silver_munic, construir_painel_munic
 from .publicacao import construir, publicar
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -15,14 +16,14 @@ EXTRACAO = {'siconfi': siconfi, 'munic': munic,
             'transferegov_especiais': transferegov_especiais}
 # Transformação ainda pendente: só podem ser carregadas no Bronze.
 # Do SICONFI, só RGF (Anexo 1) e DCA (Anexo I-C, apoio ao Transferegov) são transformados; o resto fica no Bronze.
-SOMENTE_BRONZE = {'munic'}
+SOMENTE_BRONZE = set()
 
 
 def bronze(modulo, sessao, raiz, args):
     return modulo.verificar(raiz) if args.offline else modulo.extrair(sessao, raiz, refresh=args.refresh)
 
 
-def fontes_adicionais(parser, args, raiz, codigos):
+def fontes_adicionais(parser, args, raiz, codigos, base):
     """Silver e painéis de Transferegov e RGF; as Especiais dependem do mapa CNPJ → IBGE das Discricionárias."""
     if 'transferegov_especiais' in args.sources and 'transferegov_discricionarias' not in args.sources:
         parser.error('transferegov_especiais exige transferegov_discricionarias (mapa CNPJ → IBGE)')
@@ -58,6 +59,32 @@ def fontes_adicionais(parser, args, raiz, codigos):
                 temporalidade.update(siconfi.TEMPORALIDADE_DCA_TRANSFEREGOV)
             adicionais['siconfi_dca'] = (siconfi.painel_dca(silver, codigos, anos, transferegov), silver, temporalidade)
             proveniencia['bronze_siconfi_dca'] = sorted(p.relative_to(raiz).as_posix() for p in caminhos['dca'])
+        if 'munic' in args.sources:
+            caminhos = bronze(munic, sessao, raiz, args)
+            silver = construir_silver_munic(raiz)
+            obs = silver['silver/munic_observacoes'].copy()
+            obs['valor_publicado'] = obs['valor_normalizado']
+            populacao = base[['codigo_ibge', 'ano', 'populacao']].rename(columns={'ano': 'ano_fotografia'})
+            gold_munic = construir_painel_munic(obs, anos=list(range(2020, 2025)), populacao=populacao)
+            painel = gold_munic['gold/munic_capacidade_institucional_ano'].rename(
+                columns={'ano_fotografia': 'ano'}
+            ).drop(columns=['municipio', 'uf', 'populacao', 'status_denominador_populacao'], errors='ignore')
+            temporalidade = {
+                coluna: ('apta_com_ressalva_documentada', 'corte anual e nota de correção do IBGE')
+                for coluna in painel.columns if coluna not in ('codigo_ibge', 'ano')
+            }
+            tabelas_munic = {
+                'silver/munic_observacoes': silver['silver/munic_observacoes'],
+                'silver/munic_municipio_edicao': silver['silver/munic_municipio_edicao'],
+                'silver/munic_observacoes_versao': silver['silver/munic_observacoes_versao'],
+                'silver/munic_municipio_edicao_versao': silver['silver/munic_municipio_edicao_versao'],
+                'gold/munic_capacidade_institucional_ano': gold_munic['gold/munic_capacidade_institucional_ano'],
+                'gold/munic_disponibilidade_variavel': gold_munic['gold/munic_disponibilidade_variavel'],
+                'gold/munic_auditoria_disponibilidade_variavel': gold_munic['gold/munic_auditoria_disponibilidade_variavel'],
+            }
+            adicionais['munic'] = (painel, tabelas_munic, temporalidade)
+            proveniencia['bronze_munic'] = {k: p.relative_to(raiz).as_posix() for k, p in caminhos.items()}
+            proveniencia['condicao_temporal_munic'] = 'apta_com_ressalva_documentada'
     return adicionais, proveniencia
 
 
@@ -122,7 +149,7 @@ def main(argv=None):
             referencia, territorial = ibge_territorial.transformar(fontes)
             proveniencia['referencia_territorial'] = 'ibge_localidades_oficial'
             proveniencia['bronze_territorial'] = {k: p.relative_to(raiz).as_posix() for k, p in fontes.items()}
-        adicionais, extra = fontes_adicionais(parser, args, raiz, set(referencia.codigo_ibge))
+        adicionais, extra = fontes_adicionais(parser, args, raiz, set(referencia.codigo_ibge), base)
         proveniencia.update(extra)
         tabelas = construir(base, eventos, referencia, territorial, adicionais)
         resultado = publicar(tabelas, raiz, proveniencia)

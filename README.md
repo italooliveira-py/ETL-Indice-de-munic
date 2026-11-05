@@ -89,6 +89,12 @@ O fluxo produz:
 4. cobertura, faltantes, cardinalidade, variância e pares muito correlacionados;
 5. status de cada variável candidata: disponível, derivável, ausente ou dependente de arquivo manual.
 
+## Pacote MUNIC para visualização
+
+O fluxo MUNIC publica Bronze, Silver versionado, Gold institucional e integração aditiva no painel. A condição temporal é `apta_com_ressalva_documentada`, pois os originais de 2019 e 2021 não estão disponíveis no FTP consultado. Para gerar a fotografia compacta a partir de uma versão Gold explícita, siga o [guia de reprodução](docs/GUIA_REPRODUCAO_VISUALIZACAO.md). O pacote fica em `dados/visualizacao/` e não contém score, pesos, ranking, variáveis ambientais ou interpretação causal.
+
+O pacote compacto cobre 223 municípios da Paraíba, 2020–2024, em 1.115 chaves `codigo_ibge + ano`. O Parquet é a representação analítica canônica; o CSV é preparado para Power BI e deve importar `codigo_ibge` como texto, com UTF-8, separador `;` e decimal `,`. O guia lista o schema real, o significado de zero/nulo e os passos de importação.
+
 ## Fontes contempladas
 
 | Fonte | Acesso oficial | Uso no projeto | Situação no ETL |

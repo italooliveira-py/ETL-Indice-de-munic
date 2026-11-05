@@ -1,5 +1,7 @@
 # Plano revisado do MVP
 
+O bloco institucional MUNIC está integrado com RH harmonizado, tabelas Silver versionadas e painel Gold 2020–2024. A condição temporal é `apta_com_ressalva_documentada`, sem score, pesos ou imputação.
+
 Atualizado em 2026-10-24. Reaproveitar coletores, catálogos, checkpoints e política de nulos. Cada etapa termina com dados, contratos, auditoria e documentação; criar uma pasta ou um adaptador vazio não conta como fonte integrada.
 
 ## Entregue nesta etapa

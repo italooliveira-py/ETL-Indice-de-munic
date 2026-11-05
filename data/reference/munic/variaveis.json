@@ -1,0 +1,67 @@
+{
+  "edicoes_autorizadas": [2019, 2020, 2021, 2023, 2024],
+  "variaveis": [
+    {
+      "edicao": 2021,
+      "bloco": "recursos_humanos",
+      "codigo_original": "RH_TOTAL",
+      "aliases": ["RH_TOTAL"],
+      "variavel": "pessoal_ativo",
+      "tipo": "numerico",
+      "unidade": "pessoas",
+      "comparabilidade": "recorrente",
+      "decisao_uso": "candidata_gold"
+    },
+    {
+      "edicao": 2021,
+      "bloco": "recursos_humanos",
+      "codigo_original": "RH_ESTATUTARIOS",
+      "aliases": ["RH_ESTATUTARIOS"],
+      "variavel": "pessoal_estatutario",
+      "tipo": "numerico",
+      "unidade": "pessoas",
+      "comparabilidade": "recorrente",
+      "decisao_uso": "candidata_gold"
+    },
+    {
+      "edicao": 2021,
+      "bloco": "recursos_humanos",
+      "codigo_original": "RH_CELETISTAS",
+      "aliases": ["RH_CELETISTAS"],
+      "variavel": "pessoal_celetista",
+      "tipo": "numerico",
+      "unidade": "pessoas",
+      "comparabilidade": "recorrente",
+      "decisao_uso": "candidata_gold"
+    },
+    {
+      "edicao": 2021,
+      "bloco": "recursos_humanos",
+      "codigo_original": "RH_COMISSIONADOS",
+      "aliases": ["RH_COMISSIONADOS"],
+      "variavel": "pessoal_comissionado",
+      "tipo": "numerico",
+      "unidade": "pessoas",
+      "comparabilidade": "recorrente",
+      "decisao_uso": "candidata_gold"
+    },
+    {
+      "edicao": 2021,
+      "bloco": "recursos_humanos",
+      "codigo_original": "RH_ESTAGIARIOS",
+      "aliases": ["RH_ESTAGIARIOS"],
+      "variavel": "pessoal_estagiario",
+      "tipo": "numerico",
+      "unidade": "pessoas",
+      "comparabilidade": "recorrente",
+      "decisao_uso": "candidata_gold"
+    }
+  ],
+  "mapas_rh": {
+    "2019": {"MREH0111": "pessoal_estatutario", "MREH0112": "pessoal_celetista", "MREH0113": "pessoal_comissionado", "MREH0114": "pessoal_estagiario", "MREH0115": "pessoal_sem_vinculo", "MREH0116": "pessoal_ativo"},
+    "2020": {"MREH0111": "pessoal_estatutario", "MREH0112": "pessoal_celetista", "MREH0113": "pessoal_comissionado", "MREH0114": "pessoal_estagiario", "MREH0115": "pessoal_sem_vinculo", "MREH0116": "pessoal_ativo"},
+    "2021": {"MREH0111": "pessoal_estatutario", "MREH0112": "pessoal_celetista", "MREH0113": "pessoal_comissionado", "MREH0114": "pessoal_estagiario", "MREH0115": "pessoal_sem_vinculo", "MREH0116": "pessoal_ativo"},
+    "2023": {"MREH0111": "pessoal_estatutario", "MREH0112": "pessoal_celetista", "MREH0113": "pessoal_comissionado", "MREH0114": "pessoal_estagiario", "MREH0115": "pessoal_sem_vinculo", "MREH0116": "pessoal_ativo"},
+    "2024": {"MREH011": "pessoal_estatutario", "MREH012": "pessoal_celetista", "MREH013": "pessoal_comissionado", "MREH014": "pessoal_estagiario", "MREH015": "pessoal_sem_vinculo", "MREH016": "pessoal_ativo"}
+  }
+}

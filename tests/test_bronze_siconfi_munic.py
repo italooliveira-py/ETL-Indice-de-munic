@@ -116,6 +116,10 @@ class Ftp:
 
 
 class BronzeMunic(unittest.TestCase):
+    def test_edicoes_autorizadas_ignoram_2022_e_anos_fora_do_contrato(self):
+        html = b''.join(f'<a href="{ano}/">{ano}/</a>'.encode() for ano in (2019, 2020, 2021, 2022, 2023, 2024, 2025))
+        self.assertEqual(munic.edicoes(html), [2019, 2020, 2021, 2023, 2024])
+
     def test_baixa_edicoes_a_partir_de_2019(self):
         ftp = Ftp({'2019': ['Base_MUNIC_2019_20210817.ods', 'Base_MUNIC_2019_20210817.xlsx'],
                    '2021': ['Base_MUNIC_2021.xlsx']})
@@ -124,6 +128,37 @@ class BronzeMunic(unittest.TestCase):
             self.assertEqual(set(caminhos), {'edicao_2019', 'edicao_2021'})
             self.assertEqual(caminhos['edicao_2019'].name, 'Base_MUNIC_2019_20210817.xlsx')
             self.assertFalse(any('2018' in u for u in ftp.urls))
+
+    def test_smoke_pode_limitar_edicoes_sem_baixar_as_demais(self):
+        bases = {str(ano): [f'Base_MUNIC_{ano}.xlsx'] for ano in (2019, 2020, 2021, 2023, 2024)}
+        class SmokeFtp(Ftp):
+            def get(self, url, timeout=None):
+                if url == munic.BASE_URL:
+                    self.urls.append(url)
+                    return resposta(''.join(f'<a href="{ano}/">{ano}/</a>' for ano in bases).encode())
+                return super().get(url, timeout=timeout)
+        ftp = SmokeFtp(bases)
+        with tempfile.TemporaryDirectory() as temp:
+            caminhos = munic.extrair(ftp, Path(temp), anos=[2019, 2024])
+            self.assertEqual(set(caminhos), {'edicao_2019', 'edicao_2024'})
+            self.assertFalse(any('/2020/' in u or '/2021/' in u or '/2023/' in u for u in ftp.urls))
+
+    def test_manifesto_registra_versao_hash_tamanho_e_publicacao(self):
+        ftp = Ftp({'2019': ['Base_MUNIC_2019_20210817.xlsx']})
+        with tempfile.TemporaryDirectory() as temp:
+            munic.extrair(ftp, Path(temp), anos=[2019])
+            indice = json.loads((Path(temp) / 'ref' / 'munic_bronze.json').read_text(encoding='utf-8'))
+            registro = indice['edicoes']['2019']
+            self.assertEqual(registro['versao_base'], 'revisao_2021_08_17')
+            self.assertEqual(registro['data_publicacao'], '2020-12-02')
+            self.assertEqual(registro['data_publicacao_versao'], '2021-08-17')
+            self.assertEqual(len(registro['sha256']), 64)
+            self.assertGreater(registro['tamanho_bytes'], 0)
+            self.assertEqual(registro['status_versao'], 'revisao_unica_disponivel')
+            self.assertFalse(registro['original_disponivel'])
+            self.assertFalse(registro['original_bytes_disponiveis'])
+            self.assertEqual(registro['escopo_correcao_oficial'], 'MREG0151,MREG0152,MREG0153')
+            self.assertTrue(registro['url_nota_oficial'].startswith('https://www.ibge.gov.br/'))
 
     def test_revisao_entra_sem_apagar_a_anterior(self):
         bases = {'2019': ['Base_MUNIC_2019.xlsx'], '2021': ['Base_MUNIC_2021.xlsx']}
