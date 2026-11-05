@@ -1,0 +1,7 @@
+# Ambiente validado para Regressão Logística e KNN com a base ObrasGov.
+# Python 3.12 x64
+numpy==2.2.6
+pandas==2.3.1
+pyarrow==21.0.0
+scikit-learn==1.7.1
+joblib==1.5.2
