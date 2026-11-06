@@ -1,0 +1,459 @@
+{
+  "aptidao": "descritiva; não preditiva",
+  "aptidao_descritiva": true,
+  "aptidao_preditiva": false,
+  "aptidao_tabelas": {
+    "especiais": "descritiva_temporal",
+    "eventos_financeiros": "descritiva_temporal",
+    "instrumentos": "descritiva_temporal",
+    "municipio_ano_historico": "descritiva_nao_preditiva",
+    "sensibilidade_maturidade": "diagnostica"
+  },
+  "caminhos_absolutos": false,
+  "censurados_por_ano": {
+    "2020": 284,
+    "2021": 739,
+    "2022": 239,
+    "2023": 386,
+    "2024": 242
+  },
+  "chaves_tabelas": {
+    "censura_municipio_ano": [
+      "codigo_ibge",
+      "ano"
+    ],
+    "especiais": [
+      "tipo_evento",
+      "id_evento"
+    ],
+    "eventos_financeiros": [
+      "id_desembolso"
+    ],
+    "instrumentos": [
+      "nr_convenio",
+      "ano"
+    ],
+    "municipio_ano_historico": [
+      "codigo_ibge",
+      "ano"
+    ],
+    "sensibilidade_maturidade": [
+      "codigo_ibge",
+      "ano"
+    ]
+  },
+  "cobertura_por_ano_visao": {
+    "2020": {
+      "linhas": 223,
+      "municipios_com_cobertura": 223,
+      "status": "confirmada"
+    },
+    "2021": {
+      "linhas": 223,
+      "municipios_com_cobertura": 223,
+      "status": "confirmada"
+    },
+    "2022": {
+      "linhas": 223,
+      "municipios_com_cobertura": 223,
+      "status": "confirmada"
+    },
+    "2023": {
+      "linhas": 223,
+      "municipios_com_cobertura": 223,
+      "status": "confirmada"
+    },
+    "2024": {
+      "linhas": 223,
+      "municipios_com_cobertura": 223,
+      "status": "confirmada"
+    }
+  },
+  "config_raw_sha256": "2c6681fc256897109002a88f6fe00a976a5a2e01170152faffb567b3acc0d460",
+  "config_sha256": "42e4f8679f5873b105bbe019fbe43bf616e409a42b8f41e7b8aaff64f5d3fb06",
+  "contrato_cobertura": {
+    "artefato_completo": true,
+    "consulta_confirmada": true,
+    "modalidade_coberta": true,
+    "universo_municipal_completo": true
+  },
+  "cortes": "31/12 de cada ano",
+  "definicao_coorte": "instrumentos cuja data_assinatura pertence ao ano de referência",
+  "definicao_janela_3a": "instrumentos assinados entre ano-2 e ano, avaliados somente se maduros no corte",
+  "distribuicao_denominadores": {
+    "2020:10": 15,
+    "2020:11": 23,
+    "2020:12": 14,
+    "2020:13": 10,
+    "2020:14": 8,
+    "2020:15": 14,
+    "2020:16": 3,
+    "2020:17": 14,
+    "2020:18": 14,
+    "2020:19": 7,
+    "2020:2": 2,
+    "2020:20": 8,
+    "2020:21": 11,
+    "2020:22": 7,
+    "2020:23": 3,
+    "2020:24": 3,
+    "2020:25": 6,
+    "2020:26": 2,
+    "2020:27": 2,
+    "2020:28": 3,
+    "2020:29": 2,
+    "2020:30": 3,
+    "2020:31": 3,
+    "2020:32": 1,
+    "2020:33": 1,
+    "2020:34": 3,
+    "2020:37": 1,
+    "2020:4": 4,
+    "2020:46": 1,
+    "2020:5": 5,
+    "2020:54": 1,
+    "2020:57": 1,
+    "2020:6": 2,
+    "2020:65": 1,
+    "2020:7": 8,
+    "2020:74": 1,
+    "2020:8": 7,
+    "2020:9": 9,
+    "2021:10": 14,
+    "2021:11": 17,
+    "2021:12": 12,
+    "2021:13": 13,
+    "2021:14": 10,
+    "2021:15": 16,
+    "2021:16": 5,
+    "2021:17": 12,
+    "2021:18": 10,
+    "2021:19": 9,
+    "2021:20": 10,
+    "2021:21": 9,
+    "2021:22": 11,
+    "2021:23": 2,
+    "2021:24": 6,
+    "2021:25": 5,
+    "2021:26": 5,
+    "2021:27": 2,
+    "2021:28": 2,
+    "2021:29": 1,
+    "2021:30": 3,
+    "2021:31": 6,
+    "2021:32": 4,
+    "2021:34": 2,
+    "2021:35": 1,
+    "2021:37": 2,
+    "2021:4": 3,
+    "2021:40": 1,
+    "2021:5": 4,
+    "2021:51": 1,
+    "2021:56": 1,
+    "2021:57": 1,
+    "2021:6": 3,
+    "2021:69": 1,
+    "2021:7": 6,
+    "2021:78": 1,
+    "2021:8": 7,
+    "2021:9": 5,
+    "2022:10": 9,
+    "2022:11": 6,
+    "2022:12": 9,
+    "2022:13": 9,
+    "2022:14": 5,
+    "2022:15": 13,
+    "2022:16": 11,
+    "2022:17": 10,
+    "2022:18": 15,
+    "2022:19": 8,
+    "2022:20": 9,
+    "2022:21": 10,
+    "2022:22": 11,
+    "2022:23": 8,
+    "2022:24": 11,
+    "2022:25": 7,
+    "2022:26": 5,
+    "2022:27": 6,
+    "2022:28": 3,
+    "2022:29": 3,
+    "2022:30": 7,
+    "2022:31": 2,
+    "2022:32": 4,
+    "2022:33": 4,
+    "2022:34": 6,
+    "2022:35": 1,
+    "2022:36": 1,
+    "2022:37": 3,
+    "2022:39": 1,
+    "2022:40": 1,
+    "2022:41": 2,
+    "2022:47": 1,
+    "2022:56": 1,
+    "2022:59": 1,
+    "2022:6": 2,
+    "2022:60": 1,
+    "2022:7": 2,
+    "2022:74": 1,
+    "2022:8": 6,
+    "2022:9": 7,
+    "2022:90": 1,
+    "2023:10": 11,
+    "2023:11": 4,
+    "2023:12": 9,
+    "2023:13": 7,
+    "2023:14": 6,
+    "2023:15": 9,
+    "2023:16": 14,
+    "2023:17": 10,
+    "2023:18": 14,
+    "2023:19": 10,
+    "2023:20": 6,
+    "2023:21": 12,
+    "2023:22": 9,
+    "2023:23": 4,
+    "2023:24": 12,
+    "2023:25": 10,
+    "2023:26": 11,
+    "2023:27": 2,
+    "2023:28": 6,
+    "2023:29": 6,
+    "2023:30": 4,
+    "2023:31": 4,
+    "2023:32": 2,
+    "2023:33": 4,
+    "2023:34": 1,
+    "2023:35": 6,
+    "2023:36": 2,
+    "2023:37": 3,
+    "2023:38": 2,
+    "2023:39": 2,
+    "2023:40": 1,
+    "2023:41": 1,
+    "2023:42": 1,
+    "2023:45": 1,
+    "2023:48": 1,
+    "2023:56": 1,
+    "2023:6": 1,
+    "2023:60": 1,
+    "2023:67": 1,
+    "2023:7": 1,
+    "2023:77": 1,
+    "2023:8": 2,
+    "2023:9": 7,
+    "2023:94": 1,
+    "2024:10": 6,
+    "2024:102": 1,
+    "2024:11": 5,
+    "2024:12": 11,
+    "2024:13": 9,
+    "2024:14": 4,
+    "2024:15": 8,
+    "2024:16": 6,
+    "2024:17": 9,
+    "2024:18": 10,
+    "2024:19": 10,
+    "2024:20": 13,
+    "2024:21": 13,
+    "2024:22": 12,
+    "2024:23": 6,
+    "2024:24": 6,
+    "2024:25": 10,
+    "2024:26": 8,
+    "2024:27": 10,
+    "2024:28": 4,
+    "2024:29": 8,
+    "2024:30": 6,
+    "2024:31": 8,
+    "2024:32": 3,
+    "2024:33": 3,
+    "2024:34": 1,
+    "2024:35": 2,
+    "2024:36": 5,
+    "2024:37": 3,
+    "2024:38": 2,
+    "2024:39": 2,
+    "2024:40": 2,
+    "2024:41": 6,
+    "2024:45": 1,
+    "2024:47": 1,
+    "2024:52": 1,
+    "2024:57": 1,
+    "2024:61": 1,
+    "2024:7": 1,
+    "2024:73": 1,
+    "2024:8": 1,
+    "2024:81": 1,
+    "2024:9": 2
+  },
+  "formulas": {
+    "beta_binomial": "(atrasados + 1) / (maduros + 1 + 1)",
+    "shrinkage": "n/(n+5)*taxa + 5/(n+5)*media_estadual",
+    "taxa_atraso_365": "atrasados_365 / denominador_maduro"
+  },
+  "gold_manifest_sha": "28E24585431DC29B0DA53B10FD0811B91A02BA79BD00484EA6297D9ABB84F5B5",
+  "gold_version": "65260a170ee18cd79501",
+  "hashes_entradas_semanticos": {
+    "configuracao": "42e4f8679f5873b105bbe019fbe43bf616e409a42b8f41e7b8aaff64f5d3fb06",
+    "desembolsos": "2524387c10a68a279bc7df2738c8e3ec9e6476e8152e0400941440973e37bec1",
+    "empenhos": "6cc5cbb082713c02a1a37557f6e58052f8c137cec5ab7414a5a88a42293f9368",
+    "instrumentos": "d943da0a88b2d91ec07b3982e4d1d371704363417f277340ea4cf0a80defb532",
+    "pagamentos": "6b363b41c8b07801ba5651e88c377aa0b31120ca14e60ed9afbe1346f267e9d3",
+    "planos": "364dd25762659f05e57016a9211d2b85dd567952081446303913de14b17d162e",
+    "universo_municipal": "6ac366998ec59c186702e43a0713dd63b3b96c7ec054ca82dcf6b62fa6666219"
+  },
+  "hashes_saidas": {
+    "censura_municipio_ano": "828f588a048b4efb05229baa14c0ddc6406d486d2033b7114c1b3423c640980d",
+    "elegibilidade_variaveis": "6f6d041868cbd85dea964a81b17fe62608c733dd3ebe1268539c902f7be9eb1f",
+    "especiais": "9710bcd407cb924bb705b4f50c7414a15461919817af51dcb410e4106263b762",
+    "eventos_financeiros": "c3df6091a6d11c601b18dc2c64dd556362be8c61f0c190826067d3a4ccb1a90c",
+    "instrumentos": "1f111983ec7fbd934671bf0628de59a1e623324fb53a2f6ddb1f60beb45457ce",
+    "instrumentos_auditoria": "cd5ab31817e3737538669a4eeca403535d318c6f3e539ac2776c042a27d3ee7e",
+    "municipio_ano_historico": "f0681b78fa5156c50bbf09b546cb8023c9e0413641e66876766dc791724dacf6",
+    "sensibilidade_maturidade": "e02327f52e9a8e9fe1e15317a6c0ef230d6baa43ffd25c274bf96356c4a1d019"
+  },
+  "linhas": {
+    "censura_municipio_ano": 1115,
+    "elegibilidade_variaveis": 2,
+    "especiais": 5596,
+    "eventos_financeiros": 9411,
+    "instrumentos": 24662,
+    "instrumentos_auditoria": 0,
+    "municipio_ano_historico": 1115,
+    "sensibilidade_maturidade": 1115
+  },
+  "modalidades": [
+    "discricionaria",
+    "legal",
+    "especial"
+  ],
+  "parametros_sensibilidade": {
+    "beta_alpha": 1,
+    "beta_beta": 1,
+    "minimo_denominador": 5,
+    "shrinkage_k": 5
+  },
+  "periodo": [
+    2020,
+    2024
+  ],
+  "regras_maturidade": {
+    "dia_365": "no_prazo_365",
+    "dia_366": "atrasado_apos_365",
+    "dias": 365,
+    "valor": "> 0"
+  },
+  "sensibilidade_por_metodo_ano": {
+    "taxa_beta_binomial": {
+      "2020": {
+        "municipios_excluidos": 0,
+        "municipios_incluidos": 223,
+        "spearman_vs_bruta": 0.9804567687033358
+      },
+      "2021": {
+        "municipios_excluidos": 0,
+        "municipios_incluidos": 223,
+        "spearman_vs_bruta": 0.9857793217261533
+      },
+      "2022": {
+        "municipios_excluidos": 0,
+        "municipios_incluidos": 223,
+        "spearman_vs_bruta": 0.980452195885543
+      },
+      "2023": {
+        "municipios_excluidos": 0,
+        "municipios_incluidos": 223,
+        "spearman_vs_bruta": 0.9805320220117582
+      },
+      "2024": {
+        "municipios_excluidos": 0,
+        "municipios_incluidos": 223,
+        "spearman_vs_bruta": 0.9849402684535666
+      }
+    },
+    "taxa_bruta": {
+      "2020": {
+        "municipios_excluidos": 0,
+        "municipios_incluidos": 223,
+        "spearman_vs_bruta": 0.9999999999999998
+      },
+      "2021": {
+        "municipios_excluidos": 0,
+        "municipios_incluidos": 223,
+        "spearman_vs_bruta": 1.0
+      },
+      "2022": {
+        "municipios_excluidos": 0,
+        "municipios_incluidos": 223,
+        "spearman_vs_bruta": 0.9999999999999998
+      },
+      "2023": {
+        "municipios_excluidos": 0,
+        "municipios_incluidos": 223,
+        "spearman_vs_bruta": 0.9999999999999998
+      },
+      "2024": {
+        "municipios_excluidos": 0,
+        "municipios_incluidos": 223,
+        "spearman_vs_bruta": 1.0
+      }
+    },
+    "taxa_minimo_configurado": {
+      "2020": {
+        "municipios_excluidos": 6,
+        "municipios_incluidos": 217,
+        "spearman_vs_bruta": 1.0
+      },
+      "2021": {
+        "municipios_excluidos": 3,
+        "municipios_incluidos": 220,
+        "spearman_vs_bruta": 1.0
+      },
+      "2022": {
+        "municipios_excluidos": 0,
+        "municipios_incluidos": 223,
+        "spearman_vs_bruta": 0.9999999999999998
+      },
+      "2023": {
+        "municipios_excluidos": 0,
+        "municipios_incluidos": 223,
+        "spearman_vs_bruta": 0.9999999999999998
+      },
+      "2024": {
+        "municipios_excluidos": 0,
+        "municipios_incluidos": 223,
+        "spearman_vs_bruta": 1.0
+      }
+    },
+    "taxa_shrinkage_estadual": {
+      "2020": {
+        "municipios_excluidos": 0,
+        "municipios_incluidos": 223,
+        "spearman_vs_bruta": 0.9945151786696079
+      },
+      "2021": {
+        "municipios_excluidos": 0,
+        "municipios_incluidos": 223,
+        "spearman_vs_bruta": 0.9968510806116472
+      },
+      "2022": {
+        "municipios_excluidos": 0,
+        "municipios_incluidos": 223,
+        "spearman_vs_bruta": 0.9972135767705964
+      },
+      "2023": {
+        "municipios_excluidos": 0,
+        "municipios_incluidos": 223,
+        "spearman_vs_bruta": 0.9972825801730629
+      },
+      "2024": {
+        "municipios_excluidos": 0,
+        "municipios_incluidos": 223,
+        "spearman_vs_bruta": 0.9979534732988781
+      }
+    }
+  },
+  "tempo_execucao_segundos": 0.292618,
+  "versao_analitica": "95534890b62018db9922",
+  "versao_contrato": "transferegov-historico-temporal-v0.1.2"
+}
