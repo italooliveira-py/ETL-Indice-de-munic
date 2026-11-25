@@ -1,0 +1,34 @@
+{
+  "hashes": {
+    "README.md": "ff6194b9c4acf688892eb84c904f9a551e9e002df923a17d3685df890a654348",
+    "audit/feature_eligibility.csv": "6f0a6988188fb4a4155754d22bfa94c0e584a65eb0f871436977f0b1b4f8666e",
+    "audit/leakage_checks.json": "96aff66898557b8f2f21e82caace212ddba1cde85f62ee7a53673dd865dfc133",
+    "audit/quality_report.json": "745345aa162c475ffd489e0dcdbf173d1863c0c1775b7c147842c60c31a66f1f",
+    "audit/split_validation.json": "7a1f289ae00531bca764cbc76faa1e7982cb83e72a2735a50b018f230b6b7fde",
+    "data/censored.parquet": "e9986dc2573cc0bca229ec7832ffdcb298d1014e808e52b8190e1cf904f8f161",
+    "data/feature_sets.json": "5383482deaec1fbef3f9a8df49f5f87abd0f778f12e9df88aacdb970cb774ab8",
+    "data/split_manifest.csv": "66c698af5d26070a81ce3b27a13ce78b39b010091ef5d0710e9f1e3a9359acfb",
+    "data/test.parquet": "a04bb175471352becc7b107a90a46fe740942ba8a91de951621547470c05f3b5",
+    "data/train.parquet": "2db3a39490c969be59fb567899076a744d5df7dbb85f907efdcc6e0ce9ffe2a4",
+    "data/validation.parquet": "7daa8bee194fb94af9d558223be096d9eca864f991e462ee0070c53db040fd80",
+    "docs/CONTRATO_DESFECHO.md": "f15648a99d2303c7e6d94463c97f9010f669bd88e0137241690bf7685a1bbf92",
+    "docs/CONTRIBUICAO_ENGENHARIA_DADOS.md": "ce2d4432d96b2b32eeb505376c75e75677788d2e154d255f41aa6caf02d243e8",
+    "docs/DICIONARIO_VARIAVEIS.csv": "ab296f52759bb033e2c330e08dfc7a6da5ea7325f8e2503fd35ad1816db2c53a",
+    "docs/GUIA_EQUIPE_MODELAGEM.md": "20965276f4e641846f9c0a88c48c6b51c112f1a8781fec172aba237aa29dbb7a",
+    "docs/LIMITACOES_MULTIBASE.md": "ed7075a08c1b65fa3254b5eaa9cfe5cff0801b0ee2e9fc2d887569285a66c7a7",
+    "docs/METODOLOGIA_TEMPORAL.md": "55fd29ad9032631b5235f02395497e0f8504dff6170cf2b94f25226a7d05ec16",
+    "docs/QUALIDADE_DADOS.md": "8cef8457060d6b689e5e0ae3abbca6e2dcfdff2a537da114b374fde305e32ad3",
+    "verify_package.py": "1b81e976c2f174ac63db0b525b5e35df5149a850ba81fa098b062bd619f23e1e"
+  },
+  "metadata": {
+    "environment": "Python 3.12 x64; pandas/pyarrow do lock E05",
+    "source_4c": "4c5e7a1b3d9f0c2e6a8b",
+    "source_4e": "4e1b7d9a3c5f0e2d6a8b",
+    "source_4g": "4g1c7e9a2b5d0f3e6a8c",
+    "training_executed": false,
+    "version": "4h1a7c9e3b5d0f2e6a8c"
+  },
+  "relative_paths_only": true,
+  "schema": "pacote_final_modelagem_e06.v1",
+  "training_executed": false
+}

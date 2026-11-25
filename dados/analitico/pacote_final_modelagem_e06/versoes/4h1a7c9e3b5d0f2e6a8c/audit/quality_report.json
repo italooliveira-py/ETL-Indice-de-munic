@@ -1,0 +1,37 @@
+{
+  "version": "4h1a7c9e3b5d0f2e6a8c",
+  "n_instrumentos_maduros": 5359,
+  "n_censurados": 242,
+  "n_municipios": 223,
+  "y1": 4315,
+  "y0": 1044,
+  "nulls_by_column": {
+    "nr_convenio": 0,
+    "codigo_ibge": 0,
+    "data_assinatura": 0,
+    "data_previsao": 0,
+    "split": 0,
+    "ano_origem": 0,
+    "modalidade": 0,
+    "historico_instrumentos_maduros": 0,
+    "historico_atrasados": 0,
+    "historico_eventos_financeiros": 0,
+    "historico_valor_desembolsado": 0,
+    "valor_global_assinatura": 0,
+    "y_1_sem_desembolso_365": 0
+  },
+  "duplicate_instruments": 0,
+  "signature_value_audit": {
+    "nulos": 0,
+    "zeros": 0,
+    "negativos": 0,
+    "distintos": 2186,
+    "min": 88192.0,
+    "mediana": 334572.0,
+    "p99": 6007000.0,
+    "max": 71532046.5
+  },
+  "training_executed": false,
+  "full_etl_reproducible": false,
+  "package_reproducible": true
+}

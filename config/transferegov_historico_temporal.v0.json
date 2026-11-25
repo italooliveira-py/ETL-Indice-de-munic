@@ -1,0 +1,19 @@
+{
+  "versao_contrato": "transferegov-historico-temporal-v0.1.2",
+  "periodo": [2020, 2024],
+  "corte_anual": "12-31",
+  "maturidade_dias": 365,
+  "regra_dia_365": "no_prazo_365",
+  "regra_dia_366": "atrasado_apos_365",
+  "valor_desembolso_estritamente_positivo": true,
+  "modalidades": ["discricionaria", "legal", "especial"],
+  "faixas_denominador": [
+    {"nome": "0", "minimo": 0, "maximo": 0},
+    {"nome": "1-4", "minimo": 1, "maximo": 4},
+    {"nome": "5-9", "minimo": 5, "maximo": 9},
+    {"nome": "10-19", "minimo": 10, "maximo": 19},
+    {"nome": "20+", "minimo": 20, "maximo": null}
+  ],
+  "metodos_sensibilidade": ["taxa_bruta", "taxa_minimo_configurado", "taxa_beta_binomial", "taxa_shrinkage_estadual"],
+  "parametros_sensibilidade": {"minimo_denominador": 5, "beta_alpha": 1, "beta_beta": 1, "shrinkage_k": 5}
+}

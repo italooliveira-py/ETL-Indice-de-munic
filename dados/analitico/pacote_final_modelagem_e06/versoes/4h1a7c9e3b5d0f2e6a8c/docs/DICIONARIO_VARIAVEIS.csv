@@ -1,0 +1,14 @@
+variavel,conjunto,tipo,papel,descricao,elegibilidade
+ano_origem,M1/M1+,inteiro,preditor,Ano da assinatura,A
+modalidade,M1/M1+,categoria,preditor,Modalidade registrada na origem,A
+historico_instrumentos_maduros,M1/M1+,contagem,preditor,Instrumentos maduros anteriores do município,A
+historico_atrasados,M1/M1+,contagem,preditor,Instrumentos anteriores com atraso,A
+historico_eventos_financeiros,M1/M1+,contagem,preditor,Eventos financeiros anteriores,A
+historico_valor_desembolsado,M1/M1+,monetário,preditor,Valor desembolsado em eventos anteriores,A
+valor_global_assinatura,M1+,monetário,preditor,Valor original registrado na assinatura,A condicionada
+y_1_sem_desembolso_365,M1/M1+,booleano,alvo,Ausência de primeiro desembolso em 365 dias,C como preditor; alvo válido
+nr_convenio,M1/M1+,identificador,metadata,Identificador do instrumento,Never como preditor
+codigo_ibge,M1/M1+,identificador,metadata,Código municipal,Never como preditor
+data_assinatura,M1/M1+,data,metadata,Data de origem da previsão,Never como preditor
+data_previsao,M1/M1+,data,metadata,Data de previsão preservada,Never como preditor
+split,M1/M1+,categoria,metadata,Partição temporal,Never como preditor
