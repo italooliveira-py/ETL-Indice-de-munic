@@ -1,0 +1,4 @@
+# Pacotes congelados: o manifesto guarda o SHA-256 de cada arquivo. Sem conversão de fim de
+# linha, o checkout no Windows (core.autocrlf=true) entrega os mesmos bytes e a verificação passa.
+dados/** -text
+*.parquet binary
