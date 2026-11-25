@@ -1,0 +1,38 @@
+{
+  "M1": [
+    "ano_origem",
+    "modalidade",
+    "historico_instrumentos_maduros",
+    "historico_atrasados",
+    "historico_eventos_financeiros",
+    "historico_valor_desembolsado"
+  ],
+  "M1_plus": [
+    "ano_origem",
+    "modalidade",
+    "historico_instrumentos_maduros",
+    "historico_atrasados",
+    "historico_eventos_financeiros",
+    "historico_valor_desembolsado",
+    "valor_global_assinatura"
+  ],
+  "target": "y_1_sem_desembolso_365",
+  "identifiers": [
+    "nr_convenio",
+    "codigo_ibge"
+  ],
+  "metadata": [
+    "nr_convenio",
+    "codigo_ibge",
+    "data_assinatura",
+    "data_previsao",
+    "split"
+  ],
+  "forbidden_as_predictors": [
+    "data_maturidade_365",
+    "data_observacao_desfecho",
+    "desfecho_365",
+    "instrumento_censurado",
+    "y_1_sem_desembolso_365"
+  ]
+}

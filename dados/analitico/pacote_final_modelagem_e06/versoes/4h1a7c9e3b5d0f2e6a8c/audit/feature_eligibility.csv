@@ -1,0 +1,8 @@
+variavel,fonte,conjunto,descricao,tipo,cobertura,elegibilidade
+ano_origem,Transferegov,M1,conforme contrato temporal 4E,int32,1.0,A
+modalidade,Transferegov,M1,conforme contrato temporal 4E,object,1.0,A
+historico_instrumentos_maduros,Transferegov,M1,conforme contrato temporal 4E,int64,1.0,A
+historico_atrasados,Transferegov,M1,conforme contrato temporal 4E,int64,1.0,A
+historico_eventos_financeiros,Transferegov,M1,conforme contrato temporal 4E,int64,1.0,A
+historico_valor_desembolsado,Transferegov,M1,conforme contrato temporal 4E,float64,1.0,A
+valor_global_assinatura,Transferegov,M1+,variável Transferegov disponível na origem; valor_global_assinatura é o valor original da assinatura,float64,1.0,A

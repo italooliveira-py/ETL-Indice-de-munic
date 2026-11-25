@@ -1,0 +1,6 @@
+{
+  "forbidden_predictors_in_M1": [],
+  "forbidden_predictors_in_M1_plus": [],
+  "target_used_to_construct_predictors": false,
+  "point_in_time_status": "validated_for_transferegov_history_with_value_assinatura_conditioned_on_source_field"
+}
