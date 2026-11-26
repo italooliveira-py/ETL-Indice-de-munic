@@ -1,0 +1,10 @@
+{
+  "cadencia": "mensal",
+  "momento_escore": "assinatura",
+  "priorizacao": "fechamento do mês",
+  "origem_parametros": "sensibilidade ilustrativa",
+  "unidade": "utilidade líquida normalizada por revisão",
+  "meses_validacao": 24,
+  "instrumentos_validacao": 1023,
+  "capacidade_referencia_validacao": 9
+}

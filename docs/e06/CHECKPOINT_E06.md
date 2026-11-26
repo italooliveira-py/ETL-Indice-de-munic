@@ -1,5 +1,7 @@
 # Checkpoint — E06
 
+A rodada coletiva que reconstrói a matriz desde o Bronze está em [Execução da Entrega 6](EXECUCAO_ENTREGA.md).
+
 ## Estado
 
 - Plano executado, incluindo a aplicação aos instrumentos de 2024. Resultados em `docs/e06/RESULTADOS_E06.md`.

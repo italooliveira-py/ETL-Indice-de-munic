@@ -1,0 +1,46 @@
+{
+  "origem": "bronze",
+  "semente": 20261125,
+  "anos_cv": [
+    2016,
+    2017,
+    2018,
+    2019
+  ],
+  "pacote": "4h1a7c9e3b5d0f2e6a8c",
+  "hash_pacote": "943c226ba3a5ab9d7d53560f2eab0fed0a90fe907925d64a5a299f7c6255f349",
+  "codigo": "8372c592cd5139d0c455e908c70f3248dcdcb0a1+alteracoes_nao_commitadas",
+  "python": "3.12.2",
+  "pacotes": {
+    "pandas": "2.3.1",
+    "numpy": "2.2.6",
+    "scikit-learn": "1.7.1",
+    "pyarrow": "21.0.0",
+    "scipy": "1.18.0"
+  },
+  "hashes": {
+    "auditoria_base.json": "6bf14b4ec6d55e87b13805007043df1d95e13b97d1fa3a99d3043e3b84caf25a",
+    "calibracao.csv": "42788e0e4569a0b0ef2d1c3420dd65706c425a7b1f0dd3d1933b02c16168be43",
+    "casos.csv": "f199c9861a9cc8d9b1f85849cd70ba0d626d9e58e46289cf281c28f42313af1e",
+    "comparacao.csv": "d89a7ab0b40ef65bcaf10ab814392bb2f4bd8ed1f66e93a46f8a37a48fd05a0e",
+    "equidade.csv": "c97909553525d06f691649e8b4bda82880d66f411498edd6d6860a6d250eac0d",
+    "erros.csv": "7dca187ee1f4771e6b6549a5d1e05bd62b3ead3a7b868c0ac3ce912747ffb779",
+    "escolhas.json": "f5884debb29d365b9e74b5ae3d6c2e93409a15446bdc15425dfc07dbdab4aec7",
+    "grades_cv.csv": "876d80f1771411f682fdc4bb449082055637c2c74b9583eb5e92243e7b883f16",
+    "janelas_cv.csv": "ae4ca0aeffe63be0f8f76af865593d64722ff1a46cae3dc2b31f27abc74e906f",
+    "modelos/arvore.joblib": "ec177c7ae71724913022b57d3ae5815f5a72312450d9af7e843060ddc1d36de3",
+    "modelos/floresta.joblib": "afa2af6130ba6d1d8f8ed5d2d0656d105b1d6cfedf569a003f7880273f3f62b4",
+    "modelos/gb.joblib": "15a03697f2da01feff58b6fa5de1938051adebda49a2518b1797ffecec43dc9f",
+    "modelos/logistica.joblib": "bd34076f4111163d08548d3811ed97361d6d2aee006057cf45e09d4ad50940ec",
+    "modelos/modalidade.joblib": "997d873e99478cfba021e7596a21d771fe3d320aed2387bfcfedeb41355bbd4b",
+    "operacao.csv": "eea135f42d37a93dabe3d0d389db295856969438994e3f0bdb69faaf4c4855ad",
+    "operacao_mensal.csv": "d83f39edf1e2eaf26bb11be20411a64bb606408d8d8e5eda3a7afaab23f91b4f",
+    "premissas.json": "35d5b18e2568399a32d39fda8d0371b3ab97d528998f2751c1d2d36905815127",
+    "previsoes.parquet": "ad7c4b951054c1161e0a96b4d76c40c4fb3c02b02622a3fa349d3e20076e2d3e",
+    "prospectivo_2024.parquet": "3ea93ea84e3aaf337a9327ffb509cf7bb15b67de30c036b0e9c6b6d0bfc814f1",
+    "test.parquet": "5850ca8e39771cea5954187ee5f69592383ddf23b159709e2e745f6e1908d467",
+    "train.parquet": "6e22902fe08c8305b7b09da907133423d8ce1044f4ccdd40f10cce6570113a96",
+    "validation.parquet": "8357637606673a7d6f09c392c0ac68ca5b05f53d5607a4714ea6f4c67ce1d8e9"
+  },
+  "sha256_fonte_porte": "4be0f0b26d4273e957e4fd3727f3628c67b515477f2805cc0206094e597ec6f6"
+}

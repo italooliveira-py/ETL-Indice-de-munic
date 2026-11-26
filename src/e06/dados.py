@@ -96,7 +96,11 @@ def porte(codigos, config):
         return pd.Series('sem IBGE', index=codigos.index)
     ibge = pd.read_parquet(caminho).dropna(subset=['populacao']).sort_values('ano')
     pop = ibge.groupby(ibge.codigo_ibge.astype(str)).populacao.last()
-    return pd.cut(codigos.map(pop), FAIXAS_PORTE, labels=ROTULOS_PORTE, right=False).astype(str)
+    return classificar_porte(codigos, pop)
+
+
+def classificar_porte(codigos, populacao):
+    return pd.cut(codigos.map(populacao), FAIXAS_PORTE, labels=ROTULOS_PORTE, right=False).astype(str)
 
 
 def experiencia(maduros):
