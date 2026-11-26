@@ -1,0 +1,25 @@
+{
+  "versao_pacote": "4h1a7c9e3b5d0f2e6a8c",
+  "hashes": {
+    "aberturas_teste.csv": "0d84128d7396d25dfd1b7fc0809ffe82cff3a134c12ea299e4ab72f619105514",
+    "calibracao.csv": "8f784d66c1a2721974767abfeb208a31cb0387cce113e03dbd5c0ba1203d4268",
+    "calibracao_por_ano_A0.csv": "4d929522269702d237876dea025a93392d8e6c8b15518278951c4107f724987f",
+    "capacidade_esperada.csv": "a4d29ff282a6049ae7514ad46179772cb47b82ee566fe1980e0d0f49ebb41e97",
+    "erros.csv": "9867c960f0961a00f12ca9e7b64f37ba8e9cda0a47cced3b4419c48d87cbac8c",
+    "escolhas/A0.json": "a5b16b7d9ab0d5879bd4856d3b5520f4c5a28e813659b2394fb5771421255636",
+    "escolhas/A1.json": "84d0b86879d7ef7df799c29a2a37086a7c9ca750b9ac3d32f90c4ef37371b11d",
+    "escolhas/A2.json": "8e75235f2e007ff0c9367a8772f0049aa8b4a4ea2f5a51bfbab5998558b25398",
+    "escolhas/B1.json": "5a5a68a1162aa3e9e8b355815f27d4cbb6adcca391d5bab248d4337fce2ba697",
+    "escolhas/B2.json": "fde7116d96a8ac362d6746b3bb7b1b7d7eca06fdd5ae65a86c0f967e3f379cbd",
+    "escolhas/C1.json": "7e3cf79882c95c1f378001262ac95189ac58d76c1d019bb9a98da7ac5279633d",
+    "grades.csv": "0a4c873620692b1a403291461c457a003946a608e421c4f1c9863d7fbb06f901",
+    "matrizes_tres_limiares.csv": "107204503314107d6b506016a3e2155198276700bf75e6a4c9ab09cddd678b85",
+    "previsoes.parquet": "ee1e657c57a8d9dd6db48bde64ef09966cf6191a6dd93c8d300a851ff59efaf2",
+    "proveniencia.json": "bbc88ff562f9d43d1407cbef94bed76eb27de76a8c2bab10673cbf8a876bdb91",
+    "quadro_validacao.csv": "b9dcb1bdbd30f8d42cf19ae986fcf56eead965e5082a24ab82bce9b27adee83b",
+    "registro.csv": "41e57282b8ff6c24325b919c22ad201ab5dba254d03ad29b418b380fcb24151c",
+    "registro_oficial_teste.csv": "0ca931d5eec98d7f1268c9b9cf2a3b02142ce610429e90924e1d99e6b7e1aab3",
+    "replicacao.csv": "04a777d8857074daadcb74fb9aee0c7338cc487878132cf8bf4a1d8f7a6e1f69",
+    "robustez.csv": "7bac9a38f159f136b14fd75b7612bed09fb18fb552b3a194b69d1308c7c172ea"
+  }
+}

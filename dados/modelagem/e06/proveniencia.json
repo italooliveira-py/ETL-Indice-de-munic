@@ -1,0 +1,306 @@
+{
+  "A0_escolha_20261126T001627": {
+    "run_id": "A0_escolha_20261126T001627",
+    "data_hora": "2026-11-26T00:16:27",
+    "commit_codigo": "35d6410627ac341e2152869abc4d8da585b05525",
+    "versao_pacote": "4h1a7c9e3b5d0f2e6a8c",
+    "hash_pacote": "d015a9eb055b9df53c34c33b8525026e5ff02d496ea005e5408130fb23ff2d7f",
+    "python": "3.12.4",
+    "arquitetura": "AMD64",
+    "pacotes": {
+      "pandas": "2.3.3",
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "pyarrow": "21.0.0",
+      "scipy": "1.18.1"
+    },
+    "fora_do_lock": {},
+    "semente": 20261125,
+    "ensaio": false
+  },
+  "A0_teste_20261126T002507": {
+    "run_id": "A0_teste_20261126T002507",
+    "data_hora": "2026-11-26T00:25:07",
+    "commit_codigo": "b4d4b5db72b42d258f5d9b8eefcee2b2637db480",
+    "versao_pacote": "4h1a7c9e3b5d0f2e6a8c",
+    "hash_pacote": "d015a9eb055b9df53c34c33b8525026e5ff02d496ea005e5408130fb23ff2d7f",
+    "python": "3.12.4",
+    "arquitetura": "AMD64",
+    "pacotes": {
+      "pandas": "2.3.3",
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "pyarrow": "21.0.0",
+      "scipy": "1.18.1"
+    },
+    "fora_do_lock": {},
+    "semente": 20261125,
+    "ensaio": false
+  },
+  "A1_escolha_20261126T002823": {
+    "run_id": "A1_escolha_20261126T002823",
+    "data_hora": "2026-11-26T00:28:23",
+    "commit_codigo": "b4d4b5db72b42d258f5d9b8eefcee2b2637db480",
+    "versao_pacote": "4h1a7c9e3b5d0f2e6a8c",
+    "hash_pacote": "d015a9eb055b9df53c34c33b8525026e5ff02d496ea005e5408130fb23ff2d7f",
+    "python": "3.12.4",
+    "arquitetura": "AMD64",
+    "pacotes": {
+      "pandas": "2.3.3",
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "pyarrow": "21.0.0",
+      "scipy": "1.18.1"
+    },
+    "fora_do_lock": {},
+    "semente": 20261125,
+    "ensaio": false
+  },
+  "A2_escolha_20261126T002834": {
+    "run_id": "A2_escolha_20261126T002834",
+    "data_hora": "2026-11-26T00:28:34",
+    "commit_codigo": "b4d4b5db72b42d258f5d9b8eefcee2b2637db480",
+    "versao_pacote": "4h1a7c9e3b5d0f2e6a8c",
+    "hash_pacote": "d015a9eb055b9df53c34c33b8525026e5ff02d496ea005e5408130fb23ff2d7f",
+    "python": "3.12.4",
+    "arquitetura": "AMD64",
+    "pacotes": {
+      "pandas": "2.3.3",
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "pyarrow": "21.0.0",
+      "scipy": "1.18.1"
+    },
+    "fora_do_lock": {},
+    "semente": 20261125,
+    "ensaio": false
+  },
+  "B1_escolha_20261126T002842": {
+    "run_id": "B1_escolha_20261126T002842",
+    "data_hora": "2026-11-26T00:28:42",
+    "commit_codigo": "b4d4b5db72b42d258f5d9b8eefcee2b2637db480",
+    "versao_pacote": "4h1a7c9e3b5d0f2e6a8c",
+    "hash_pacote": "d015a9eb055b9df53c34c33b8525026e5ff02d496ea005e5408130fb23ff2d7f",
+    "python": "3.12.4",
+    "arquitetura": "AMD64",
+    "pacotes": {
+      "pandas": "2.3.3",
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "pyarrow": "21.0.0",
+      "scipy": "1.18.1"
+    },
+    "fora_do_lock": {},
+    "semente": 20261125,
+    "ensaio": false
+  },
+  "B2_escolha_20261126T002848": {
+    "run_id": "B2_escolha_20261126T002848",
+    "data_hora": "2026-11-26T00:28:48",
+    "commit_codigo": "b4d4b5db72b42d258f5d9b8eefcee2b2637db480",
+    "versao_pacote": "4h1a7c9e3b5d0f2e6a8c",
+    "hash_pacote": "d015a9eb055b9df53c34c33b8525026e5ff02d496ea005e5408130fb23ff2d7f",
+    "python": "3.12.4",
+    "arquitetura": "AMD64",
+    "pacotes": {
+      "pandas": "2.3.3",
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "pyarrow": "21.0.0",
+      "scipy": "1.18.1"
+    },
+    "fora_do_lock": {},
+    "semente": 20261125,
+    "ensaio": false
+  },
+  "C1_escolha_20261126T002854": {
+    "run_id": "C1_escolha_20261126T002854",
+    "data_hora": "2026-11-26T00:28:54",
+    "commit_codigo": "b4d4b5db72b42d258f5d9b8eefcee2b2637db480",
+    "versao_pacote": "4h1a7c9e3b5d0f2e6a8c",
+    "hash_pacote": "d015a9eb055b9df53c34c33b8525026e5ff02d496ea005e5408130fb23ff2d7f",
+    "python": "3.12.4",
+    "arquitetura": "AMD64",
+    "pacotes": {
+      "pandas": "2.3.3",
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "pyarrow": "21.0.0",
+      "scipy": "1.18.1"
+    },
+    "fora_do_lock": {},
+    "semente": 20261125,
+    "ensaio": false
+  },
+  "B1_escolha_20261126T003012": {
+    "run_id": "B1_escolha_20261126T003012",
+    "data_hora": "2026-11-26T00:30:12",
+    "commit_codigo": "d7f72ec501a66599201cff67c8abeb4bb438dcb3",
+    "versao_pacote": "4h1a7c9e3b5d0f2e6a8c",
+    "hash_pacote": "d015a9eb055b9df53c34c33b8525026e5ff02d496ea005e5408130fb23ff2d7f",
+    "python": "3.12.4",
+    "arquitetura": "AMD64",
+    "pacotes": {
+      "pandas": "2.3.3",
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "pyarrow": "21.0.0",
+      "scipy": "1.18.1"
+    },
+    "fora_do_lock": {},
+    "semente": 20261125,
+    "ensaio": false
+  },
+  "B2_escolha_20261126T003037": {
+    "run_id": "B2_escolha_20261126T003037",
+    "data_hora": "2026-11-26T00:30:37",
+    "commit_codigo": "d7f72ec501a66599201cff67c8abeb4bb438dcb3+alteracoes_nao_commitadas",
+    "versao_pacote": "4h1a7c9e3b5d0f2e6a8c",
+    "hash_pacote": "d015a9eb055b9df53c34c33b8525026e5ff02d496ea005e5408130fb23ff2d7f",
+    "python": "3.12.4",
+    "arquitetura": "AMD64",
+    "pacotes": {
+      "pandas": "2.3.3",
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "pyarrow": "21.0.0",
+      "scipy": "1.18.1"
+    },
+    "fora_do_lock": {},
+    "semente": 20261125,
+    "ensaio": false
+  },
+  "A1_teste_20261126T003105": {
+    "run_id": "A1_teste_20261126T003105",
+    "data_hora": "2026-11-26T00:31:05",
+    "commit_codigo": "1bb140ce1726feec19db3387e3535ec37beb401a+alteracoes_nao_commitadas",
+    "versao_pacote": "4h1a7c9e3b5d0f2e6a8c",
+    "hash_pacote": "d015a9eb055b9df53c34c33b8525026e5ff02d496ea005e5408130fb23ff2d7f",
+    "python": "3.12.4",
+    "arquitetura": "AMD64",
+    "pacotes": {
+      "pandas": "2.3.3",
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "pyarrow": "21.0.0",
+      "scipy": "1.18.1"
+    },
+    "fora_do_lock": {},
+    "semente": 20261125,
+    "ensaio": false
+  },
+  "A2_teste_20261126T003130": {
+    "run_id": "A2_teste_20261126T003130",
+    "data_hora": "2026-11-26T00:31:30",
+    "commit_codigo": "1bb140ce1726feec19db3387e3535ec37beb401a+alteracoes_nao_commitadas",
+    "versao_pacote": "4h1a7c9e3b5d0f2e6a8c",
+    "hash_pacote": "d015a9eb055b9df53c34c33b8525026e5ff02d496ea005e5408130fb23ff2d7f",
+    "python": "3.12.4",
+    "arquitetura": "AMD64",
+    "pacotes": {
+      "pandas": "2.3.3",
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "pyarrow": "21.0.0",
+      "scipy": "1.18.1"
+    },
+    "fora_do_lock": {},
+    "semente": 20261125,
+    "ensaio": false
+  },
+  "B1_teste_20261126T003158": {
+    "run_id": "B1_teste_20261126T003158",
+    "data_hora": "2026-11-26T00:31:58",
+    "commit_codigo": "1bb140ce1726feec19db3387e3535ec37beb401a+alteracoes_nao_commitadas",
+    "versao_pacote": "4h1a7c9e3b5d0f2e6a8c",
+    "hash_pacote": "d015a9eb055b9df53c34c33b8525026e5ff02d496ea005e5408130fb23ff2d7f",
+    "python": "3.12.4",
+    "arquitetura": "AMD64",
+    "pacotes": {
+      "pandas": "2.3.3",
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "pyarrow": "21.0.0",
+      "scipy": "1.18.1"
+    },
+    "fora_do_lock": {},
+    "semente": 20261125,
+    "ensaio": false
+  },
+  "B2_teste_20261126T003222": {
+    "run_id": "B2_teste_20261126T003222",
+    "data_hora": "2026-11-26T00:32:22",
+    "commit_codigo": "1bb140ce1726feec19db3387e3535ec37beb401a+alteracoes_nao_commitadas",
+    "versao_pacote": "4h1a7c9e3b5d0f2e6a8c",
+    "hash_pacote": "d015a9eb055b9df53c34c33b8525026e5ff02d496ea005e5408130fb23ff2d7f",
+    "python": "3.12.4",
+    "arquitetura": "AMD64",
+    "pacotes": {
+      "pandas": "2.3.3",
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "pyarrow": "21.0.0",
+      "scipy": "1.18.1"
+    },
+    "fora_do_lock": {},
+    "semente": 20261125,
+    "ensaio": false
+  },
+  "C1_teste_20261126T003247": {
+    "run_id": "C1_teste_20261126T003247",
+    "data_hora": "2026-11-26T00:32:47",
+    "commit_codigo": "1bb140ce1726feec19db3387e3535ec37beb401a+alteracoes_nao_commitadas",
+    "versao_pacote": "4h1a7c9e3b5d0f2e6a8c",
+    "hash_pacote": "d015a9eb055b9df53c34c33b8525026e5ff02d496ea005e5408130fb23ff2d7f",
+    "python": "3.12.4",
+    "arquitetura": "AMD64",
+    "pacotes": {
+      "pandas": "2.3.3",
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "pyarrow": "21.0.0",
+      "scipy": "1.18.1"
+    },
+    "fora_do_lock": {},
+    "semente": 20261125,
+    "ensaio": false
+  },
+  "A0_teste_20261126T003313": {
+    "run_id": "A0_teste_20261126T003313",
+    "data_hora": "2026-11-26T00:33:13",
+    "commit_codigo": "1bb140ce1726feec19db3387e3535ec37beb401a+alteracoes_nao_commitadas",
+    "versao_pacote": "4h1a7c9e3b5d0f2e6a8c",
+    "hash_pacote": "d015a9eb055b9df53c34c33b8525026e5ff02d496ea005e5408130fb23ff2d7f",
+    "python": "3.12.4",
+    "arquitetura": "AMD64",
+    "pacotes": {
+      "pandas": "2.3.3",
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "pyarrow": "21.0.0",
+      "scipy": "1.18.1"
+    },
+    "fora_do_lock": {},
+    "semente": 20261125,
+    "ensaio": false
+  },
+  "A0_prospectivo_20261126T062250": {
+    "run_id": "A0_prospectivo_20261126T062250",
+    "data_hora": "2026-11-26T06:22:50",
+    "commit_codigo": "d853b87fe4c4aaab3250a2e9bb8f9f6fdd19b61c",
+    "versao_pacote": "4h1a7c9e3b5d0f2e6a8c",
+    "hash_pacote": "d015a9eb055b9df53c34c33b8525026e5ff02d496ea005e5408130fb23ff2d7f",
+    "python": "3.12.4",
+    "arquitetura": "AMD64",
+    "pacotes": {
+      "pandas": "2.3.3",
+      "numpy": "2.5.4",
+      "scikit-learn": "1.9.1",
+      "pyarrow": "21.0.0",
+      "scipy": "1.18.1"
+    },
+    "fora_do_lock": {},
+    "semente": 20261125,
+    "ensaio": false
+  }
+}

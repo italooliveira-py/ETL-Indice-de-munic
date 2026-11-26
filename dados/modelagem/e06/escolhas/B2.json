@@ -1,0 +1,36 @@
+{
+  "experimento": "B2",
+  "run_id": "B2_escolha_20261126T003037",
+  "escolha": "validacao",
+  "prevalencia_treino": 0.7652923740231743,
+  "conjuntos": {
+    "B2": {
+      "trivial": {
+        "hiperparametros": {},
+        "brier_escolha": 0.09035625509456287,
+        "limiar_f1": 0.7652923740231743
+      },
+      "modalidade": {
+        "hiperparametros": {},
+        "brier_escolha": 0.09740723480293263,
+        "limiar_f1": 0.6482084690553745
+      },
+      "logistica": {
+        "hiperparametros": {
+          "l1_ratio": 0.0,
+          "C": 0.01
+        },
+        "brier_escolha": 0.06956061957567018,
+        "limiar_f1": 0.6558572681949515
+      },
+      "arvore": {
+        "hiperparametros": {
+          "max_depth": 3,
+          "min_samples_leaf": 100
+        },
+        "brier_escolha": 0.0783269396968955,
+        "limiar_f1": 0.3867924528301887
+      }
+    }
+  }
+}
