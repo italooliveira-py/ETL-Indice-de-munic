@@ -40,19 +40,16 @@ def matrizes_tres_limiares(previsoes, escolhas, fracao=0.2):
     return pd.DataFrame(linhas)
 
 
-PUBLICADOS = ['registro.csv', 'aberturas_teste.csv', 'registro_oficial_teste.csv', 'quadro_validacao.csv',
-              'capacidade_esperada.csv', 'matrizes_tres_limiares.csv', 'calibracao_por_ano_A0.csv',
-              'previsoes', 'grades', 'erros', 'calibracao', 'robustez', 'replicacao', 'proveniencia']
+PUBLICADOS = ['registro.csv', 'aberturas_teste.csv', 'previsoes.parquet', 'grades.csv', 'erros.csv',
+              'calibracao.csv', 'robustez.csv', 'replicacao.csv', 'proveniencia.json',
+              'registro_oficial_teste.csv', 'quadro_validacao.csv', 'capacidade_esperada.csv',
+              'matrizes_tres_limiares.csv', 'calibracao_por_ano_A0.csv']
 
 
 def publicar(config, saida, oficiais):
     destino = ROOT / 'dados' / 'modelagem' / 'e06'
     for nome in PUBLICADOS:
-        origem = saida / nome
-        if origem.is_dir():
-            shutil.copytree(origem, destino / nome, dirs_exist_ok=True)
-        else:
-            shutil.copy2(origem, destino / nome)
+        shutil.copy2(saida / nome, destino / nome)
     figuras = ROOT / 'docs' / 'e06' / 'figuras'
     shutil.copytree(saida / 'figuras' / 'resumo', figuras, dirs_exist_ok=True)
     shutil.copytree(saida / 'figuras' / oficiais['A0'], figuras / 'A0_teste', dirs_exist_ok=True)
@@ -71,8 +68,9 @@ def main():
     aberturas = pd.read_csv(saida / 'aberturas_teste.csv')
     # A primeira abertura de cada experimento previsto no plano é a leitura oficial.
     oficiais = aberturas[aberturas.prevista_no_plano].groupby('experimento').run_id.first()
-    previsoes = pd.concat([pd.read_parquet(saida / 'previsoes' / f'{rid}.parquet').assign(experimento=exp)
-                           for exp, rid in oficiais.items()], ignore_index=True)
+    previsoes = pd.read_parquet(saida / 'previsoes.parquet')
+    previsoes = previsoes[previsoes.run_id.isin(oficiais.values)].assign(
+        experimento=lambda q: q.run_id.map({rid: exp for exp, rid in oficiais.items()}))
     escrever_csv(capacidades(previsoes, config['capacidades']), saida / 'capacidade_esperada.csv')
 
     registro = pd.read_csv(saida / 'registro.csv')
@@ -87,8 +85,9 @@ def main():
     escrever_csv(matrizes, saida / 'matrizes_tres_limiares.csv')
     figura_matrizes(matrizes, saida / 'figuras' / 'resumo')
 
-    calib = pd.read_csv(saida / 'calibracao' / f'{oficiais["A0"]}.csv')
-    escrever_csv(calib[(calib.tipo == 'ano') & (calib.particao == 'teste')], saida / 'calibracao_por_ano_A0.csv')
+    calib = pd.read_csv(saida / 'calibracao.csv')
+    calib = calib[(calib.run_id == oficiais['A0']) & (calib.tipo == 'ano') & (calib.particao == 'teste')]
+    escrever_csv(calib, saida / 'calibracao_por_ano_A0.csv')
     if args.publicar:
         publicar(config, saida, oficiais)
 

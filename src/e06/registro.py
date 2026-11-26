@@ -86,6 +86,20 @@ def acrescentar(caminho: Path, linhas):
     escrever_csv(novo, caminho)
 
 
+def acrescentar_parquet(caminho: Path, quadro: pd.DataFrame):
+    if caminho.exists():
+        quadro = pd.concat([pd.read_parquet(caminho), quadro], ignore_index=True)
+    caminho.parent.mkdir(parents=True, exist_ok=True)
+    quadro.to_parquet(caminho, index=False)
+
+
+def acrescentar_proveniencia(caminho: Path, prov):
+    """Um único JSON com a proveniência de todas as rodadas, indexada pelo run_id."""
+    todas = json.loads(caminho.read_text(encoding='utf-8')) if caminho.exists() else {}
+    todas[prov['run_id']] = prov
+    gravar_json(caminho, todas)
+
+
 def registrar_abertura_teste(saida: Path, run_id, experimento, previsto_no_plano):
     acrescentar(saida / 'aberturas_teste.csv', [{'run_id': run_id, 'experimento': experimento,
                                                  'data_hora': datetime.now().isoformat(timespec='seconds'),

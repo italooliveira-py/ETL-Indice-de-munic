@@ -65,7 +65,8 @@ Rodam com os dois melhores modelos da validação em M1+, mais a logística e os
 
 - `registro.csv`: uma linha por experimento × conjunto × modelo × partição, com proveniência (commit, hash do pacote, versões). Só recebe linhas novas.
 - `aberturas_teste.csv`: cada uso do teste.
-- `previsoes/`: probabilidade por instrumento, para recalcular métricas sem treinar de novo.
+- `previsoes.parquet`: probabilidade por instrumento, para recalcular métricas sem treinar de novo.
+- `grades.csv`, `erros.csv`, `calibracao.csv`, `robustez.csv`, `replicacao.csv` e `proveniencia.json`: um arquivo por tipo, com o `run_id` de cada rodada.
 - `escolhas/<experimento>.json`: hiperparâmetros e limiares, commitados antes do teste.
 - As rodadas gravam em `output/e06/` (fora do git); a versão final fica em `dados/modelagem/e06/`, com `manifesto.json` de hashes.
 - `docs/e06/decisoes/`: decisões no formato dos ADRs do repo. `CHECKPOINT_E06.md`: estado e próximo passo.

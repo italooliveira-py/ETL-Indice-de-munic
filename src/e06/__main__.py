@@ -99,12 +99,13 @@ def fase_escolha(nome_exp, config, partes, prov, saida):
                                                                           if n['hiperparametros'] == params_cv),
                                  'brier_validacao_escolha_oficial': melhor['brier_escolha']})
             print(f'{nome_exp} {conjunto} {modelo}: {params} Brier {melhor["brier_escolha"]:.4f}', flush=True)
+    rid = prov['run_id']
     r.acrescentar(saida / 'registro.csv', registro)
-    r.escrever_csv(pd.DataFrame(grade), saida / 'grades' / f'{prov["run_id"]}.csv')
+    r.acrescentar(saida / 'grades.csv', pd.DataFrame(grade).assign(run_id=rid))
     if previsoes:
-        pd.concat(previsoes).to_parquet(saida / 'previsoes' / f'{prov["run_id"]}.parquet', index=False)
+        r.acrescentar_parquet(saida / 'previsoes.parquet', pd.concat(previsoes).assign(run_id=rid))
     if robustez:
-        r.escrever_csv(pd.DataFrame(robustez), saida / 'robustez' / f'{prov["run_id"]}.csv')
+        r.acrescentar(saida / 'robustez.csv', pd.DataFrame(robustez).assign(run_id=rid))
     destino = _pasta_escolhas(prov, saida, config) / f'{nome_exp}.json'
     r.gravar_json(destino, escolhas)
     print(f'Escolhas em {destino}. Faça o commit antes de abrir o teste.')
@@ -150,10 +151,11 @@ def _aplicar(nome_exp, config, escolhas, ajustes, avaliado, grupos, prov, saida,
                 parte = parte[(parte.conjunto == conjunto) & (parte.particao == particao)]
                 figuras(parte, {m: e['limiar_f1'] for m, e in modelos.items()},
                         saida / 'figuras' / prov['run_id'] / conjunto, f'{nome_exp} {conjunto} — {titulo}')
+    rid = prov['run_id']
     r.acrescentar(saida / 'registro.csv', registro)
-    pd.concat(previsoes).to_parquet(saida / 'previsoes' / f'{prov["run_id"]}.parquet', index=False)
-    r.escrever_csv(pd.concat(calib), saida / 'calibracao' / f'{prov["run_id"]}.csv')
-    r.escrever_csv(pd.concat(erros), saida / 'erros' / f'{prov["run_id"]}.csv')
+    r.acrescentar_parquet(saida / 'previsoes.parquet', pd.concat(previsoes).assign(run_id=rid))
+    r.acrescentar(saida / 'calibracao.csv', pd.concat(calib).assign(run_id=rid))
+    r.acrescentar(saida / 'erros.csv', pd.concat(erros).assign(run_id=rid))
 
 
 def _grupos(base, config):
@@ -192,12 +194,13 @@ def replicacao(nome_exp, saida):
     ids = aberturas[aberturas.experimento == nome_exp].run_id.tolist()[-2:]
     if len(ids) < 2:
         raise SystemExit('São necessárias duas rodadas de teste para comparar.')
-    a, b = (pd.read_parquet(saida / 'previsoes' / f'{i}.parquet') for i in ids)
+    todas = pd.read_parquet(saida / 'previsoes.parquet')
+    a, b = (todas[todas.run_id == i].drop(columns='run_id') for i in ids)
     junto = a.merge(b, on=['nr_convenio', 'conjunto', 'modelo', 'particao'], suffixes=('_1', '_2'), validate='one_to_one')
     junto['diferenca'] = (junto.p_1 - junto.p_2).abs()
     resumo = junto.groupby(['conjunto', 'modelo', 'particao']).diferenca.max().reset_index()
     resumo['identico'] = resumo.diferenca <= 1e-9
-    r.escrever_csv(resumo, saida / 'replicacao' / f'{ids[0]}__{ids[1]}.csv')
+    r.acrescentar(saida / 'replicacao.csv', resumo.assign(run_id_1=ids[0], run_id_2=ids[1]))
     print(resumo.to_string(index=False))
     print('REPLICACAO OK' if resumo.identico.all() and len(junto) == len(a) == len(b) else 'REPLICACAO DIVERGENTE')
 
@@ -218,14 +221,14 @@ def main():
     diferencas = r.conferir_lock(config, args.fora_do_lock)
     if args.fora_do_lock:
         saida = saida.parent / (saida.name + '_fora_do_lock')
-    (saida / 'previsoes').mkdir(parents=True, exist_ok=True)
+    saida.mkdir(parents=True, exist_ok=True)
     print('Pacote:', d.verificar_pacote(config))
     partes = d.carregar(config)
     fases = {'escolha': fase_escolha, 'teste': fase_teste, 'prospectivo': fase_prospectivo}
     for nome_exp in (list(config['experimentos']) if args.todos else [args.experimento]):
         prov = {**r.proveniencia(r.novo_run_id(nome_exp, args.fase), config, diferencas),
                 'semente': config['semente'], 'ensaio': args.fora_do_lock}
-        r.gravar_json(saida / 'proveniencia' / f'{prov["run_id"]}.json', prov)
+        r.acrescentar_proveniencia(saida / 'proveniencia.json', prov)
         fases[args.fase](nome_exp, config, partes, prov, saida)
 
 

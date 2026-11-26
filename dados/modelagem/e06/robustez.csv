@@ -1,0 +1,13 @@
+conjunto,modelo,escolha_validacao,escolha_janelas_2016_2019,mesma_escolha,brier_validacao_da_escolha_janelas,brier_validacao_da_escolha_oficial,run_id
+M1,logistica,"{""l1_ratio"": 0.5, ""C"": 10.0}","{""l1_ratio"": 0.5, ""C"": 0.01}",False,0.0691081330515465,0.0683386223649568,A0_escolha_20261126T001627
+M1,arvore,"{""max_depth"": 2, ""min_samples_leaf"": 20}","{""max_depth"": 4, ""min_samples_leaf"": 20}",False,0.1101449500792042,0.0943213931783154,A0_escolha_20261126T001627
+M1,floresta,"{""max_depth"": 4, ""min_samples_leaf"": 10}","{""max_depth"": 4, ""min_samples_leaf"": 30}",False,0.0832081171513337,0.0823944719787196,A0_escolha_20261126T001627
+M1,gb,"{""learning_rate"": 0.03, ""max_depth"": 2}","{""learning_rate"": 0.03, ""max_depth"": 3}",False,0.0948302086362814,0.0874877628030916,A0_escolha_20261126T001627
+M1,svc,"{""C"": 3.0}","{""C"": 1.0}",False,0.0799546786983546,0.0794563283811813,A0_escolha_20261126T001627
+M1,mlp,"{""hidden_layer_sizes"": [8], ""alpha"": 10.0}","{""hidden_layer_sizes"": [8], ""alpha"": 1.0}",False,0.1386188691305835,0.0809647596905995,A0_escolha_20261126T001627
+M1_plus,logistica,"{""l1_ratio"": 0.0, ""C"": 0.01}","{""l1_ratio"": 0.0, ""C"": 0.01}",True,0.0693093965650918,0.0693093965650918,A0_escolha_20261126T001627
+M1_plus,arvore,"{""max_depth"": 3, ""min_samples_leaf"": 100}","{""max_depth"": 3, ""min_samples_leaf"": 100}",True,0.0775865654010018,0.0775865654010018,A0_escolha_20261126T001627
+M1_plus,floresta,"{""max_depth"": 4, ""min_samples_leaf"": 30}","{""max_depth"": 4, ""min_samples_leaf"": 30}",True,0.0796990378789089,0.0796990378789089,A0_escolha_20261126T001627
+M1_plus,gb,"{""learning_rate"": 0.03, ""max_depth"": 2}","{""learning_rate"": 0.03, ""max_depth"": 2}",True,0.093707900756288,0.093707900756288,A0_escolha_20261126T001627
+M1_plus,svc,"{""C"": 3.0}","{""C"": 1.0}",False,0.0798095155105942,0.0792792692839473,A0_escolha_20261126T001627
+M1_plus,mlp,"{""hidden_layer_sizes"": [8], ""alpha"": 10.0}","{""hidden_layer_sizes"": [16], ""alpha"": 10.0}",False,0.0966810199337451,0.0891366202775076,A0_escolha_20261126T001627
