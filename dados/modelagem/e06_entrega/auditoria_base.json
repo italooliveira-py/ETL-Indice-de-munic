@@ -1,0 +1,88 @@
+{
+  "origem": "bronze",
+  "pacote_verificado": {
+    "status": "OK",
+    "rows": 5359,
+    "municipios": 223,
+    "target_nulls": 0,
+    "hash_mismatches": 0,
+    "training_executed": false
+  },
+  "carga": "2026-07-17T06:30:47",
+  "corte": "2024-12-31",
+  "bronze_sha256": {
+    "data_carga_siconv.csv.zip": "f028e71437e085da89838200afde1ee270f3173a90c8ccea48794270ffb97b23",
+    "siconv_proposta_pb.csv.gz": "1e182ea9919b509e24148a79e66c43cf57a94ab091aec0a88201b07eee690741",
+    "siconv_convenio_pb.csv.gz": "84a51303adfe489035ba1edf9d6c556f2aa643dfafbaa9c2dfa8755d336b4415",
+    "siconv_emenda_pb.csv.gz": "c63f532be1173b87a922eb21ef35ffd59e62acd952812f5575eaa99d3109510d",
+    "siconv_desembolso_pb.csv.gz": "ec22f086200e47d0ef1d520b6a409a470ae7af748899aab991a245c2ca26f593"
+  },
+  "linhas_silver_instrumentos": 6182,
+  "linhas_silver_desembolsos": 9411,
+  "linhas": {
+    "train": 3711,
+    "validation": 1023,
+    "test": 625
+  },
+  "censurados": 242,
+  "prospectivos_maduros": 242,
+  "comparacao_congelado": {
+    "train": {
+      "n_em_comum": 3711,
+      "so_bronze": 0,
+      "so_pacote": 0,
+      "divergencias": {
+        "codigo_ibge": 0,
+        "data_assinatura": 0,
+        "data_previsao": 0,
+        "split": 0,
+        "ano_origem": 0,
+        "modalidade": 0,
+        "historico_instrumentos_maduros": 0,
+        "historico_atrasados": 0,
+        "historico_eventos_financeiros": 0,
+        "historico_valor_desembolsado": 0,
+        "valor_global_assinatura": 0,
+        "y_1_sem_desembolso_365": 0
+      }
+    },
+    "validation": {
+      "n_em_comum": 1023,
+      "so_bronze": 0,
+      "so_pacote": 0,
+      "divergencias": {
+        "codigo_ibge": 0,
+        "data_assinatura": 0,
+        "data_previsao": 0,
+        "split": 0,
+        "ano_origem": 0,
+        "modalidade": 0,
+        "historico_instrumentos_maduros": 221,
+        "historico_atrasados": 215,
+        "historico_eventos_financeiros": 51,
+        "historico_valor_desembolsado": 51,
+        "valor_global_assinatura": 0,
+        "y_1_sem_desembolso_365": 0
+      }
+    },
+    "test": {
+      "n_em_comum": 625,
+      "so_bronze": 0,
+      "so_pacote": 0,
+      "divergencias": {
+        "codigo_ibge": 0,
+        "data_assinatura": 0,
+        "data_previsao": 0,
+        "split": 0,
+        "ano_origem": 0,
+        "modalidade": 0,
+        "historico_instrumentos_maduros": 597,
+        "historico_atrasados": 590,
+        "historico_eventos_financeiros": 458,
+        "historico_valor_desembolsado": 458,
+        "valor_global_assinatura": 0,
+        "y_1_sem_desembolso_365": 0
+      }
+    }
+  }
+}

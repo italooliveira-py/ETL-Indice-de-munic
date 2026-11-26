@@ -1,0 +1,9 @@
+# Ambiente da execução Bronze E06 em Python 3.12 AMD64
+numpy==2.2.6
+pandas==2.3.1
+scikit-learn==1.7.1
+pyarrow==21.0.0
+scipy==1.18.0
+requests==2.32.4
+joblib==1.5.2
+threadpoolctl==3.6.0

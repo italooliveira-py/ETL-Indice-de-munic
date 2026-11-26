@@ -85,7 +85,8 @@ def _estimador(nome, params, config):
         l1 = params['l1_ratio']
         if l1 == 0:
             return LogisticRegression(C=params['C'], max_iter=5000, random_state=s)
-        return LogisticRegression(C=params['C'], l1_ratio=l1, solver='saga', max_iter=10000, random_state=s)
+        return LogisticRegression(C=params['C'], penalty='elasticnet', l1_ratio=l1,
+                                  solver='saga', max_iter=10000, random_state=s)
     if nome == 'arvore':
         return DecisionTreeClassifier(random_state=s, **params)
     if nome == 'floresta':

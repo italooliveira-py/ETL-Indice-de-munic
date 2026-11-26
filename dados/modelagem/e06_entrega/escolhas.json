@@ -1,0 +1,44 @@
+{
+  "modalidade": {
+    "modelo": "modalidade",
+    "hiperparametros": {},
+    "brier_escolha": 0.15445094380744764,
+    "segundos_busca": 0.00798789999953442
+  },
+  "logistica": {
+    "modelo": "logistica",
+    "hiperparametros": {
+      "l1_ratio": 0.0,
+      "C": 0.01
+    },
+    "brier_escolha": 0.13572158604029055,
+    "segundos_busca": 2.8745856000005006
+  },
+  "arvore": {
+    "modelo": "arvore",
+    "hiperparametros": {
+      "max_depth": 3,
+      "min_samples_leaf": 100
+    },
+    "brier_escolha": 0.14685756283873097,
+    "segundos_busca": 0.4760601999996652
+  },
+  "floresta": {
+    "modelo": "floresta",
+    "hiperparametros": {
+      "max_depth": 4,
+      "min_samples_leaf": 30
+    },
+    "brier_escolha": 0.13954597425685192,
+    "segundos_busca": 12.787527399999817
+  },
+  "gb": {
+    "modelo": "gb",
+    "hiperparametros": {
+      "learning_rate": 0.03,
+      "max_depth": 2
+    },
+    "brier_escolha": 0.13616218204836128,
+    "segundos_busca": 1.7619014000001698
+  }
+}
