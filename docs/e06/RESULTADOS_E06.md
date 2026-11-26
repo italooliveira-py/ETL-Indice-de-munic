@@ -41,6 +41,7 @@ A precisão no top k% usa o valor esperado nos empates (seção 6).
 - No top 10% (63 instrumentos), o Random Forest acerta cerca de 4 instrumentos a mais que a taxa por modalidade. Essa métrica não tem intervalo, e a diferença não é conclusiva.
 - O SVC M1+ ordena ao contrário: o intervalo do ROC-AUC fica todo abaixo de 0,5.
 - O M1+ não melhora o M1 em nenhum modelo.
+- Contra uma constante igual à taxa real do teste (83,2%), que nenhum modelo poderia conhecer, só a taxa por modalidade (+4,2%), o Random Forest M1 (+4,1%) e o M1+ (+3,4%) ganham com folga. O ganho deles vem da ordenação, não só do nível.
 - Reajustar em treino + validação piora quase todos os modelos. A previsão média sobe para 0,90–0,94, e o ROC-AUC de vários cai para 0,39–0,47 (`registro.csv`, partição `teste_refit_treino_validacao`).
 
 ## 2. Validação (A0)
@@ -178,13 +179,13 @@ O pacote apurou o desfecho até 31/12/2024 e deixou de fora os 242 instrumentos 
 | SVC | +0,034 [+0,004; +0,074] | 0,472 [0,371; 0,602] | 0,792 | 83,5 |
 | MLP | +0,047 [−0,009; +0,093] | 0,672 [0,560; 0,769] | 0,762 | 91,7 |
 
-- A logística vence em 2024 porque sua previsão média (0,93) fica próxima da taxa do ano.
+- A logística vence em 2024 porque sua previsão média (0,93) fica próxima da taxa do ano. Contra uma constante igual à taxa real de 2024 (87,6%), só a logística fica acima, por +1,8% (M1+) e +0,2% (M1); todos os outros ficam abaixo.
 - Dentro de cada modalidade, o ROC-AUC da logística é 0,46 nos contratos de repasse, 0,45 nos termos e 0,62 nos 30 convênios. O 0,70 no total vem de prever 0,95 para os termos e 0,87 para os convênios.
 - A taxa por modalidade perde força porque não conhece os termos de compromisso.
 
 ## 8. Encaminhamentos
 
-- **Relatório:** apresentar o Random Forest M1 como melhor modelo treinado, empatado com a taxa por modalidade, que fica como baseline a ser batido. Registrar que a validação 2020–2021 não permite escolher modelos por ordenação.
+- **Relatório:** pelo protocolo, o modelo escolhido é a logística, que venceu a validação. No teste, ela não supera a taxa por modalidade. O empate do Random Forest com a taxa por modalidade foi visto no teste, entre 16 modelos, e não serve para escolher modelo: entra como comparação, não como vencedor. A taxa por modalidade fica como baseline a ser batido. Registrar que a validação 2020–2021 não permite escolher modelos por ordenação.
 - **Professor:** a partição oficial escolhe pelo período mais atípico da série; o A1 mostra que mudar o critério não altera o resultado.
 - **Ítalo:** registrar no pacote a modalidade "TERMO DE COMPROMISSO", que aparece a partir de 2024.
 - **Modelagem:** a ordem entre os modelos muda de ano para ano conforme o nível de cada um se aproxima da taxa do ano. Com estas variáveis, só a modalidade separa instrumentos de forma consistente.
