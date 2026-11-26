@@ -1,0 +1,52 @@
+{
+  "pacote": "dados/analitico/pacote_final_modelagem_e06/versoes/4h1a7c9e3b5d0f2e6a8c",
+  "versao_pacote": "4h1a7c9e3b5d0f2e6a8c",
+  "lock": "requirements-e05-lock.txt",
+  "ibge": "data/silver/ibge.parquet",
+  "desembolsos": "data/silver/transferegov_desembolsos.parquet",
+  "saida": "output/e06",
+  "escolhas": "dados/modelagem/e06/escolhas",
+  "semente": 20261125,
+  "sementes_mlp": [0, 1, 2],
+  "bootstrap": 1000,
+  "suavizacao_historico": 5,
+  "capacidades": [0.1, 0.2, 0.3],
+  "conjuntos": {
+    "M1": ["ano_origem", "modalidade", "historico_instrumentos_maduros", "historico_atrasados",
+           "historico_eventos_financeiros", "historico_valor_desembolsado"],
+    "M1_plus": ["ano_origem", "modalidade", "historico_instrumentos_maduros", "historico_atrasados",
+                "historico_eventos_financeiros", "historico_valor_desembolsado", "valor_global_assinatura"],
+    "B1": ["ano_origem", "modalidade", "valor_global_assinatura",
+           "taxa_atraso_hist", "sem_historico", "valor_medio_evento"],
+    "B2": ["ano_origem", "modalidade", "historico_instrumentos_maduros", "historico_atrasados",
+           "historico_eventos_financeiros", "historico_valor_desembolsado", "valor_global_assinatura",
+           "taxa_atraso_hist", "sem_historico", "valor_medio_evento"],
+    "C1": ["modalidade", "historico_instrumentos_maduros", "historico_atrasados",
+           "historico_eventos_financeiros", "historico_valor_desembolsado", "valor_global_assinatura"]
+  },
+  "grades": {
+    "trivial": [{}],
+    "modalidade": [{}],
+    "logistica": {"l1_ratio": [0.0, 1.0, 0.5], "C": [0.01, 0.1, 1.0, 10.0]},
+    "arvore": {"max_depth": [2, 3, 4, 6], "min_samples_leaf": [20, 50, 100]},
+    "floresta": {"max_depth": [4, 8, null], "min_samples_leaf": [10, 30]},
+    "gb": {"learning_rate": [0.03, 0.1], "max_depth": [2, 3]},
+    "svc": {"C": [0.3, 1.0, 3.0]},
+    "mlp": {"hidden_layer_sizes": [[8], [16]], "alpha": [1.0, 10.0]}
+  },
+  "experimentos": {
+    "A0": {"descricao": "oficial do pacote", "treino": [2008, 2019], "escolha": "validacao",
+           "conjuntos": ["M1", "M1_plus"], "modelos": "todos", "robustez_cv": [2016, 2017, 2018, 2019],
+           "refit_treino_validacao": true},
+    "A1": {"descricao": "sem pandemia: escolha por janelas no tempo dentro do treino", "treino": [2008, 2019],
+           "escolha": "cv_tempo", "anos_cv": [2018, 2019], "conjuntos": ["M1_plus"], "modelos": "finalistas"},
+    "A2": {"descricao": "janela recente 2015-2019", "treino": [2015, 2019],
+           "escolha": "cv_tempo", "anos_cv": [2018, 2019], "conjuntos": ["M1_plus"], "modelos": "finalistas"},
+    "B1": {"descricao": "historico derivado no lugar das contagens", "treino": [2008, 2019],
+           "escolha": "validacao", "conjuntos": ["B1"], "modelos": "finalistas"},
+    "B2": {"descricao": "contagens + historico derivado", "treino": [2008, 2019],
+           "escolha": "validacao", "conjuntos": ["B2"], "modelos": "finalistas"},
+    "C1": {"descricao": "M1+ sem ano_origem", "treino": [2008, 2019],
+           "escolha": "validacao", "conjuntos": ["C1"], "modelos": "finalistas"}
+  }
+}

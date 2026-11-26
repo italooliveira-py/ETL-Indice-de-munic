@@ -1,0 +1,27 @@
+modelo,hiperparametros,brier_escolha,conjunto
+trivial,{},0.09035625509456287,C1
+modalidade,{},0.09740723480293263,C1
+logistica,"{""l1_ratio"": 0.0, ""C"": 0.01}",0.07816520152691638,C1
+logistica,"{""l1_ratio"": 0.0, ""C"": 0.1}",0.0803715307632181,C1
+logistica,"{""l1_ratio"": 0.0, ""C"": 1.0}",0.08035907718709988,C1
+logistica,"{""l1_ratio"": 0.0, ""C"": 10.0}",0.08031673702595088,C1
+logistica,"{""l1_ratio"": 1.0, ""C"": 0.01}",0.0788073398339561,C1
+logistica,"{""l1_ratio"": 1.0, ""C"": 0.1}",0.0799870899389074,C1
+logistica,"{""l1_ratio"": 1.0, ""C"": 1.0}",0.080298281896671,C1
+logistica,"{""l1_ratio"": 1.0, ""C"": 10.0}",0.08031953447341486,C1
+logistica,"{""l1_ratio"": 0.5, ""C"": 0.01}",0.0780402741132329,C1
+logistica,"{""l1_ratio"": 0.5, ""C"": 0.1}",0.08018730564906511,C1
+logistica,"{""l1_ratio"": 0.5, ""C"": 1.0}",0.08032447565149278,C1
+logistica,"{""l1_ratio"": 0.5, ""C"": 10.0}",0.0803228469389183,C1
+arvore,"{""max_depth"": 2, ""min_samples_leaf"": 20}",0.0875189118802638,C1
+arvore,"{""max_depth"": 2, ""min_samples_leaf"": 50}",0.0875189118802638,C1
+arvore,"{""max_depth"": 2, ""min_samples_leaf"": 100}",0.0875189118802638,C1
+arvore,"{""max_depth"": 3, ""min_samples_leaf"": 20}",0.08004737457379697,C1
+arvore,"{""max_depth"": 3, ""min_samples_leaf"": 50}",0.08004737457379697,C1
+arvore,"{""max_depth"": 3, ""min_samples_leaf"": 100}",0.07997706657961935,C1
+arvore,"{""max_depth"": 4, ""min_samples_leaf"": 20}",0.08562955333341742,C1
+arvore,"{""max_depth"": 4, ""min_samples_leaf"": 50}",0.08019528237658517,C1
+arvore,"{""max_depth"": 4, ""min_samples_leaf"": 100}",0.07901844829529606,C1
+arvore,"{""max_depth"": 6, ""min_samples_leaf"": 20}",0.0935576121541589,C1
+arvore,"{""max_depth"": 6, ""min_samples_leaf"": 50}",0.09325342604310985,C1
+arvore,"{""max_depth"": 6, ""min_samples_leaf"": 100}",0.08863112071939398,C1
